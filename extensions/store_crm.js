@@ -121,6 +121,21 @@ obj['softauth'] = "order"; // [OPTIONAL]. if user is logged in, this gets ignore
 			},//buyerOrderMacro
 
 
+		buyerAddressAddUpdate  : {
+			init : function(cmdObj,tagObj,Q)	{
+				tagObj = $.isEmptyObject(tagObj) ? {} : tagObj; 
+				tagObj.datapointer = "buyerAddressAddUpdate|"+cmdObj.shortcut+"|"+myControl.util.unixNow();
+				cmdObj['_cmd'] = 'buyerAddressAddUpdate ';
+				cmdObj['_tag'] = tagObj;
+				if(!Q)	{Q = 'immutable'}
+				this.dispatch(cmdObj,Q);
+				return 1;
+				},
+			dispatch : function(cmdObj,Q)	{
+				myControl.model.addDispatchToQ(cmdObj,Q);	
+				}
+			},//buyerAddressAddUpdate 
+
 //always uses immutable q so that an order update is not cancelled.
 /*
 NOT SUPPORTED.

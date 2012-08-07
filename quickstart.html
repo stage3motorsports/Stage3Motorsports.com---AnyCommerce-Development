@@ -10,33 +10,30 @@
 <base href='' /><!-- leave blank so it works for a local file -->
 
 <script type="text/javascript">
-//sets the base url based on secure or non-secure protocol. necessary to play well across all browsers.
-//specifically, IE didn't like base href="/", plus that doesn't play well w/ zoovy hosting of SSL domains.
-// the check for file allows us to leave this code uncommented while testing locally.
 
 var ac = {
 	"baseURL":"",
 	"httpsURL":"https://ssl.zoovy.com/s=www.sporks.zoovy.com/",
 	"httpURL":"http://www.sporks.zoovy.com/"
 	};
-
+//set base url so images, css, js, etc all load from appropriate location once deployed.
+//baseURL as blank lets loadScript function run off local copy when testing locally.
 if(document.location.protocol != 'file:')	{
 	ac.baseURL  = "https:" == document.location.protocol ? ac.httpsURL : ac.httpURL; 
 	document.getElementsByTagName('base')[0].href = ac.baseURL;
 	}
 </script>
+
 <script type="text/javascript" src="jquery-1.7.2.min.js"></script>
 <script type="text/javascript" src="loadscript.js"></script>
-<!-- for local testing, use full path. for deplyment, use "jquery/config.js" -->
-<script type="text/javascript">
-loadScript(ac.baseURL+"init.js");
-</script>
 
-<script type='text/javascript'>
+<script type="text/javascript">
 
 var _gaq = {'push':function(){}} //here for testing. replace with actual GA code or delete at deployment.
 var myControl;
 var myCreole;
+
+loadScript(ac.baseURL+"init.js");
 
 </script>
 </head>
@@ -618,9 +615,7 @@ adding classes is not likely to have any bad effects.
 			<div id='logMessaging'></div>
 			<div><a href="#" onClick="myControl.util.logBuyerOut(); return false;">Log Out</a></div>
 			
-			<section id='buyerAddresses'>
-
-			</section>
+			<section id='buyerAddresses'></section>
 
 			
 		</div>
@@ -1175,21 +1170,36 @@ If this gets recycled, test in order history after making changes.
 
 
 
-<!-- used in the my account area -->
-<address id='billAddressTemplate' class='ui-state-default buyerAddressContainer buyerBillAddressContainer'>
+<!--
+
+The following classes used in the bill and ship address templates are used in the quickstart.js file: buyerAddressContainer, buttonMenu, offMenu, onMenu, editable
+The 'data-action' attribute is used to assign an onclick.
+
+-->
+
+<address id='billAddressTemplate' class='ui-widget ui-widget-content ui-corner-all buyerAddressContainer buyerBillAddressContainer '>
+	<menu class='buttonMenu alignRight floatRight'>
+		<div class='offMenu'><button data-action="displayOnMenu" class='ui-button-text ui-button ui-state-default ui-corner-all'>edit</button></div>
+		<div class='onMenu'>
+			<button data-action="cancelAddressChanges" class='ui-button-text ui-button ui-state-default ui-corner-all'>cancel changes</button>
+			<button data-action="saveAddressChanges" class='ui-button-text ui-button ui-state-default ui-state-active ui-corner-all'>Save</button>
+		</div>
+		<div class='changeLog'></div>
+	</menu>
 	<div class='addressFullname'>
-		<span data-bind="var: address(bill_firstname);format:text;"></span> <span data-bind="var: address(bill_lastname);format:text;"></span>
+		<span data-bind="var: address(bill_firstname);format:text;" class='editable' title='first name'></span> <span data-bind="var: address(bill_lastname);format:text;" class='editable' title='last name'></span>
 	</div>
 	<div class='address'>
-		<div data-bind="var: address(bill_address1);format:text;"></div>
-		<div data-bind="var: address(bill_address2);format:text;"></div>
+		<div data-bind="var: address(bill_address1);format:text;" class='editable' title='address'></div>
+		<div data-bind="var: address(bill_address2);format:text;" class='editable' title='address 2'></div>
 		
-		<span data-bind="var: address(bill_city);format:text; posttext:, ;"></span>
-		<span data-bind="var: address(bill_state);format:text;posttext:. ;"></span>
-		<span data-bind="var: address(bill_zip);format:text;"></span>
-		<div data-bind="var: address(bill_country);format:text;"></div>
+		<span data-bind="var: address(bill_city);format:text;" class='editable' title='city'></span>, 
+		<span data-bind="var: address(bill_state);format:text;" class='editable' title='state'></span>. 
+		<span data-bind="var: address(bill_zip);format:text;" class='editable' title='zip'></span>
+		<div data-bind="var: address(bill_country);format:text;" title='country'></div>
 
 	</div>
+
 </address>
 
 
@@ -1311,6 +1321,15 @@ If this gets recycled, test in order history after making changes.
 <div class='debug displayNone'>
 	<button class='ui-button-text ui-button ui-state-default ui-corner-all' onClick="localStorage.clear(); return false;">Clear Local Storage</button>
 	<button class='ui-button-text ui-button ui-state-default ui-corner-all' onClick="myControl.util.dump(myControl); return false;">Control to Console</button>
+<button class='ui-button-text ui-button ui-state-default ui-corner-all' onClick="myControl.ext.store_crm.calls.buyerOrderPaymentAdd.init({'tender':'CREDIT',
+'amt':'5.00',
+'payment.cc':'4111111111111111',
+'payment.mm':'03',
+'payment.yy':'2013',
+'payment.cv':'123',
+'orderid':'2012-01-396'
+}); myControl.model.dispatchThis('immutable'); return false;">Buyer Order Macro test</button>
+
 </div>
 
 

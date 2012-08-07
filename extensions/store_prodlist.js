@@ -187,7 +187,9 @@ The advantage of saving the data in memory and local storage is lost if the data
 //				myControl.util.dump(" -> tagObj.parentID = "+tagObj.parentID);
 				var tmp = myControl.data[tagObj.datapointer];
 				var pid = myControl.data[tagObj.datapointer].pid;
-				if(typeof myControl.data['appReviewsList|'+pid] == 'object')	{
+//				myControl.util.dump(" -> typeof myControl.data['appReviewsList|'+pid]:"+ typeof myControl.data['appReviewsList|'+pid]);
+				if(typeof myControl.data['appReviewsList|'+pid] == 'object'  && myControl.data['appReviewsList|'+pid]['@reviews'].length)	{
+//					myControl.util.dump(" -> Item ["+pid+"] has "+myControl.data['appReviewsList|'+pid]['@reviews'].length+" review(s)");
 					tmp['reviews'] = myControl.ext.store_prodlist.util.summarizeReviews(pid); //generates a summary object (total, average)
 					tmp['reviews']['@reviews'] = myControl.data['appReviewsList|'+pid]['@reviews']
 					}
@@ -251,16 +253,12 @@ var L = csv.length;
 if(L > itemsPerPage)	{ L = itemsPerPage } //only show as many product as are in this page.
 //				myControl.util.dump("itemsPerPage: "+itemsPerPage+"; L:"+L);
 
-
+data.bindData.templateID = data.bindData.loadsTemplate;
+data.bindData.items_per_page = itemsPerPage;
+data.bindData.csv = csv;
+data.bindData.parentID = parentListID;
 //creates an object in myControl.ext.store_prodlist.vars such as items per page, # pages, etc.
-myControl.ext.store_prodlist.util.setProdlistVars({
-	'parentID':parentListID,
-	'csv':csv,
-	'items_per_page':itemsPerPage,
-	'templateID':data.bindData.loadsTemplate,
-	'withVariations':data.bindData.withVariations,
-	'withInventory':data.bindData.withInventory
-	})
+myControl.ext.store_prodlist.util.setProdlistVars(data.bindData)
 					
 var pid; //used as a shortcut in the loop below to store the pid during each iteration.
 for(var i = 0; i < L; i += 1)	{
@@ -276,7 +274,7 @@ if(!data.bindData.hide_multipage)	{
 	}
 
 					}
-				},//prodlist	
+				},//prodlist		
 			
 // NOT DONE!!!			
 			reviewSummary : function($tag,data){

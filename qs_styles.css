@@ -1,4 +1,4 @@
-#appTemplates, #appView {display:none;} /* container for all templates. should be hidden */
+#appTemplates {display:none;} /* container for all templates. should be hidden */
 
 #appPreView	{width:550px; margin:0 auto;}
 
@@ -6,9 +6,11 @@
 /*
 loading class. add class to your templates if you want a loading graphic to appear while data is requested. add only to the parent element. 
 loadingBG classname is removed once template is rendered.
+note - wait should only be used in cases where the entire template is being reloaded. the class is NOT automatically removed ever.
 */
 .loadingBG	{background:url(loading.gif) no-repeat center center; min-height:100px; min-width:100px;}
-li.loadingBG	{background:url(wait.gif) no-repeat top center; min-height:20px; min-width:20px;}
+li.loadingBG, .wait	{background:url(wait.gif) no-repeat top center; min-height:20px; min-width:20px;}
+span.wait	{display:inline-block;}
 
 /******* global styles - added for cross-browser uniformity or usability ******/
 
@@ -37,6 +39,16 @@ input:focus {
 
 button:focus	{outline:none;}
 button.ui-button	{padding:2px 12px !important;} /* jqueryui ui-button default class doesn't handle padding for 'button' elements. */
+.zform_number	{width:50px;}
+
+/*
+classes used on menus that are toggled on/off. wrap offMenu around the default buttons and onMenu around buttons that get turned on.
+for example, in /customer/myaccount, a 'change' button is displayed (wrapped in offMenu) for each address. onClick, 'onMenu' is toggled on, revealing save and cancel
+and offMenu is toggle off, hiding the change button.
+*/
+.onMenu	{display:none;}
+.offMenu	{}
+
 
 .bindByAnchor	{} /* here just to give a little aid to wysiwyg editors. no styles should be applied. used w/ bindNav feature */
 
@@ -84,8 +96,10 @@ button.ui-button	{padding:2px 12px !important;} /* jqueryui ui-button default cl
     visibility: hidden;
 	}
 	
-
-
+/* added to a piece of text once it becomed editable */
+.editable	{} /* put this on any editable field. */
+.editEnabled	{border:1px solid #ffcc00; min-width:25px; min-height:22px; width:200px; display:inline-block; padding:2px; margin-bottom:2px;} /* added to any editable field once editor is enabled. */
+.edited		{border:1px solid #390;} /* added if a field is changed */
 
 /****** APP specific styles ******/
 
@@ -272,6 +286,15 @@ CUSTOMER PAGES
 #orderInvoiceSoloPage table	{width:700px;}
 .orderContentsProdlistContainer	{width:500px;}
 .orderContentsProdlistContainer .prodThumbContainer	{float:left; margin:0 5px 5px 0;}
+
+
+/****** MY ACCOUNT ******/
+
+#buyerAddresses	{margin-bottom:12px;}
+#buyerAddresses h2	{margin:12px 0; clear:both;}
+#buyerAddresses address	{margin:0 0px 12px 0; float:left; width:90%; display:block; padding:5px;}
+
+
 
 
 /***************************************************

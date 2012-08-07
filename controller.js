@@ -1295,8 +1295,8 @@ later, it will handle other third party plugins as well.
 	
 					case 'PO':
 						tmp += "<li><label for='payment-po'>PO #<\/label><input type='text' size='2' name='payment.po' id='payment-po' class=' purchaseOrder' onChange='myControl.calls.cartSet.init({\"payment.po\":this.value});' value='";
-						if(myControl.data.cartItemsList.cart['payment.po'])
-								tmp += myControl.data.cartItemsList.cart['payment.po'];
+						if(data['payment.po'])
+								tmp += data['payment.po'];
 						tmp += "' /><\/li>";
 						break;
 	
@@ -1308,8 +1308,8 @@ later, it will handle other third party plugins as well.
 //The field is required in checkout. if it needs to be optional elsewhere, remove the required attribute in that code base after this has rendered.
 							tmp += "<li><label for='"+safeid+"'>"+echeckFields[key]+"<\/label><input required='required' type='text' size='2' name='"+key+"' id='"+safeid+"' class=' echeck'  value='";
 //if the value for this field is set in the data object (cart or invoice), set it here.
-							if(myControl.ext.convertSessionToOrder.vars[key])
-								tmp += myControl.ext.convertSessionToOrder.vars[key];
+							if(data[key])
+								tmp += data[key];
 							tmp += "' /><\/li>";
 							}
 						break;
@@ -1539,11 +1539,14 @@ $r.find('[data-bind]').each(function()	{
 		if(myControl.util.isSet(bindData.format)){
 //the renderFunction could be in 1 of 2 places, so it's saved to a local var so it can be used as a condition before executing itself.
 			var renderFunction; //saves a copy of the renderFunction to a local var.
-			if(bindData.extension && myControl.ext[bindData.extension] && typeof myControl.ext[bindData.extension].renderFormats[bindData.format] == 'function')	{
+			if(bindData.extension && myControl.ext[bindData.extension] && typeof myControl.ext[bindData.extension].renderFormats == 'object' && typeof myControl.ext[bindData.extension].renderFormats[bindData.format] == 'function')	{
 				renderFunction = myControl.ext[bindData.extension].renderFormats[bindData.format];
 				}
 			else if(typeof myControl.renderFormats[bindData.format] == 'function'){
 				renderFunction = myControl.renderFormats[bindData.format];
+				}
+			else	{
+				myControl.util.dump("WARNING! unrecognized render format: "+bindData.format);
 				}
 
 			if(typeof renderFunction == 'function')	{

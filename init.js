@@ -1,6 +1,7 @@
 
 
-
+// A list of all the extensions that are going to be used.
+//if an extension is 'required' for any page within the store to load properly, the extension should be added as a dependency within quickstart.js
 var myExtensions = [
 	{"namespace":"store_prodlist","filename":"extensions/store_prodlist.js"},
 	{"namespace":"convertSessionToOrder","filename":"extensions/checkout_passive/extension.js"},  /* checkout_passive does not require buyer to login */
@@ -15,10 +16,23 @@ var myExtensions = [
 
 
 /*
-load any script that needs to callback after loading.
+an object containing a list of scripts that are required/desired.
+for each script, include:  
+	pass -> scripts are loaded in a loop. pass 1 is loaded before app gets initiated and should only include 'required' scripts. Use > 1 for other scripts.
+	location -> the location of the file. be sure to load a secure script on secure pages to avoid an ssl error.
+	validator -> a function returning true or false if the script is loaded. Used primarily on pass 1.
+optionally also include:
+	callback -> a function to execute after the script is loaded.
 */
 var acBaseScripts = new Array();
-acBaseScripts.push({'pass':1,'location':ac.baseURL+'jquery-ui-1.8.20.custom.min.js','validator':function(){return (typeof $ == 'function' && jQuery.ui) ? true : false;}})
+
+
+acBaseScripts.push({
+	'pass':1,
+	'location':(document.location.protocol == 'https:' ? 'https:' : 'http:')+'//ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/jquery-ui.js',
+	'validator':function(){return (typeof $ == 'function' && jQuery.ui) ? true : false;}
+	})
+
 acBaseScripts.push({'pass':1,'location':ac.baseURL+'model.js','validator':function(){return (typeof zoovyModel == 'function') ? true : false;}})
 acBaseScripts.push({'pass':1,'location':ac.baseURL+'includes.js','validator':function(){return (typeof handlePogs == 'function') ? true : false;}})
 
@@ -26,18 +40,32 @@ acBaseScripts.push({'pass':1,'location':ac.baseURL+'includes.js','validator':fun
 //when opening the app locally, always use the nonsecure config file. Makes testing easier.
 //when opening the app remotely, use ac.baseURL which will be http/https as needed.
 
-acBaseScripts.push({'pass':1,'location':(document.location.protocol == 'file:') ? ac.httpURL+'jquery/config.js' : ac.baseURL+'jquery/config.js','validator':function(){return (typeof zGlobals == 'object') ? true : false;}})
+acBaseScripts.push({
+	'pass':1,
+	'location':(document.location.protocol == 'file:') ? ac.httpURL+'jquery/config.js' : ac.baseURL+'jquery/config.js',
+	'validator':function(){return (typeof zGlobals == 'object') ? true : false;}
+	})
 
-//acBaseScripts.push({'pass':1,'location':ac.baseURL+'json2.js','validator':function(){return true}})
-//acBaseScripts.push({'pass':1,'location':ac.baseURL+'variations.js','validator':function(){return (typeof handlePogs == 'function') ? true : false;}})
-//acBaseScripts.push({'pass':1,'location':ac.baseURL+'wiki.js','validator':function(){return (typeof Parse == 'object') ? true : false;}})
-acBaseScripts.push({'pass':1,'location':ac.baseURL+'controller.js','validator':function(){return (typeof zController == 'function') ? true : false;},'callback':function(){acHandleAppInit()}})
+
+acBaseScripts.push({
+	'pass':1,
+	'location':ac.baseURL+'controller.js',
+	'validator':function(){return (typeof zController == 'function') ? true : false;},
+	'callback':function(){acHandleAppInit()} //the acHandleAppInit callback is what instantiates the controller.
+	})
+
+//used for making text editable (customer address). non-essential. loaded late.
+acBaseScripts.push({'pass':8,'location':ac.baseURL+'jeditable.js','validator':function(){return (typeof $ == 'function' && jQuery.editable) ? true : false;}})
+
 
 var acScriptsInPass = acLoadScriptsByPass(1,false)
 
 
+/*
+Will load all the scripts from pass X (PASS) where X is an integer less than 10.
+This will load all of the scripts in the acBaseScripts object that have a matching 'pass' value.
 
-
+*/
 
 function acLoadScriptsByPass(PASS,CONTINUE)	{
 //	acDump("BEGIN acLoadScriptsByPass ["+PASS+"]");
@@ -70,6 +98,8 @@ function acAppIsLoaded()	{
 
 //gets executed once controller.js is loaded.
 //check dependencies and make sure all other .js files are done, then init controller.
+//function will get re-executed if not all the scripts in acBaseScripts pass 1 are done loading.
+//the 'attempts' var is incremented each time the function is executed.
 function acHandleAppInit(attempts){
 //	acDump("acHandleAppInit activated");
 	var includesAreDone = true;

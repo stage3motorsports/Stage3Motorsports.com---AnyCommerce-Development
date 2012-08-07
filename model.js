@@ -81,7 +81,7 @@ myControl.ajax.lastDispatch - keeps track of when the last dispatch occurs. Not 
 function zoovyModel() {
 	var r = {
 	
-		version : "201228",
+		version : "201231",
 	// --------------------------- GENERAL USE FUNCTIONS --------------------------- \\
 	
 	//pass in a json object and the last item id is returned.
@@ -853,7 +853,7 @@ or as a series of messages (_msg_X_id) where X is incremented depending on the n
 							r = true;
 							responseData['errid'] = "MVC-M-100";
 							responseData['errtype'] = "apperr"; 
-							responseData['errmsg'] = "could not find product (may not exist)";
+							responseData['errmsg'] = "could not find product "+responseData.pid+". Product may no longer exist. ";
 							} //db:id will not be set if invalid sku was passed.
 						break;
 					case 'appCategoryDetail':
@@ -1286,7 +1286,12 @@ respond accordingly.
 						}
 					},
 				error: function(a,b,c) {
-					$('#globalMessaging').append("<div class='ui-state-error ui-corner-all'>Uh oh! It appears something went wrong with our app. If error persists, please contact the site administrator.<br \/>(error: ext "+extensionObjItem.namespace+" had error type "+b+")<\/div>"); 
+					var $messageEle = $('#globalMessaging');
+					if(!$messageEle.is(':visible'))	{
+						$messageEle = $('.appErrors');
+						}
+					$messageEle.append("<div class='ui-state-error ui-corner-all'>Uh oh! It appears something went wrong with our app. If error persists, please contact the site administrator.<br \/>(error: ext "+extensionObjItem.namespace+" had error type "+b+")<\/div>");
+						
 					myControl.util.dump(" -> EXTCONTROL ("+namespace+")Got to error. error type = "+b+" c = ");
 					myControl.util.dump(c);
 					}
@@ -1395,8 +1400,6 @@ this makes extension sequence less important when initializing the controller.
 //			myControl.util.dump(" -> callback: "+callback);
 			var pass = true;
 			var D = 0; //# of dependencies
-			var dl = 0; //# of dependies that have been loaded.
-
 			if(myControl.ext[namespace].vars.dependencies)	{
 				D = myControl.ext[namespace].vars.dependencies.length
 				}
@@ -1404,8 +1407,11 @@ this makes extension sequence less important when initializing the controller.
 //			myControl.util.dump(" -> # of dependant extensions: "+D);
 //make sure all dependencies have been loaded.
 			for(var i = 0; i < D; i += 1)	{
-				if(typeof myControl.ext[myControl.ext[namespace].vars.dependencies[i]] === 'object') {dl += 1}
-				else	{myControl.util.dump(" -> missing: "+myControl.ext[namespace].vars.dependencies[i]); pass = false; break} //once we have a no match, just end the loop. no point going forward if we're going to reexecute this function anyway.
+				if(typeof myControl.ext[myControl.ext[namespace].vars.dependencies[i]] !== 'object') {
+					myControl.util.dump(" -> missing: "+myControl.ext[namespace].vars.dependencies[i]);
+					pass = false;
+					break
+					} //once we have a no match, just end the loop. no point going forward if we're going to reexecute this function anyway.
 				}
 //			myControl.util.dump(" -> after dependencies loop. pass: "+pass);
 

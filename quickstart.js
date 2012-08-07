@@ -69,10 +69,12 @@ var myRIA = function() {
 
 		startMyProgram : {
 			onSuccess : function()	{
-//			myControl.util.dump("BEGIN myRIA.callback.startMyProgram");
+			myControl.util.dump("BEGIN myRIA.callback.startMyProgram");
 //			myControl.util.dump(" -> window.onpopstate: "+typeof window.onpopstate);
 //			myControl.util.dump(" -> window.history.pushState: "+typeof window.history.pushState);
-
+//This will create the arrays for the template[templateID].onCompletes and onInits
+			myControl.ext.myRIA.util.createTemplateFunctions(); //should happen early so that the myRIA.template object exists, specifically for acAppIsLoaded
+				
 //attach an event to the window that will execute code on 'back' some history has been added to the history.
 //if ?debug=anything is on URI, show all elements with a class of debug.
 if(myControl.util.getParameterByName('debug'))	{
@@ -97,13 +99,12 @@ else	{
 
 
 
-//This will create the arrays for the template[templateID].onCompletes and onInits
-				myControl.ext.myRIA.util.createTemplateFunctions();
+
 
 //get list of categories and append to DOM IF parent id exists
 				myControl.ext.store_navcats.calls.appCategoryList.init({"callback":"showRootCategories","extension":"myRIA"},'passive'); 
 				myControl.ext.store_navcats.calls.appCategoryDetailMax.init('.',{},'passive'); //have this handy.
-				if(typeof acAppIsLoaded == 'function'){acAppIsLoaded()};
+				if(typeof acAppIsLoaded == 'function'){acAppIsLoaded()}; //gets run prior to any page content so that it can be used to add renderformats of template functions.
 
 				var page = myControl.ext.myRIA.util.handleAppInit({"skipClearMessaging":true}); //checks url and will load appropriate page content. returns object {pageType,pageInfo}
 
@@ -270,6 +271,27 @@ myControl.ext.store_checkout.checkoutCompletes.push(function(P){
 				}
 			}, //showProd 
 
+
+
+
+		handleBuyerAddressUpdate : 	{
+			onSuccess : function(tagObj)	{
+//				myControl.util.dump("BEGIN myRIA.callbacks.showCompany");
+//				myControl.util.dump(tagObj);
+				$parent = $('#'+tagObj.parentID);
+				$('button',$parent).removeAttr('disabled').removeClass('ui-state-disabled');
+				$('.changeLog',$parent).empty().append('Changes Saved');
+				$('.buttonMenu',$parent).find('.offMenu').show();
+				$('.buttonMenu',$parent).find('.onMenu').hide();
+				myControl.ext.myRIA.util.destroyEditable($parent);
+				},
+			onError : function(responseData,uuid)	{
+				var $parent = $('#'+tagObj.parentID);
+				$('.changeLog',$parent).append(myControl.util.getResponseErrors(responseData))
+				$('button',$parent).removeAttr('disabled').removeClass('ui-state-disabled');
+				}
+			}, //showProd 
+
 //used in /customer
 		showAddresses : {
 			onSuccess : function(tagObj)	{
@@ -283,7 +305,7 @@ myControl.ext.store_checkout.checkoutCompletes.push(function(P){
 					var types = new Array('@ship','@bill');
 					var L,type;
 //yes, it's a loop inside a loop.  bad mojo, i know.
-//but there's only two types of addresses and probably no more than 5 addresses in each type.
+//but there's only two types of addresses and typically no more than 5 addresses in each type.
 					for(var j = 0; j < 2; j += 1)	{
 						type = types[j];
 //						myControl.util.dump(" -> address type: "+type);
@@ -291,16 +313,59 @@ myControl.ext.store_checkout.checkoutCompletes.push(function(P){
 						L = myControl.data.buyerAddressList[type].length;
 //						myControl.util.dump(" -> # addresses: "+L);
 						if(L)	{
-							$buyerAddresses.append(type == '@bill' ? '<h2>billing address(es)</h2>' : '<h2>shipping address(es)</h2>');
+							$buyerAddresses.append(type == '@bill' ? '<h2>Billing Address(es)</h2>' : '<h2>Shipping Address(es)</h2>');
+							for(var i = 0; i < L; i += 1)	{
+								$buyerAddresses.append(myControl.renderFunctions.transmogrify({
+									'id':'address_'+myControl.data.buyerAddressList[type][i]['_id'],
+									'addressclass': type == '@bill' ? 'BILL' : 'SHIP', //appBuyerAddressAddUpdate wants this as UC w/ no @
+									'addressid':myControl.data.buyerAddressList[type][i]['_id']
+									},type.substring(1)+'AddressTemplate',myControl.data.buyerAddressList[type][i]))
+								} //for loop for addresses
+							}// L if
+						} //for loop for address types
+
+					$('button',$buyerAddresses).each(function(){
+						var $button = $(this);
+						if($button.data('action') == 'cancelAddressChanges'){
+							$button.click(function(){
+								$button.closest('.buttonMenu').find('.offMenu').show();
+								$button.closest('.buttonMenu').find('.onMenu').hide();
+								var $parent = $button.closest('.buyerAddressContainer');
+								myControl.ext.myRIA.util.destroyEditable($parent);
+								});
+							} //if for cancelAddressChanges
+							
+						else if($button.data('action') == 'saveAddressChanges'){
+							$button.click(function(){
+								var $parent = $(this).closest('.buyerAddressContainer');
+//								alert($('.edited',$parent).length)
+								var cmdObj = myControl.ext.myRIA.util.getAllDataFromEditable($parent);
+								if(!$.isEmptyObject(cmdObj))	{
+									$('button',$parent).addClass('ui-state-disabled').attr('disabled','disabled');
+									cmdObj.shortcut = $parent.attr('data-addressid');
+									cmdObj.type = $parent.attr('data-addressclass');
+//									myControl.util.dump(" -> cmdObj: "); myControl.util.dump(cmdObj);
+									$('.changeLog',$parent).append("<div class='alignRight'><span class='wait'></span><span>Saving</span></div>");
+									myControl.ext.store_crm.calls.buyerAddressAddUpdate.init(cmdObj, {'callback':'handleBuyerAddressUpdate','extension':'myRIA'},'immutable');
+									myControl.model.dispatchThis('immutable')
+									}
+								else	{
+									$('.changeLog',$parent).empty().append("<div>no changes have been made</div>");
+									}
+								});
+							} //else if for saveAddressChanges
+							
+						else if($button.data('action') == 'displayOnMenu')	{
+							$button.click(function(){
+								$(this).closest('.buttonMenu').find('.offMenu').hide();
+								$(this).closest('.buttonMenu').find('.onMenu').show();
+								myControl.ext.myRIA.util.makeRegionEditable($(this).closest('.buyerAddressContainer'));
+								});
+							} //else if for displayOnMenu
+						else	{
+							myControl.util.dump("WARNING! unknown data-action set on customer address button");
 							}
-						for(var i = 0; i < L; i += 1)	{
-							$buyerAddresses.append(myControl.renderFunctions.transmogrify({
-								'id':'address_'+myControl.data.buyerAddressList[type][i]['_id'],
-								'addressclass':type,
-								'addressid':myControl.data.buyerAddressList[type][i]['_id']
-								},type.substring(1)+'AddressTemplate',myControl.data.buyerAddressList[type][i]))
-							}
-						}
+						})
 					}
 				},
 			onError : function(responseData,uuid)	{
@@ -435,69 +500,7 @@ myControl.ext.store_checkout.checkoutCompletes.push(function(P){
 //_gaq.push(['_trackEvent','Authentication','User Event','Log in as Zoovy user attempt failed']);
 				}	
 			} //authenticateZoovyUser
-/*
-Part of legacy search and no longer needed.
-		updateSearchNav : {
-			
-			onSuccess : function(tagObj)	{
-//				myControl.util.dump('BEGIN myRIA.callbacks.updateSearchNav.onSuccess');
 
-				var keyword = tagObj.datapointer.split("|")[1];
-//				myControl.util.dump(" -> update search nav for = "+keyword);
-				var o = "<li><a href='#' onClick=\"$('#headerKeywordsInput').val('"+keyword+"'); $('#headerSearchFrm').submit();\">"+keyword+" ("+myControl.data[tagObj.datapointer]['@products'].length+")<\/a><\/li>"
-//				myControl.util.dump(o);
-				$('#altSearchesList').removeClass('loadingBG').append(o);
-				},
-			onError : function(responseData,uuid)	{
-				myControl.util.handleErrors(responseData,uuid);
-//$('#searchNav').append(myControl.util.getResponseErrors(d)).toggle(true); //here just in case. replaced w/ line above.
-				$('#altSearchesList').removeClass('loadingBG')
-				}
-			
-			}, //updateSearchNav
-
-
-		showResults :  {
-			onSuccess : function(tagObj)	{
-//				myControl.util.dump('BEGIN myControl.ext.myRIA.callbacks.showResults.onSuccess');
-				
-				var keywords = tagObj.datapointer.split('|')[1];
-				$('#altSearchesList').empty(); //clear existing 'alternative searches'
-//				myControl.util.dump(' -> altSearchList emptied.');
-				if(myControl.data[tagObj.datapointer]['@products'].length == 0)	{
-					$('#resultsProdlist').empty().append("Zero items matched your search.  Please try again.");
-					}
-				else	{
-
-//will handle building a template for each pid and tranlating it once the data is available.
-//returns # of requests needed. so if 0 is returned, no need to dispatch.
-					myControl.ext.store_prodlist.util.buildProductList({"templateID":"productListTemplate","withInventory":1,"withVariations":1,"parentID":"resultsProductListContainer","csv":myControl.data[tagObj.datapointer]['@products']})
-					}
-
-//whether the search had results or not, if more than 1 keyword was searched for, provide a breakdown for each permutation.
-				var keywords = tagObj.datapointer.split('|')[1];
-				if(keywords.split(' ').length > 1)	{
-					$('#altSearchesContainer').show();
-//					myControl.util.dump(" -> more than 1 keyword was searched for.");
-					$('#altSearchesList').addClass('loadingBG');
-					myControl.ext.store_search.util.getAlternativeQueries(keywords,{"callback":"updateSearchNav","extension":"myRIA"});
-					}
-				else	{
-					$('#altSearchesContainer').hide();
-					}
-				myControl.ext.myRIA.util.showRecentSearches();
-				myControl.model.dispatchThis(); // will dispatch requests for product and/or requests for alternative queries.
-				
-				if(!tagObj.templateID)	{tagObj.templateID = 'searchTemplate'}
-				tagObj.state = 'onCompletes';
-				myControl.ext.myRIA.util.handleTemplateFunctions(tagObj);
-				
-				},
-			onError : function(responseData,uuid)	{
-				myControl.util.handleErrors(responseData,uuid)
-				}
-			} //showResults
-*/			
 		}, //callbacks
 
 
@@ -700,36 +703,8 @@ fallback is to just output the value.
 				o = savings.toFixed(0)+'%';
 				}
 			$tag.append(o);
-			}, //priceRetailSavings	
+			} //priceRetailSavings	
 			
-//pass in the sku for the bindata.value so that the original data object can be referenced for additional fields.
-// will show price, then if the msrp is MORE than the price, it'll show that and the savings/percentage.
-			priceRetailSavings : function($tag,data)	{
-			var o = ''; //output generated.
-			var pData = myControl.data['appProductGet|'+data.value]['%attribs'];
-//use original pdata vars for display of price/msrp. use parseInts for savings computation only.
-			var price = parseInt(pData['zoovy:base_price']);
-			var msrp = parseInt(pData['zoovy:prod_msrp']);
-			if(price > 0)	{
-				o += "<div class='basePrice'><span class='prompt pricePrompt'>Our Price: <\/span><span class='value'>";
-				o += myControl.util.formatMoney(pData['zoovy:base_price'],'$',2,true)
-				o += "<\/span><\/div>";
-//only show the msrp if it is greater than the price.
-				if(msrp > price)	{
-					o += "<div class='retailPrice'><span class='prompt retailPricePrompt'>MSRP: <\/span><span class='value'>";
-					o += myControl.util.formatMoney(pData['zoovy:prod_msrp'],'$',2,true)
-					o += "<\/span><\/div>";
-//don't bother with savings of less than a buck.
-					if(msrp-price > 1)	{
-						o += "<div class='savings'><span class='prompt savingsPrompt'>You Save: <\/span><span class='value'>";
-						o += myControl.util.formatMoney(msrp-price,'$',2,true)
-						o += "<\/span><\/div>";
-						}
-					}
-				}
-			$tag.append(o);
-			} //priceRetailSavings
-
 		}, //renderFormats
 
 
@@ -878,9 +853,12 @@ for legacy browsers. That means old browsers will use the anchor to retain 'back
 						window.location.hash = hash;
 						}
 					}
-				
-				$('#appPreView').hide();
-				$('#appView').show();
+//transition appPreView out on init.
+				if($('#appPreView').is(':visible'))	{
+					$('#appPreView').slideUp(1000,function(){
+						$('#appView').slideDown(3000);
+						});
+					}
 				
 				return false; //always return false so the default action (href) is cancelled. hashstate will address the change.
 				}, //showContent
@@ -935,6 +913,12 @@ for legacy browsers. That means old browsers will use the anchor to retain 'back
 				$ele.dialog('open');
 				return false;
 				},
+
+
+			saveAddressChange : function()	{
+				
+				},
+
 
 //assumes the faq are already in memory.
 			showFAQbyTopic : function(topicID)	{
@@ -1285,7 +1269,7 @@ for legacy browsers. That means old browsers will use the anchor to retain 'back
 
 			addPushState : function(P)	{
 //				myControl.util.dump("BEGIN addPushState. ");
-				var useAnchor = false; //what is returned. set to true if pushState supported
+				var useAnchor = false; //what is returned. set to true if pushState not supported
 				var title = P.pageInfo;
 				var historyFunction = P.back == 0 ? 'replaceState' : 'pushState'; //could be changed to replaceState if back == 0;
 				var fullpath = ''; //set to blank by default so += does not start w/ undefined
@@ -1309,6 +1293,14 @@ for legacy browsers. That means old browsers will use the anchor to retain 'back
 						fullpath += this.buildRelativePath(P);
 						}
 					if(typeof P.uriParams == 'string')	{fullpath += '?'+P.uriParams} //add params back on to url.
+					else if(typeof P.uriParams == 'object') {
+//will convert uri param object into uri friendly key value pairs.						
+						fullpath += '?';
+						var params = $.map(P.uriParams, function(n, i){
+							return i+"="+n;
+							}).join("&");
+						fullpath += params;
+						}
 					}
 //!!! need to find an IE8 friendly way of doing this.  This code caused a script error					
 //				document.getElementsByTagName('title')[0].innerHTML = fullpath; //doing this w/ jquery caused IE8 to error. test if changed.
@@ -1326,9 +1318,70 @@ for legacy browsers. That means old browsers will use the anchor to retain 'back
 
 
 
+/*
+
+#########################################     FUNCTIONS FOR DEALING WITH EDITABLE
+
+*/
+
+
+			makeRegionEditable : function($parent){
+var r; //what is returned. # of editable elements.				
+//info on editable can be found here: https://github.com/tuupola/jquery_jeditable
+$parent.find('.editable').each(function(){
+	r += 1; //incremented for each editable element.
+	var $text = $(this)
+	if($text.attr('title'))	{
+		$text.before("<label><br />"+$text.attr('title')+": </label>"); //br is in label so on cancel when label is hidden, display returns to normal.
+		}
+	var defaultValue = $text.text(); //saved to data.defaultValue and used to compare the post-editing value to the original so that if no change occurs, .edited class not added. Also used for restoring default value
+//	myControl.util.dump(" -> defaultValue: "+defaultValue);
+	$text.addClass('editEnabled').data('defaultValue',defaultValue).editable(function(value,settings){
+//onSubmit code:
+		if(value == $(this).data('defaultValue'))	{
+			$(this).removeClass('editing');
+			myControl.util.dump("field edited. no change.")
+			}
+		else	{
+			$(this).addClass('edited').removeClass('editing');
+			myControl.util.dump("NOTE - this needs to update the change log");
+			}
+		return value;
+		}, {
+		  indicator : 'loading...', //can be img tag
+		  onblur : 'submit',
+		  type : 'text',
+		  style  : 'inherit'
+		  }); //editable
+	}); //each
+
+return r;
+				
+				
+				}, //makeRegionEditable
 
 
 
+//restore a series of elements from jeditable back to a normal html block.
+			destroyEditable : function($parent)	{
+				$('.edited',$parent).each(function(){
+					$(this).text($(this).data('defaultValue')).removeClass('edited'); //restore defaults
+					})
+				$('.editable',$parent).removeClass('editEnabled').editable('destroy');
+				$('label',$parent).empty().remove(); //removed so if edit is clicked again, duplicates aren't created.
+				}, //destroyEditable
+
+
+//This will get all the key value pairs from $parent, even if the value didn't change.
+//useful when all params in an update must be set, such as address update.
+			getAllDataFromEditable : function($parent)	{
+				var obj = {}; //what is returned. either an empty object or an assoc of key/value pairs where key = attribute and value = new value
+				$parent.find('[data-bind]').each(function(){
+					var bindData = myControl.renderFunctions.parseDataBind($(this).attr('data-bind'));
+					obj[myControl.renderFunctions.parseDataVar(bindData['var'])] = $(this).text();
+					});				
+				return obj;	
+				},
 
 
 
@@ -1433,7 +1486,7 @@ for legacy browsers. That means old browsers will use the anchor to retain 'back
 					P.show = 'newsletter'
 					}
 				$('#mainContentArea').empty();
-				myControl.util.dump(" -> P follows:"); myControl.util.dump(P);
+//				myControl.util.dump(" -> P follows:"); myControl.util.dump(P);
 				var parentID = 'mainContentArea_customer'; //this is the id that will be assigned to the companyTemplate instance.
 				$('#mainContentArea').append(myControl.renderFunctions.createTemplateInstance('customerTemplate',parentID))
 				myControl.ext.myRIA.util.bindNav('#sideline a');
