@@ -276,7 +276,7 @@ myControl.ext.store_checkout.checkoutCompletes.push(function(P){
 
 		handleBuyerAddressUpdate : 	{
 			onSuccess : function(tagObj)	{
-//				myControl.util.dump("BEGIN myRIA.callbacks.showCompany");
+				myControl.util.dump("BEGIN myRIA.callbacks.handleBuyerAddressUpdate");
 //				myControl.util.dump(tagObj);
 				$parent = $('#'+tagObj.parentID);
 				$('button',$parent).removeAttr('disabled').removeClass('ui-state-disabled');
@@ -298,22 +298,23 @@ myControl.ext.store_checkout.checkoutCompletes.push(function(P){
 //				myControl.util.dump("BEGIN myRIA.callbacks.showAddresses.onSuccess");
 //clean the workspace.
 				var authState = myControl.ext.store_checkout.util.determineAuthentication();
-				var $buyerAddresses = $('#buyerAddresses').empty(); //empty no matter what, so if user was logged in and isn't, addresses go away.
-
+				$('#buyerAddresses .shipAddresses, #buyerAddresses .billAddresses, ').empty(); //empty no matter what, so if user was logged in and isn't, addresses go away.
+				var $buyerAddresses; //recycled. use as target for bill and ship addresses
 //only show addresses if user is logged in.
 				if(authState == 'authenticated')	{
 					var types = new Array('@ship','@bill');
 					var L,type;
 //yes, it's a loop inside a loop.  bad mojo, i know.
-//but there's only two types of addresses and typically no more than 5 addresses in each type.
+//but there's only two types of addresses and, typically, not a lot of addresses per user.
 					for(var j = 0; j < 2; j += 1)	{
 						type = types[j];
-//						myControl.util.dump(" -> address type: "+type);
+						$buyerAddresses = $("."+type.substring(1)+"Addresses",$('#buyerAddresses'))
+						myControl.util.dump(" -> address type: "+type);
 //						myControl.util.dump(myControl.data.buyerAddressList[type]);
 						L = myControl.data.buyerAddressList[type].length;
 //						myControl.util.dump(" -> # addresses: "+L);
 						if(L)	{
-							$buyerAddresses.append(type == '@bill' ? '<h2>Billing Address(es)</h2>' : '<h2>Shipping Address(es)</h2>');
+//							$buyerAddresses.append(type == '@bill' ? '<h2>Billing Address(es)</h2>' : '<h2>Shipping Address(es)</h2>');
 							for(var i = 0; i < L; i += 1)	{
 								$buyerAddresses.append(myControl.renderFunctions.transmogrify({
 									'id':'address_'+myControl.data.buyerAddressList[type][i]['_id'],
@@ -346,7 +347,7 @@ myControl.ext.store_checkout.checkoutCompletes.push(function(P){
 									cmdObj.type = $parent.attr('data-addressclass');
 //									myControl.util.dump(" -> cmdObj: "); myControl.util.dump(cmdObj);
 									$('.changeLog',$parent).append("<div class='alignRight'><span class='wait'></span><span>Saving</span></div>");
-									myControl.ext.store_crm.calls.buyerAddressAddUpdate.init(cmdObj, {'callback':'handleBuyerAddressUpdate','extension':'myRIA'},'immutable');
+									myControl.ext.store_crm.calls.buyerAddressAddUpdate.init(cmdObj, {'callback':'handleBuyerAddressUpdate','extension':'myRIA','parentID':$parent.attr('id')},'immutable');
 									myControl.model.dispatchThis('immutable')
 									}
 								else	{

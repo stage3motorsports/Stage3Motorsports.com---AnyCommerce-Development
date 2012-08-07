@@ -133,7 +133,7 @@ function acHandleAppInit(attempts){
 	if(includesAreDone == true && jQuery)	{
 		$.support.cors = true;  //cross site scripting for non cors sites. will b needed for IE10. IE8 & 9 don't support xss well.
 		myControl = new zController({
-			"release":"201200716103400" //increment this with each change. should solve caching issues.
+			"release":"20120807135400" //increment this with each change. should solve caching issues.
 			},myExtensions);  //instantiate controller. handles all logic and communication between model and view.
 
 		//instantiate wiki parser.

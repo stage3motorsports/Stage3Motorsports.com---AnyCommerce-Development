@@ -125,7 +125,7 @@ obj['softauth'] = "order"; // [OPTIONAL]. if user is logged in, this gets ignore
 			init : function(cmdObj,tagObj,Q)	{
 				tagObj = $.isEmptyObject(tagObj) ? {} : tagObj; 
 				tagObj.datapointer = "buyerAddressAddUpdate|"+cmdObj.shortcut+"|"+myControl.util.unixNow();
-				cmdObj['_cmd'] = 'buyerAddressAddUpdate ';
+				cmdObj['_cmd'] = 'buyerAddressAddUpdate';
 				cmdObj['_tag'] = tagObj;
 				if(!Q)	{Q = 'immutable'}
 				this.dispatch(cmdObj,Q);
