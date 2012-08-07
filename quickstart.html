@@ -69,17 +69,6 @@ This file is intended to go along with the 10-step tutorial at:
 
 
 <div id='appView' class='displayNone'>
-<!--
-sample links:
-<a href='#category?navcat=.' class='bindByAnchor'>Homepage</a>
-<a href='#customer?show=orders' class='bindByAnchor'>Orders</a>
-<a href='#cart?show=cart' class='bindByAnchor'>Cart</a>
-<a href='#company?show=return' class='bindByAnchor'>Returns</a>
-
-put this where you want the main nav to appear:
-<ul id='tier1categories'></ul>
--->
-
 <!-- VIEW CONTENT -->
 <!-- leave the appView div, put your your html here ...  -->
 
@@ -1319,8 +1308,18 @@ The 'data-action' attribute is used to assign an onclick.
 
 
 <div class='debug displayNone'>
+
+<menu>
+	<li><a href='#' onClick="return showContent('category',{'navcat':'.'});">Homepage</a></li>
+	<li><a href='#' onClick="return showContent('customer',{'show':'orders'});">Orders</a></li>
+	<li><a href='#' onClick="return showContent('cart',{'show':'cart'});">Cart</a></li>
+	<li><a href='#' onClick="return showContent('company',{'show':'return'});">Returns</a></li>
+</menu>
 	<button class='ui-button-text ui-button ui-state-default ui-corner-all' onClick="localStorage.clear(); return false;">Clear Local Storage</button>
 	<button class='ui-button-text ui-button ui-state-default ui-corner-all' onClick="myControl.util.dump(myControl); return false;">Control to Console</button>
+
+
+
 <button class='ui-button-text ui-button ui-state-default ui-corner-all' onClick="myControl.ext.store_crm.calls.buyerOrderPaymentAdd.init({'tender':'CREDIT',
 'amt':'5.00',
 'payment.cc':'4111111111111111',
