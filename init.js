@@ -58,7 +58,11 @@ acBaseScripts.push({
 acBaseScripts.push({'pass':8,'location':ac.baseURL+'jeditable.js','validator':function(){return (typeof $ == 'function' && jQuery.editable) ? true : false;}})
 
 
-var acScriptsInPass = acLoadScriptsByPass(1,false)
+var acScriptsInPass;
+//don't execute script till both jquery AND the dom are ready.
+$(document).ready(function(){
+	acScriptsInPass = acLoadScriptsByPass(1,false)
+	});
 
 
 /*

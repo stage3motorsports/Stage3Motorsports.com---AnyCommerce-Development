@@ -100,6 +100,7 @@ copying the template into memory was done for two reasons:
 		myControl.ajax.numRequestsPerPipe = 50;
 		myControl.ajax.requests = {"mutable":{},"immutable":{},"passive":{}}; //'holds' each ajax request. completed requests are removed.
 		myControl.sessionId = false;
+		myControl.vars.extensions = E;
 /*
 
 session ID can be passed in via the params (for use in one page checkout on a non-ajax storefront). If one is passed, it must be validated as active session.
@@ -135,10 +136,7 @@ Exception - the controller is used for admin sessions too. if an admin session i
 //if third party inits are not done before extensions, the extensions can't use any vars loaded by third parties. yuck. would rather load our code first.
 // -> EX: username from FB and OPC.
 		myControl.util.handleThirdPartyInits();
-//E is the extensions. if there are any (and most likely there will be) add then to the controller
-		if(E && E.length > 0)	{
-			myControl.model.addExtensions(E);
-			}
+
 		}, //initialize
 
 					// //////////////////////////////////   CALLS    \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ \\		
@@ -401,6 +399,9 @@ myControl.model.addDispatchToQ({
 //having a callback does allow for behavioral changes (update new session with old cart contents which may still be available.
 			onSuccess : function(tagObj)	{
 //				myControl.util.dump('BEGIN myControl.callbacks.handleNewSession.onSuccess');
+// if there are any  extensions(and most likely there will be) add then to the controller.
+// This is done here because a valid cart id is required.
+				myControl.model.addExtensions(myControl.vars.extensions);
 				},
 			onError : function(responseData)	{
 				myControl.util.dump('BEGIN myControl.callbacks.handleNewSession.onError');
@@ -415,6 +416,9 @@ myControl.model.addDispatchToQ({
 				myControl.util.dump('BEGIN myControl.callbacks.handleTrySession.onSuccess');
 				if(myControl.data.appCartExists.exists == 1)	{
 //					myControl.util.dump(' -> valid session id.  Proceed.');
+// if there are any  extensions(and most likely there will be) add then to the controller.
+// This is done here because a valid cart id is required.
+					myControl.model.addExtensions(myControl.vars.extensions);
 					}
 				else	{
 					myControl.util.dump(' -> UH OH! invalid session ID. Generate a new session. ');
