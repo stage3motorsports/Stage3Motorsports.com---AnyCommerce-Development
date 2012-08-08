@@ -2014,7 +2014,10 @@ return r;
 					myControl.ext.myRIA.template[pageTemplates[i]] = {"onCompletes":[],"onInits":[]};
 //these will change the cursor to 'wait' and back to normal as each template loads/finishes loading.
 					myControl.ext.myRIA.template[pageTemplates[i]].onInits.push(function(){myControl.ext.myRIA.util.changeCursor('wait')});
-					myControl.ext.myRIA.template[pageTemplates[i]].onCompletes.push(function(P){myControl.util.dump("turn of cursor: "+P.templateID); myControl.ext.myRIA.util.changeCursor('auto')});
+					myControl.ext.myRIA.template[pageTemplates[i]].onCompletes.push(function(P){
+//						myControl.util.dump("turn of cursor: "+P.templateID);
+						myControl.ext.myRIA.util.changeCursor('auto')
+						});
 					}
 
 				},

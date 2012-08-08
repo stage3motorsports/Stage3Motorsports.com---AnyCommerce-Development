@@ -6,7 +6,21 @@ fieldsets 'can' be defined here if a specific order is desired. If fieldsets are
  -> do not change the checkout form id.
  -> do not change the chkoutCartSummaryContainer id. that is where the cart summary is generated (using other templates).
 -->
+
+
 <div id='checkoutTemplate' class='checkoutFormContainer'>
+
+
+
+<div id='returnFromThirdPartyPayment' class="displayNone ui-widget zMessage">
+	<div class='ui-state-highlight ui-corner-all appMessage'>
+	<p class='clearfix'>
+	<span class='floatLeft ui-icon ui-icon-info'></span>
+	<strong>Welcome back, you are nearly done!</strong> Just confirm your information below and then push the 'place order' button at the bottom.
+	</p>
+	</div>
+</div>
+
 
 	<form id='zCheckoutFrm' name='zCheckoutFrm' action='' onSubmit='return false;'>
 	

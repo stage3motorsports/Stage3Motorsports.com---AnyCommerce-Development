@@ -105,9 +105,9 @@ and offMenu is toggle off, hiding the change button.
 
 
 /* error handling css. some error css is defined in the jqueryui styles */
-
-#globalMessaging .ui-icon	{float:left; margin:auto 5px;}
-#globalMessaging .appMessage {padding:5px;} /* add padding to children, not parent, that way we can empty the parent and no space is reserved */
+.zMessage	{margin-bottom:3px;}
+.appMessage .ui-icon	{float:left; margin:auto 5px;}
+.appMessage {padding:5px;} /* add padding to children, not parent, that way we can empty the parent and no space is reserved */
 .appMessage ul	{margin-left:12px; font-size:.9em;}
 
 /* used in order history and faq (possibly other places) in a format similar to an accordian, but more than one panel can be open. */
@@ -202,19 +202,20 @@ so the displayNone class is used, then a .grpType_PARENT class is added if the i
 .review_6	{background-position:0 -181px;}
 .review_7	{background-position:0 -211px;}
 .review_8	{background-position:0 -241px;}
-.review_9	{background-position:0 -270px;}
-.review_10	{background-position:0 -301px;}
+.review_9	{background-position:0 -271px;}
+.review_10	{background-position:0 -302px;}
 
 .prodlist .review_0	{display:none;} /* hide the stars for items with no reviews */
 
 
 /****** REVIEW LIST - on product detail page, used for product reviews. ******/
-.reviewLineItem {padding-bottom:12px; display:block; clear:both;}
-.prodReviewInfo	{float:left; display:block; width:150px; list-style:none; margin:0 12px 12px 0; font-weight:normal;}
-.prodReviewInfo li	{display:block; clear:both;}
-.prodReviewTemplate li p	{font-weight:normal;}
+#prodViewerReviews	{margin:0; padding:0;} /* parent ul containing all reviews, each review as an li */
+.reviewLineItem {margin:0 0 12px 0; padding:0 0 12px 0; display:block; clear:both; border-bottom:1px #cccccc dotted;} /* on the li of an individual review */
+.prodReviewInfo	{float:left; display:block; width:165px; list-style:none; margin:0 12px 0px 0; font-weight:normal; padding:0;} /* on the ul of the list containing the name, location, date, etc */
+.prodReviewInfo li	{display:block; clear:both;} /* applies to li for location, name, date, etc */
+.prodReviewTemplate li p	{font-weight:normal; margin:0; padding:0;}
 
-
+.reviewLineItem blockquote	{margin:0 0 0 185px; padding:0;}
 
 
 /****** WRITE REVIEW MODAL ******/
@@ -382,7 +383,8 @@ CHECKOUT
 
 #modalProcessCheckout .loadingBG	{width:100px; height:200px;}
 
-
+#returnFromThirdParty	{padding:5px;}
+#returnFromThirdParty .ui-icon	{margin-right: .3em;}
 
 
 

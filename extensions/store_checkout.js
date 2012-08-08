@@ -415,7 +415,7 @@ note - the order object is available at myControl.data['order|'+P.orderID]
 //appends addresses to a fieldset based on TYPE (bill or ship)
 
 			addressListOptions : function(TYPE)	{
-				myControl.util.dump("BEGIN sharedCheckoutUtilities.addressListOptions ("+TYPE+")");
+//				myControl.util.dump("BEGIN sharedCheckoutUtilities.addressListOptions ("+TYPE+")");
 
 				var r = "";  //used for what is returned
 				if(TYPE && this.buyerHasPredefinedAddresses(TYPE))	{

@@ -178,6 +178,7 @@ if server validation passes, the callback handles what to do next (callback is m
 				myControl.util.dump('BEGIN myControl.ext.convertSessionToOrder.calls.processCheckout.init');
 				$('#modalProcessCheckout').dialog('open');
 				$('#chkoutSummaryErrors').empty(); //clear any existing global errors. //blank out any existing global errors so that only new error appear.
+				$('#returnFromThirdPartyPayment').hide(); //clear previous third party messaging.
 				$('#chkoutPlaceOrderBtn').attr('disabled','disabled').addClass('ui-state-disabled '); //disable the button to avoid double-click.
 //				return; //die here to test
 				var checkoutIsValid = myControl.ext.convertSessionToOrder.validate.isValid();
@@ -530,8 +531,8 @@ _gaq.push(['_trackEvent','Checkout','App Event','Server side validation failed']
 
 //had some issues using length. these may have been due to localStorage/expired cart issue. countProperties is more reliable though, so still using that one.			
 				var stuffCount = myControl.model.countProperties(myControl.data.cartItemsList.cart.stuff);
-				myControl.util.dump('stuff util.countProperties = '+stuffCount+' and typeof = '+typeof stuffCount);
-				myControl.util.dump('myControl.data.cartItemsList.cart.stuff.length = '+myControl.data.cartItemsList.cart.stuff.length);
+//				myControl.util.dump('stuff util.countProperties = '+stuffCount+' and typeof = '+typeof stuffCount);
+//				myControl.util.dump('myControl.data.cartItemsList.cart.stuff.length = '+myControl.data.cartItemsList.cart.stuff.length);
 
 
 				if(stuffCount > 0)	{
@@ -577,7 +578,7 @@ _gaq.push(['_trackEvent','Checkout','Milestone','Valid email address obtained'])
 //but checkout may get load/reloaded and if the cart hasn't changed, the forms still need to be 'locked'.
 //needs to run at the end here so that all the dom manipulating is done prior so function can 'lock' fields
 				if(myControl.ext.store_checkout.util.thisSessionIsPayPal())	{
-					myControl.ext.store_checkout.util.handlePaypalFormManipulation();
+					myControl.ext.convertSessionToOrder.util.handlePaypalFormManipulation();
 					}
 
 				
@@ -1409,7 +1410,12 @@ note - predefined addresses are hidden and the form is shown so that if the user
 
 */
 			handlePaypalFormManipulation : function()	{
-			myControl.util.dump("BEGIN convertSessionToOrder.util.handlePaypalFormManipulation ");
+//			myControl.util.dump("BEGIN convertSessionToOrder.util.handlePaypalFormManipulation ");
+			if(myControl.data.cartPaypalGetExpressCheckoutDetails && myControl.data.cartPaypalGetExpressCheckoutDetails['_msgs'])	{
+				//an error occured. error message is displayed as part of callback.
+				}
+			else	{
+			$('#returnFromThirdPartyPayment').show();
 //when paypal redirects back to checkout, these two vars will be on URI: token=XXXX&PayerID=YYYY
 
 //uncheck the bill to ship option so that user can see the paypal-set shipping address.
@@ -1456,8 +1462,9 @@ $('#giftcardCode').attr('disabled','disabled'); //, #couponCode
 $('#addGiftcardBtn').attr('disabled','disabled').addClass('ui-state-disabled'); //, #addCouponBtn
 
 $('#paybySupplemental_PAYPALEC').empty().append("<a href='#top' onClick='myControl.ext.store_checkout.util.nukePayPalEC();'>Choose Alternate Payment Method<\/a>");
-				
+					}
 				},
+				
 
 
 //Executed when the bill or ship fields for zip or country are updated.

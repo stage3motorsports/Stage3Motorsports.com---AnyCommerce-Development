@@ -1282,6 +1282,9 @@ later, it will handle other third party plugins as well.
 				switch(paymentID)	{
 	//for credit cards, we can't store the # or cid in local storage. Save it in memory so it is discarded on close, reload, etc
 	//expiration is less of a concern
+					case 'PAYPALEC' :
+					//paypal supplemental is used for some messaging (select another method or change due to error). leave this here.
+						break;
 					case 'CREDIT':
 						tmp += "<li><label for='payment-cc'>Credit Card #<\/label><input type='text' size='20' name='payment.cc' id='payment-cc' class=' creditCard' value='";
 						if(data['payment.cc']){tmp += data['payment.cc']}
