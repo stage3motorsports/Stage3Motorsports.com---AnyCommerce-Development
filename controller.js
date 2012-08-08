@@ -39,7 +39,7 @@ jQuery.extend(zController.prototype, {
 	initialize: function(P,E) {
 		myControl = this;
 		myControl.model = zoovyModel(); // will return model as object. so references are myControl.model.dispatchThis et all.
-		ieBlows = myControl.model.ieBlows; //global reference to JSONP callback function. a global is used to keep the url as short as possible for thejsonp req.
+		window.ieBlows = myControl.model.ieBlows; //global reference to JSONP callback function. a global is used to keep the url as short as possible for thejsonp req.
 		myControl.vars = {};
 		myControl.vars['_admin'] = null; //set to null. could get overwritten in 'P' or as part of appAdminInit.
 		myControl.vars.platform = P.platform ? P.platform : 'webapp'; //webapp, ios, android

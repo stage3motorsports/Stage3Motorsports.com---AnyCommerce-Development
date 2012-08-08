@@ -131,6 +131,7 @@ a callback was also added which just executes this call, so that checkout COULD 
 //only send the request for addresses if the user is logged in or the request will return an error.
 				if(myControl.ext.store_checkout.util.determineAuthentication() == 'authenticated')	{
 					myControl.ext.store_checkout.calls.buyerAddressList.init();
+					myControl.ext.store_checkout.calls.buyerWalletList.init();
 					}
 				myControl.ext.store_checkout.calls.appCheckoutDestinations.init();
 				myControl.ext.store_checkout.calls.cartShippingMethodsWithUpdate.init();

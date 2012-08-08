@@ -31,19 +31,31 @@ a callback was also added which just executes this call, so that checkout COULD 
 */
 	calls : {
 
-//update will modify the cart. only run this when actually selecting a shipping method (like during checkout). heavier call.
-		cartShippingMethodsWithUpdate : {
+//formerly getCustomerAddresses
+		buyerAddressList : {
 			init : function(callback)	{
 				this.dispatch(callback);
 				return 1;
 				},
 			dispatch : function(callback)	{
-//,"trace":"1"
-				myControl.model.addDispatchToQ({"_cmd":"cartShippingMethods","update":"1","_tag": {"datapointer":"cartShippingMethods","callback":callback,"extension":"convertSessionToOrder"}},'immutable');
+				myControl.model.addDispatchToQ({"_cmd":"buyerAddressList","_tag": {"datapointer":"buyerAddressList","callback":callback,"extension":"convertSessionToOrder"}},'immutable');
 				}
-			}, //cartShippingMethodsWithUpdate
+			}, //buyerAddressList	
 
 
+		buyerWalletList : {
+			init : function(tagObj,Q)	{
+//always get fresh copy.
+				this.dispatch(tagObj,Q);
+				return 1;
+				},
+			dispatch : function(tagObj,Q)	{
+				if(!Q)	{Q = 'immutable'}
+				if(typeof tagObj != 'object')	{tagObj = {}}
+				tagObj.datapointer = "buyerWalletList";
+				myControl.model.addDispatchToQ({"_cmd":"buyerWalletList","_tag": tagObj},Q);
+				}			
+			},
 //each time the cart changes, so does the google checkout url.
 		cartGoogleCheckoutURL : {
 			init : function()	{
@@ -91,17 +103,18 @@ a callback was also added which just executes this call, so that checkout COULD 
 				}
 			}, //cartPaypalGetExpressCheckoutDetails	
 
-
-//formerly getCustomerAddresses
-		buyerAddressList : {
+//update will modify the cart. only run this when actually selecting a shipping method (like during checkout). heavier call.
+		cartShippingMethodsWithUpdate : {
 			init : function(callback)	{
 				this.dispatch(callback);
 				return 1;
 				},
 			dispatch : function(callback)	{
-				myControl.model.addDispatchToQ({"_cmd":"buyerAddressList","_tag": {"datapointer":"buyerAddressList","callback":callback,"extension":"convertSessionToOrder"}},'immutable');
+//,"trace":"1"
+				myControl.model.addDispatchToQ({"_cmd":"cartShippingMethods","update":"1","_tag": {"datapointer":"cartShippingMethods","callback":callback,"extension":"convertSessionToOrder"}},'immutable');
 				}
-			}, //buyerAddressList	
+			}, //cartShippingMethodsWithUpdate
+
 
 //formerly getCheckoutDestinations
 		appCheckoutDestinations : {

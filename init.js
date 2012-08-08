@@ -66,7 +66,7 @@ $(document).ready(function(){
 
 
 /*
-Will load all the scripts from pass X (PASS) where X is an integer less than 10.
+Will load all the scripts from pass X where X is an integer less than 10.
 This will load all of the scripts in the acBaseScripts object that have a matching 'pass' value.
 
 */
