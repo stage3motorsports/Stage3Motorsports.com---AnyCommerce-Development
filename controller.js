@@ -589,6 +589,89 @@ myControl.util.handleCallback(tagObj);
 			},
 
 
+/*
+err could be a string or an object.
+if an object, could be: {errid,errmsg,errtype}   OR   {msg_X_txt,msg_X_type,msg_X_id}
+ -> if msg_X format, X will be an integer and _msgs will be set to indicate the # of messages.
+
+$target - a jquery object of the target/destination for the message itself. Will check err for parentID, targetID and if not present, check to see if globalMessaging is present AND visible.  If not visible, will open modal.
+*/
+		throwMessage : function(msg){
+			var $target = false;
+			var r = true; //what is returned. set to false if no good error message found.
+//make sure the good-ole fallback destination for errors exists and is a modal.
+			var globalDefault = $('#globalErrorMessaging')
+			if	( globalDefault.length == 0)	{
+				$globalDefaultt = $("<div \/>").attr({'id':'globalErrorMessaging'}).appendTo('body');
+				$globalDefault.dialog({autoOpen:false,modal:true})
+				}
+				
+			if(typeof msg === 'string')	{
+				if($('.appMessaging:visible').length > 0)	{
+					$target = $('.appMessaging');
+					}
+				else	{
+					$target = $globalDefault;
+					$target.dialog('open');
+					}
+				$target.prepend(msg); //always put new messages at the top.
+				}
+			else if(typeof msg === 'object')	{
+				if(typeof msg['_rtag'] == 'object' && msg['_rtag'].parentID && $('#'+msg['_rtag'].parentID).length)	{$target = $('#'+msg['_rtag'].parentID);}
+				else if(typeof msg['_rtag'] == 'object' && msg['_rtag'].targetID && $('#'+msg['_rtag'].targetID).length)	{$target = $('#'+msg['_rtag'].targetID)}
+				else if($('.appMessaging:visible').length > 0)	{
+					$target = $('.appMessaging');
+					}
+				else	{
+					$target = $globalDefault;
+					$target.dialog('open');
+					}
+				$target.prepend(this.formatResponseErrors(msg));
+				}
+			else	{
+				myControl.util.dump("WARNING! - unknown type ["+typeof err+"] set on parameter passed into myControl.util.throwMessage");
+				}
+			return r;
+			},
+
+
+
+		formatResponseErrors : function(d)	{
+//			myControl.util.dump("BEGIN myControl.util.getResponseErrors");
+//			myControl.util.dump(d);
+			var r;
+			if(!d)	{
+				r = 'unknown error has occured';
+				}
+			else if(typeof d == 'string')	{
+				r = d;
+				}
+			else if(typeof d == 'object')	{
+				r = "";
+/*
+a response could come back with messages (like adding to cart and multiple errors occured)
+which will have _msgs set or just one error, which will have errid set.
+*/
+				if(d['_msgs'])	{
+					for(var i = 1; i <= d['_msgs']; i += 1)	{
+//						myControl.util.dump(d['_msg_'+i+'_type']+": "+d['_msg_'+i+'_id']);
+						r += "<div class='"+d['_msg_'+i+'_type']+"'>"+d['_msg_'+i+'_txt']+" [id: "+d['_msg_'+i+'_id']+"]<\/div>";
+						}
+					}
+				else if(d['errid'])	{
+					r += "<div class='"+d.errtype+"'>"+d.errmsg+" [id: "+d.errid+"]<\/div>";
+					}
+				}
+			else	{
+				myControl.util.dump(" -> getResponseErrors 'else' hit. Should not have gotten to this point");
+				r = 'unknown error has occured';
+				}
+//			myControl.util.dump(r);
+			return myControl.util.formatMessage(r);
+			},
+
+
+
 
 
 
@@ -1900,24 +1983,7 @@ if(zGlobals.checkoutSettings.amazonCheckoutMerchantId && zGlobals.checkoutSettin
 	myControl.ext.store_cart.calls.cartAmazonPaymentURL.init();
 	myControl.model.dispatchThis('immutable');
 	});		
-/*
-	var payObj = myControl.util.which3PCAreAvailable(); //certain product can be flagged to disable googlecheckout as a payment option.
-	if(payObj.amazoncheckout)	{
-	var $form = $("<form />").attr({'method':'post','action':'https://payments.amazon.com/checkout/'+zGlobals.checkoutSettings.amazonCheckoutMerchantId});
-	$form.append("<input >").attr({'type':'image','src':'https://payments.amazon.com/gp/cba/button?ie=UTF8&color=orange&background=white&size=small','id':'cbaImage'}).click(function(event){
-		event.preventDefault();
-		alert('button has been pushed.');
-		});
-	$tag.append("").one('click',function(){
-		myControl.ext.convertSessionToOrder.calls.cartGoogleCheckoutURL.init();
-		$(this).addClass('disabled').attr('disabled','disabled');
-		myControl.model.dispatchThis('immutable');
-		});
-		}
-	else	{
-		$tag.append("<img id='googleCheckoutButton' border=0 src='https://payments.amazon.com/gp/cba/button?ie=UTF8&color=orange&background=white&size=small' \/>")			
-		}
-*/	}
+	}
 else	{
 	$tag.addClass('displayNone');
 	}
@@ -1978,14 +2044,7 @@ $tmp.empty().remove();
 			var o = myControl.util.truncate(data.value,data.bindData.numCharacters)
 			$tag.text(o);
 			}, //truncText
-//formerly bindClick. don't think it's in use anymore. commented out on 12/29/2011
-/*
-		bindWindowOpen : function($tag,data)	{
-			myControl.util.dump('BEGIN myControl.renderFormats.bindWindowOpen');
-			data.windowName = myControl.util.isSet(data.windowName) ? data.windowName : '';//default to blank window name, not 'null' or 'undefined'
-			$tag.click(function(){window.open(data.value),data.windowName});
-			}, //bindWindowOpen
-*/
+
 //used in a cart or invoice spec to display which options were selected for a stid.
 		selectedOptionsDisplay : function($tag,data)	{
 			var o = '';
@@ -2033,6 +2092,7 @@ $tmp.empty().remove();
 
 			$tag.attr(data.bindData.attribute,o);
 			}, //text
+
 		elasticMoney :function($tag,data)	{
 			data.value = data.value / 100;
 			myControl.renderFormats.money($tag,data);

@@ -73,7 +73,7 @@ var myRIA = function() {
 //			myControl.util.dump(" -> window.onpopstate: "+typeof window.onpopstate);
 //			myControl.util.dump(" -> window.history.pushState: "+typeof window.history.pushState);
 //This will create the arrays for the template[templateID].onCompletes and onInits
-			myControl.ext.myRIA.util.createTemplateFunctions(); //should happen early so that the myRIA.template object exists, specifically for acAppIsLoaded
+			myControl.ext.myRIA.util.createTemplateFunctions(); //should happen early so that the myRIA.template object exists, specifically for acApp.u.appInitComplete
 				
 //attach an event to the window that will execute code on 'back' some history has been added to the history.
 //if ?debug=anything is on URI, show all elements with a class of debug.
@@ -104,7 +104,7 @@ else	{
 //get list of categories and append to DOM IF parent id exists
 				myControl.ext.store_navcats.calls.appCategoryList.init({"callback":"showRootCategories","extension":"myRIA"},'passive'); 
 				myControl.ext.store_navcats.calls.appCategoryDetailMax.init('.',{},'passive'); //have this handy.
-				if(typeof acAppIsLoaded == 'function'){acAppIsLoaded()}; //gets run prior to any page content so that it can be used to add renderformats of template functions.
+				if(acApp && acApp.u && typeof acApp.u.appInitComplete == 'function'){acApp.u.appInitComplete()}; //gets run prior to any page content so that it can be used to add renderformats of template functions.
 
 				var page = myControl.ext.myRIA.util.handleAppInit({"skipClearMessaging":true}); //checks url and will load appropriate page content. returns object {pageType,pageInfo}
 
@@ -608,7 +608,7 @@ fallback is to just output the value.
 
 			banner : function($tag, data)	{
 //				myControl.util.dump("begin myRIA.renderFormats.banner");
-				obj = myControl.util.getParametersAsObject(decodeURI(data.value)); //returns an object LINK, ALT and IMG
+				var obj = myControl.util.getParametersAsObject(decodeURI(data.value)); //returns an object LINK, ALT and IMG
 				var hash; //used to store the href value in hash syntax. ex: #company?show=return
 				var pageInfo = {};
 				
@@ -781,6 +781,7 @@ for legacy browsers. That means old browsers will use the anchor to retain 'back
 							$('#mainContentArea').empty().addClass('loadingBG').html("<h1>Transferring to Secure Login...</h1>");
 							var SSLlocation = myControl.vars.secureURL+"?sessionId="+myControl.sessionId;
 							SSLlocation += "#customer?show="+infoObj.show
+							_gaq.push(['_link', SSLlocation]); //for cross domain tracking.
 							document.location = SSLlocation;
 							}
 						break;
@@ -801,7 +802,9 @@ for legacy browsers. That means old browsers will use the anchor to retain 'back
 							myControl.util.dump(" -> nonsecure session. switch to secure for checkout.");
 // if we redirect to ssl for checkout, it's a new url and a pushstate isn't needed, so a param is added to the url.
 							$('#mainContentArea').empty().addClass('loadingBG').html("<h1>Loading Secure Checkout</h1>");
-							document.location = myControl.vars.secureURL+"?sessionId="+myControl.sessionId+"#checkout?show=checkout";
+							var SSLlocation = myControl.vars.secureURL+"?sessionId="+myControl.sessionId+"#checkout?show=checkout";
+							_gaq.push(['_link', SSLlocation]); //for cross domain tracking.
+							document.location = SSLlocation;
 							}
 						else	{
 							$('#mainContentArea').empty(); //duh.

@@ -85,7 +85,7 @@ myControl.ext.store_checkout.checkoutCompletes.push(function(P){
 	for(var i = 0; i < L; i += 1)	{
 //		myControl.util.dump(" -> "+i+": stid = "+order.stuff[i].stid+" and qty = "+order.stuff[i]['qty']);
 		_gaq.push(['_addItem',
-			order.orderID,         // order ID - necessary to associate item with transaction
+			P.orderID,         // order ID - necessary to associate item with transaction
 			order.stuff[i].product,         // SKU/code - required
 			order.stuff[i].prod_name,      // product name - necessary to associate revenue with product
 			order.stuff[i].stid, // category or variation

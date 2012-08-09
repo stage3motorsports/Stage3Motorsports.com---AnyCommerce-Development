@@ -9,9 +9,11 @@
 
 <base href='' /><!-- leave blank so it works for a local file -->
 
-<script type="text/javascript">
 
-var ac = {
+
+<script type="text/javascript">
+var acApp = {};
+acApp.v = {
 	"baseURL":"",
 	"httpsURL":"https://ssl.zoovy.com/s=www.sporks.zoovy.com/",
 	"httpURL":"http://www.sporks.zoovy.com/"
@@ -19,13 +21,13 @@ var ac = {
 //set base url so images, css, js, etc all load from appropriate location once deployed.
 //baseURL as blank lets loadScript function run off local copy when testing locally.
 if(document.location.protocol != 'file:')	{
-	ac.baseURL  = "https:" == document.location.protocol ? ac.httpsURL : ac.httpURL; 
-	document.getElementsByTagName('base')[0].href = ac.baseURL;
+	acApp.v.baseURL  = "https:" == document.location.protocol ? acApp.v.httpsURL : acApp.v.httpURL; 
+	document.getElementsByTagName('base')[0].href = acApp.v.baseURL;
 	}
 </script>
 
 <script type="text/javascript" src="jquery-1.7.2.min.js"></script>
-<script type="text/javascript" src="loadscript.js"></script>
+<script type="text/javascript" src="loadscript.js"></script><!-- rename this to bootstrap -->
 
 <script type="text/javascript">
 
@@ -33,7 +35,7 @@ var _gaq = {'push':function(){}} //here for testing. replace with actual GA code
 var myControl;
 var myCreole;
 
-loadScript(ac.baseURL+"init.js");
+acApp.u.loadScript(acApp.v.baseURL+"init.js");
 
 </script>
 </head>
@@ -61,6 +63,8 @@ This file is intended to go along with the 10-step tutorial at:
 	<progress id="appPreViewProgressBar" max="100" value="0" /><br />
 	</div>
 	<div id='appPreViewProgressText'>0% Complete</div>
+	
+	<div class='appMessaging'></div>
 	</td>
 </tr>
 </table>
@@ -76,7 +80,7 @@ This file is intended to go along with the 10-step tutorial at:
 	** REMINDER : DO NOT PUT ANY GRAPHICS/CONTENT THAT SHOULD NOT APPEAR ON EVERY PAGE IN THE VIEW (HERE)
 	**				  INSTEAD PUT THEM INTO <div id="homepageTemplate"></div>
 	-->
-<div id='globalMessaging'></div><!-- DO NOT REMOVE - used for some high level error handling (usually appears below breadcrumb nav or top bar) -->
+<div id='globalMessaging' class='appMessaging'></div><!-- DO NOT REMOVE - used for some high level error handling (usually appears below breadcrumb nav or top bar) -->
 <div id='mainContentArea'></div><!-- DO NOT REMOVE - this is where the specific page (ex: homepage, product, category) content is going to go -->
 
 <!-- ... your html ends -->
