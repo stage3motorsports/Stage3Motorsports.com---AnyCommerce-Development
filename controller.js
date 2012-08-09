@@ -677,7 +677,7 @@ pass in additional information for more control, such as css class of 'error' an
 			if(typeof messageData == 'string')	{
 //				myControl.util.dump(" -> is a string. show warning.");
 				obj.message = messageData;
-				obj.uiClass = 'highlight';
+				obj.uiClass = 'alert';
 				obj.uiIcon = 'info';
 				}
 			else	{
