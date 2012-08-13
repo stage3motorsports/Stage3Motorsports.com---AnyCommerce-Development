@@ -222,23 +222,11 @@ myControl.model.addDispatchToQ({
 				} //appSessionStart
 
 			}, //authentication
-		
+
 //always uses immutable Q
 		getValidSessionID : {
 			init : function(callback)	{
-//				myControl.util.dump('BEGIN myControl.calls.getValidSessionID.init');
-				var sid = myControl.model.fetchSessionId();  //will return a sessionid from control or local.
-//				myControl.util.dump(' -> sessionId = '+sid);
-//if there is a sid, make sure it is still valid.
-				if(sid)	{
-//					myControl.util.dump(' -> sessionid was set, verify it is valid.');
-//make sure the session id is valid. 'handleTrySession' overrides the callback because error handling/logic is different between create new and verify one exists.
-					myControl.calls.appCartExists.init(sid,{'callback':'handleTrySession','datapointer':'appCartExists'}); 
-					}
-				else	{
-//					myControl.util.dump(' -> no session id. get a new one.');
-					this.dispatch(callback); 
-					}
+				this.dispatch(callback); 
 				return 1;
 				},
 			dispatch : function(callback)	{
@@ -267,13 +255,11 @@ myControl.model.addDispatchToQ({
 //for now, no fetch is done here. it's assumed if you execute this, you don't know who you are dealing with.
 		whoAmI : {
 			init : function(tagObj,Q)	{
-//				myControl.util.dump('BEGIN myControl.ext.store_crm.calls.categoryDetail.init');
-				var r = 1; //will return 1 if a request is needed. if zero is returned, all data needed was in local.
 				this.dispatch(tagObj,Q);
-				return r;
+				return 1;
 				},
 			dispatch : function(tagObj,Q)	{
-				tagObj = jQuery.isEmptyObject(tagObj) ? {} : tagObj; 
+				tagObj = $.isEmptyObject(tagObj) ? {} : tagObj; 
 				tagObj.datapointer = "whoAmI"
 				myControl.model.addDispatchToQ({"_cmd":"whoAmI","_zjsid":myControl.sessionId,"_tag" : tagObj},Q);	
 				}
@@ -371,6 +357,11 @@ myControl.model.addDispatchToQ({
 		}, // calls
 
 					// //////////////////////////////////   CALLBACKS    \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ \\
+/*
+Callbacks require should have an onSuccess.
+Optionally, callbacks can have on onError. if you have a custom onError, no error messaging is displayed. This give the developer the opportunity to easily suppress errors for a given request/callback.
+myControl.util.throwMessage(responseData); is the default error handler.
+*/
 	callbacks : {
 		
 
@@ -383,14 +374,11 @@ myControl.model.addDispatchToQ({
 				},
 			onError : function(responseData)	{
 				myControl.util.dump('BEGIN myControl.callbacks.handlePasswordResponse.onError');
-//				myControl.util.dump(d);
-				$('#loginFormContainer').prepend(myControl.util.getResponseErrors(responseData)).toggle(true);
+				myControl.util.throwMessage(responseData);
 				$('#loginFormContainer button').removeAttr('disabled').removeClass('ui-state-disabled');
 				$('#userLoginButton .loadingPlaceholder').empty();
-				
-				
 				}
-			},//sendEncryptedPassword
+			},//handleSessionStartResponse
 
 
 		handleNewSession : {
@@ -402,34 +390,29 @@ myControl.model.addDispatchToQ({
 // if there are any  extensions(and most likely there will be) add then to the controller.
 // This is done here because a valid cart id is required.
 				myControl.model.addExtensions(myControl.vars.extensions);
-				},
-			onError : function(responseData)	{
-				myControl.util.dump('BEGIN myControl.callbacks.handleNewSession.onError');
-				$('#globalMessaging').append(myControl.util.getResponseErrors(responseData)).toggle(true);
 				}
 			},//convertSessionToOrder
 
 //executed when appCartExists is requested.
 //myControl.sessionID is already set by this point. need to reset it onError.
+// onError does NOT need to nuke myControl.sessionId because it's handled in handleResponse_appCartExists 
 		handleTrySession : {
 			onSuccess : function(tagObj)	{
-				myControl.util.dump('BEGIN myControl.callbacks.handleTrySession.onSuccess');
+//				myControl.util.dump('BEGIN myControl.callbacks.handleTrySession.onSuccess');
 				if(myControl.data.appCartExists.exists == 1)	{
 //					myControl.util.dump(' -> valid session id.  Proceed.');
 // if there are any  extensions(and most likely there will be) add then to the controller.
 // This is done here because a valid cart id is required.
 					myControl.model.addExtensions(myControl.vars.extensions);
+//
+					myControl.calls.whoAmI.init({'callback':'suppressErrors'},'passive');
+					myControl.model.dispatchThis('passive');
 					}
 				else	{
 					myControl.util.dump(' -> UH OH! invalid session ID. Generate a new session. ');
 					myControl.calls.appCartCreate.init('handleNewSession');
 					myControl.model.dispatchThis('immutable');
 					}
-				},
-			onError : function(responseData)	{
-//				myControl.util.dump('BEGIN myControl.callbacks.handleTrySession.onError');
-				$('#globalMessaging').toggle(true).append(myControl.util.getResponseErrors(responseData));
-				myControl.sessionId = null;
 				}
 			}, //handleTrySession
 		
@@ -438,10 +421,6 @@ myControl.model.addDispatchToQ({
 				myControl.util.dump('BEGIN myControl.callbacks.handleAdminSession.onSuccess');
 //in DEV still. do not use this callback.
 //				myControl.vars['_admin'] is set in the model.
-				},
-			onError : function(responseData)	{
-				myControl.util.dump('BEGIN myControl.callbacks.handleAdminSession.onError');
-				$('#globalMessaging').append(myControl.util.getResponseErrors(responseData)).toggle(true);
 				}
 			},
 			
@@ -449,9 +428,6 @@ myControl.model.addDispatchToQ({
 			onSuccess : function(tagObj)	{
 //				myControl.util.dump("BEGIN callbacks.translateSelector");
 				myControl.renderFunctions.translateSelector(tagObj.selector,myControl.data[tagObj.datapointer]);
-				},
-			onError : function(responseData,uuid)	{
-				myControl.util.handleErrors(responseData,uuid);
 				}
 			},
 	
@@ -476,11 +452,6 @@ myControl.model.addDispatchToQ({
 				else {dataSrc = myControl.data[tagObj.datapointer]};
 //				myControl.util.dump(dataSrc);
 				myControl.renderFunctions.translateTemplate(dataSrc,tagObj.parentID);
-				},
-			onError : function(responseData,uuid)	{
-				myControl.util.dump("BEGIN control.callback.translateTemplate.onError");
-//				myControl.util.dump(responseData);
-				myControl.util.handleErrors(responseData,uuid)
 				}
 			
 			}, //translateTemplate
@@ -497,20 +468,30 @@ myControl.model.addDispatchToQ({
 				else if(tagObj.targetID)	{
 					$('#'+tagObj.targetID).removeClass('loadingBG').append(myControl.util.formatMessage({'message':tagObj.message,'uiIcon':'check'}));
 					}
+				}
+			},
+/*
+By default, error messaging is thrown to the appMessaging class. Sometimes, this needs to be suppressed. Add this callback and no errors will show.
+ex: whoAmI call executed during app init. Don't want "we have no idea who you are" displayed as an error.
+*/
+
+		suppressErrors : {
+			onSuccess : function(tagObj)	{
+//dummy callback. do nothing.
 				},
 			onError : function(responseData,uuid)	{
-				myControl.util.handleErrors(responseData,uuid)
+//dummy callback. do nothing.
+				myControl.util.dump("WARNING! response for uuid ["+uuid+"] contained errors but they were suppresed via suppressErrors callback.");
 				}
-			}
+			} //suppressErrors
+			
+			
 		}, //callbacks
 
 
 
 
-
-
-
-			////////////////////////////////////   UTIL [the method formerly known as utilityFunctions]    \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+////////////////////////////////////   UTIL    \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
 
@@ -556,32 +537,18 @@ myControl.util.handleCallback(tagObj);
 				};
 			return (S4()+S4()+S4()+S4()+S4()+S4()+S4()+S4());
 			},
+
 //when sending the user into a waiting pattern, pass true.  This changes the cursor into the browser 'waiting' state
 		handleWait : function (tfu){
 			if(tfu == true)	{
 				$('body').css({'cursor':'wait'})
 				}
 			else	{
-				$('body').css({'cursor':auto})
+				$('body').css({'cursor':'auto'})
 				}
 			},
 			
-//## allow for targetID to be passed in.
-		logBuyerOut : function()	{
-	
-			myControl.calls.authentication.zoovyLogout.init({'callback':'showMessaging','message':'Thank you, you are now logged out','targetID':'logMessaging'});
-			myControl.calls.refreshCart.init({},'immutable');
-			myControl.vars.cid = null; //nuke cid as it's used in the soft auth.
-			myControl.model.dispatchThis('immutable');
-			},
-		
-		thisIsAnAdminSession : function()	{
-			var r = false; //what is returned.
-			if(myControl.sessionId && myControl.sessionId.substring(0,2) != '**')	{
-				r = true;
-				}
-			return r;
-			},
+
 
 //jump to an anchor. can use a name='' or id=''.  anchor is used in function name because that's the common name for this type of action. do not need to pass # sign.
 		jumpToAnchor : function(id)	{
@@ -595,26 +562,33 @@ if an object, could be: {errid,errmsg,errtype}   OR   {msg_X_txt,msg_X_type,msg_
  -> if msg_X format, X will be an integer and _msgs will be set to indicate the # of messages.
 
 $target - a jquery object of the target/destination for the message itself. Will check err for parentID, targetID and if not present, check to see if globalMessaging is present AND visible.  If not visible, will open modal.
+returns the id of the message, so that an action can be easily added if needed (onclick or timeout w/ a hide, etc)
 */
 		throwMessage : function(msg){
-			var $target = false;
-			var r = true; //what is returned. set to false if no good error message found.
+//			myControl.util.dump("BEGIN myControl.util.throwMessage");
+//			myControl.util.dump(" -> msg follows: "); myControl.util.dump(msg);
+			var $target; //where the app message will be appended.
+			var r = false; //what is returned. set to false if no good error message found. set to htmlID is error found. 
+			var htmlID = "appMessage_"+this.guidGenerator(); //the id added to the container of the message.
+			var $container = $("<div \/>").attr({'id':htmlID});
 //make sure the good-ole fallback destination for errors exists and is a modal.
-			var globalDefault = $('#globalErrorMessaging')
-			if	( globalDefault.length == 0)	{
+			var $globalDefault = $('#globalErrorMessaging')
+			if	($globalDefault.length == 0)	{
 				$globalDefaultt = $("<div \/>").attr({'id':'globalErrorMessaging'}).appendTo('body');
 				$globalDefault.dialog({autoOpen:false,modal:true})
 				}
-				
+
 			if(typeof msg === 'string')	{
 				if($('.appMessaging:visible').length > 0)	{
+//					myControl.util.dump(" -> target is appMessaging.");
 					$target = $('.appMessaging');
 					}
 				else	{
+//					myControl.util.dump(" -> target is globalDefault.");
 					$target = $globalDefault;
 					$target.dialog('open');
 					}
-				$target.prepend(msg); //always put new messages at the top.
+				$container.append(this.formatMessage(msg)).prependTo($target); //always put new messages at the top.
 				}
 			else if(typeof msg === 'object')	{
 				if(typeof msg['_rtag'] == 'object' && msg['_rtag'].parentID && $('#'+msg['_rtag'].parentID).length)	{$target = $('#'+msg['_rtag'].parentID);}
@@ -626,7 +600,7 @@ $target - a jquery object of the target/destination for the message itself. Will
 					$target = $globalDefault;
 					$target.dialog('open');
 					}
-				$target.prepend(this.formatResponseErrors(msg));
+				$container.append(this.formatResponseErrors(msg)).prependTo($target);
 				}
 			else	{
 				myControl.util.dump("WARNING! - unknown type ["+typeof err+"] set on parameter passed into myControl.util.throwMessage");
@@ -635,23 +609,23 @@ $target - a jquery object of the target/destination for the message itself. Will
 			},
 
 
+/*
+pass in the responseData from the api request and this will return all the errors as their own lineitems.
+Request that can have multiple errors come back have _msg... in response (like adding to cart)
+Other requests will have errid set
+This function will have both cases.
+*/
 
 		formatResponseErrors : function(d)	{
-//			myControl.util.dump("BEGIN myControl.util.getResponseErrors");
-//			myControl.util.dump(d);
 			var r;
 			if(!d)	{
 				r = 'unknown error has occured';
 				}
 			else if(typeof d == 'string')	{
-				r = d;
+				r = myControl.util.formatMessage(d);
 				}
 			else if(typeof d == 'object')	{
 				r = "";
-/*
-a response could come back with messages (like adding to cart and multiple errors occured)
-which will have _msgs set or just one error, which will have errid set.
-*/
 				if(d['_msgs'])	{
 					for(var i = 1; i <= d['_msgs']; i += 1)	{
 //						myControl.util.dump(d['_msg_'+i+'_type']+": "+d['_msg_'+i+'_id']);
@@ -659,93 +633,27 @@ which will have _msgs set or just one error, which will have errid set.
 						}
 					}
 				else if(d['errid'])	{
-					r += "<div class='"+d.errtype+"'>"+d.errmsg+" [id: "+d.errid+"]<\/div>";
+					r += "<div class='"+d.errtype+"'>"+d.errmsg+"<\/div>";
+//					myControl.util.dump("WARNGING! error occured. id: "+d.errid+" and type: "+d.errtype+" and msg: "+errmsg);
 					}
-				}
-			else	{
-				myControl.util.dump(" -> getResponseErrors 'else' hit. Should not have gotten to this point");
-				r = 'unknown error has occured';
-				}
-//			myControl.util.dump(r);
-			return myControl.util.formatMessage(r);
-			},
-
-
-
-
-
-
-/*
-a generic error handler for callback.onError
-often, parentID or targetID is specified in a tagObj for a destination for rendering a template. put errors there if set, if not put in globalMessaging.
-if tagObj isn't set, look it up in the original Q (tagObj may be blank if the error is high level.)
-If none of those vars are set or are not present in DOM, throw the errors at the user via a modal. this is a last resort.
-
-sometimes, globalMessaging may be turned off, so show() is set.
-loadingBG is a class set on templates that is turned off in transmogrify/translateTemplate.  need to make sure that is also removed.
-*/
-		handleErrors : function(d,uuid)	{
-//			myControl.util.dump("BEGIN control.util.handleErrors for uuid: "+uuid);
-			var $target;
-//			myControl.util.dump(d);
-			if(!d || (d && !d['_rtag']))	{
-//				myControl.util.dump(" -> responseData (d) or responseData['_rtag'] is blank.");
-				var DQ = myControl.model.whichQAmIFrom(uuid);
-				d['_rtag'] = myControl.q[DQ][uuid]['_tag'];
-				}
-//			myControl.util.dump(d['_rtag']);
-			if(typeof d['_rtag'] == 'object' && d['_rtag'].parentID && $('#'+d['_rtag'].parentID).length)	{$target = $('#'+d['_rtag'].parentID); myControl.util.dump(" -> using parentID to display error message.");}
-			else if(typeof d['_rtag'] == 'object' && d['_rtag'].targetID && $('#'+d['_rtag'].targetID).length)	{$target = $('#'+d['_rtag'].targetID)}
-			else if	( $('#globalMessaging').length)	{$target = $('#globalMessaging')}
-			else if	( $('#globalErrorMessaging').length)	{
-				$target = $('#globalErrorMessaging')
-				if(!$target.dialog( "isOpen" ))	{$target.dialog('open');}
-				}
-			else	{
-				$target = $("<div \/>").attr({'id':'globalErrorMessaging','title':'Warning'}).appendTo('body');
-				$target.dialog({width:500,height:500,autoOpen:false})
-				$target.dialog('open');
-				} //NO modal. could nuke existing modal.
-			
-			$target.removeClass('loadingBG').show().append(this.getResponseErrors(d));
-			},
-
-//pass in the response and an li for each error (parent ul not returned) will be generated.
-//called frequently in checkout, but univeral enough to justify being in main control.
-// note that if you use this, you may need to also update a panel so that more than just an error shows up or the user may not be able to proceed.
-		getResponseErrors : function(d)	{
-//			myControl.util.dump("BEGIN myControl.util.getResponseErrors");
-//			myControl.util.dump(d);
-			var r;
-			if(!d)	{
-				r = 'unknown error has occured';
-				}
-			else if(typeof d == 'string')	{
-				r = d;
-				}
-			else if(typeof d == 'object')	{
-				r = "";
-/*
-a response could come back with messages (like adding to cart and multiple errors occured)
-which will have _msgs set or just one error, which will have errid set.
-*/
-				if(d['_msgs'])	{
-					for(var i = 1; i <= d['_msgs']; i += 1)	{
-//						myControl.util.dump(d['_msg_'+i+'_type']+": "+d['_msg_'+i+'_id']);
-						r += "<div>"+d['_msg_'+i+'_txt']+"<\/div>";
+//the validate order request returns a list of issues.
+				else if(responseData['@issues'])	{
+					var L = responseData['@issues'].length;
+					for(var i = 0; i < L; i += 1)	{
+						r += "<div>"+responseData['@issues'][i][3]+"<\/div>";
 						}
 					}
-				else if(d['errid'])	{
-					r += "<div>"+d.errmsg+" ("+d.errid+")<\/div>";
-					}
+				d.message = r; //pass in entire original object as it may contain uiClass and/or uiIcon or other params
+				r = myControl.util.formatMessage(d);
 				}
 			else	{
 				myControl.util.dump(" -> getResponseErrors 'else' hit. Should not have gotten to this point");
 				r = 'unknown error has occured';
 				}
-//			myControl.util.dump(r);
-			return myControl.util.formatMessage(r);
+			return r;
 			},
+
+
 
 
 /*
@@ -760,35 +668,44 @@ pass in additional information for more control, such as css class of 'error' an
 			if(typeof messageData == 'string')	{
 //				myControl.util.dump(" -> is a string. show warning.");
 				obj.message = messageData;
-				obj.uiClass = 'alert';
+				obj.uiClass = 'error';
 				obj.uiIcon = 'info';
 				}
 			else	{
 				obj = messageData;
 //default to a 'highlight' state, which is a warning instead of error.
 //				myControl.util.dump(" -> is an object. show message specific class.");
-				obj.uiClass = obj.uiClass ? obj.uiClass : 'highlight'; //error, highlight
+//				myControl.util.dump(" -> obj follows"); myControl.util.dump(obj);
+				obj.uiClass = obj.uiClass ? obj.uiClass : 'error'; //error, highlight
 				obj.uiIcon = obj.uiIcon ? obj.uiIcon : 'notice'
 				}
 
 //the zMessage class is added so that these warning can be cleared (either universally or within a selector).
-			var r = obj.htmlid ? "<div class='ui-widget zMessage' id='"+obj.htmlid+"'>": "<div class='ui-widget zMessage'>";
-			r += "<div class='ui-state-"+obj.uiClass+" ui-corner-all appMessage'>";
+			var r = "<div class='ui-widget appMessage'>";
+			r += "<div class='ui-state-"+obj.uiClass+" ui-corner-all'>";
 			r += "<div class='clearfix'><span style='float: left; margin-right: .3em;' class='ui-icon ui-icon-"+obj.uiIcon+"'></span>"+obj.message+"<\/div>";
 			r += "<\/div><\/div>";
-			
-//			myControl.util.dump(" -> obj.htmlid: "+obj.htmlid);
-//			myControl.util.dump(" -> obj.message: "+obj.message);
-//			myControl.util.dump(" -> obj.timeoutFunction: "+obj.timeoutFunction);
-			
-			if(obj.htmlid && obj.timeoutFunction)	{
-//				myControl.util.dump(" -> error message has timeout function.");
-				setTimeout(obj.timeoutFunction, 6000);
-				}
 			return r;
 			},
-			
-			
+
+// The next functions are simple ways to create success or error objects.
+// pass in a message and the entire success object is returned.
+// keep this simple. don't add support for icons or message type. If that degree of control is needed, build your own object and pass that in.
+// function used in store_product (and probably more)
+		successMsgObject : function(msg)	{
+			return {'_msgs':1,'_msg_1_txt':msg,'_msg_1_type':'success','uiIcon':'check','class':'success'}
+			},
+
+		youErrObject : function(errmsg,errid)	{
+			return {'errid':errid,'errmsg':errmsg,'errtype':'youerr','uiIcon':'alert','uiClass':'highlight'}
+			},
+/*
+
+URI PARAM
+
+*/
+
+
 //pass in a name and if it is a parameter on the uri, the value is returned.
 		getParameterByName : function(name)	{
 			name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
@@ -824,6 +741,53 @@ pass in additional information for more control, such as css class of 'error' an
 			return params;
 			},
 
+
+
+
+/*
+
+AUTHENTICATION/USER
+
+*/
+
+//## allow for targetID to be passed in.
+		logBuyerOut : function()	{
+	
+			myControl.calls.authentication.zoovyLogout.init({'callback':'showMessaging','message':'Thank you, you are now logged out','targetID':'logMessaging'});
+			myControl.calls.refreshCart.init({},'immutable');
+			myControl.vars.cid = null; //nuke cid as it's used in the soft auth.
+			myControl.model.dispatchThis('immutable');
+			},
+		
+		thisIsAnAdminSession : function()	{
+			var r = false; //what is returned.
+			if(myControl.sessionId && myControl.sessionId.substring(0,2) != '**')	{
+				r = true;
+				}
+			return r;
+			},
+
+/*
+looks to see what level of authentication the session is at.
+If the user has logged in during this visit, they're fully authenticated.
+If they logged in via a third party login, that login name is returned (ex: facebook login returns facebook)
+If the user logged in a previous visit, they get a softauth.
+If the user has subscribed to email during this visit, then guest will be returned.
+if there was no login of any kind, they're not authenticated. false is returned.
+
+use this function to determine IF you need to make calls, do NOT add any calls if auth level isn't as high as needed.
+*/
+
+		whatAuthIsThisSession : function()	{
+			var r = false; //what is returned.
+			if(myControl.data.appBuyerLogin && myControl.data.appBuyerLogin.cid)	{r = 'authenticated'}
+			else if(typeof FB != 'undefined' && !jQuery.isEmptyObject(FB) && FB['_userStatus'] == 'connected')	{r = 'facebook';}
+			else if(myControl.data.whoAmI && myControl.data.whoAmI.cid)	{r = 'soft'}
+			else if(myControl.model.fetchData('cartItemsList') && myControl.data.cartItemsList.cart['data.bill_email'])	{r = 'guest';}
+			else{}
+			return r;
+			}, //whatAuthIsThisSession
+
 //pass in a simple array and all the duplicates will be removed.
 //handy for dealing with product lists created on the fly (like cart accessories)
 		removeDuplicatesFromArray : function(arrayName)	{
@@ -838,6 +802,36 @@ pass in additional information for more control, such as css class of 'error' an
 				}
 			return newArray;
 			},
+
+
+
+//used in checkout to populate username: so either login or bill.email will work.
+//never use this to populate the value of an email form field because it may not be an email address.
+//later, this could be expanded to include a facebook id.
+		getUsernameFromCart : function()	{
+//			myControl.util.dump('BEGIN util.getUsernameFromCart');
+			var r = false;
+			if(myControl.util.isSet(myControl.data.cartItemsList.cart['login']))	{
+				r = myControl.data.cartItemsList.cart['login'];
+//				myControl.util.dump(' -> login was set. email = '+r);
+				}
+			else if(myControl.util.isSet(myControl.data.cartItemsList.cart['data.bill_email'])){
+				r = myControl.data.cartItemsList.cart['data.bill_email'];
+//				myControl.util.dump(' -> data.bill_email was set. email = '+r);
+				}
+			else if(!jQuery.isEmptyObject(myControl.vars.fbUser))	{
+//				myControl.util.dump(' -> user is logged in via facebook');
+				r = myControl.vars.fbUser.email;
+				}
+			return r;
+			},
+
+
+/*
+
+BROWSER/OS
+
+*/
 
 
 // .browser returns an object of info about the browser (name and version).
@@ -862,15 +856,13 @@ pass in additional information for more control, such as css class of 'error' an
 			if (navigator.appVersion.indexOf("Linux")!=-1) OSName="LI";
 			return OSName;
 			},
-			
-		numbersOnly : function(e)	{
-			var unicode=e.charCode? e.charCode : e.keyCode
-			// if (unicode!=8||unicode!=9)
-			if (unicode<8||unicode>9)        {
-				if (unicode<48||unicode>57) //if not a number
-				return false //disable key press
-				}
-			},
+
+
+/*
+
+TIME/DATE
+
+*/
 
 		
 //current time in unix format.
@@ -912,7 +904,35 @@ pass in additional information for more control, such as css class of 'error' an
 			
 			return month[m];
 			},
-		
+
+
+/*
+
+VALIDATION
+
+*/
+//used for validating strings only. checks to see if value is defined, not null, no false etc.
+//returns value (s), if it has a value .
+		isSet : function(s)	{
+			var r;
+			if(s == null || s == 'undefined' || s == '')
+				r = false;
+			else if(typeof s != 'undefined')
+				r = s;
+			else
+				r = false;
+			return r;
+			}, //isSet
+
+		numbersOnly : function(e)	{
+			var unicode=e.charCode? e.charCode : e.keyCode
+			// if (unicode!=8||unicode!=9)
+			if (unicode<8||unicode>9)        {
+				if (unicode<48||unicode>57) //if not a number
+				return false //disable key press
+				}
+			},
+
 		isValidEmail : function(str) {
 			myControl.util.dump("BEGIN isValidEmail for: "+str);
 			var r = true; //what is returned.
@@ -1020,19 +1040,6 @@ pass in additional information for more control, such as css class of 'error' an
 		return r
 		}, //formatMoney
 
-//used for validating strings only. checks to see if value is defined, not null, no false etc.
-//returns value (s), if it has a value .
-	isSet : function(s)	{
-	//	zStdErr('in isSet for '+s);
-		var r;
-		if(s == null || s == 'undefined' || s == '')
-			r = false;
-		else if(typeof s != 'undefined')
-			r = s;
-		else
-			r = false;
-		return r;
-		}, //isSet
 
 /*
 name is the image location/filename
@@ -1138,8 +1145,6 @@ a word */
 			return r;
 			}, //makeSafeHTMLId
 
-//note - had a report of expirations coming in with 0 set for month and year.
-//2012-04-09 the following two functions were set up to return errors on 0 values.
 
 		isValidMonth : function(val)	{
 			var valid = true;
@@ -1411,30 +1416,10 @@ later, it will handle other third party plugins as well.
 				return $o;
 //				myControl.util.dump(" -> $o:");
 //				myControl.util.dump($o);
-			},
-
-
-
-//used in checkout to populate username: so either login or bill.email will work.
-//never use this to populate the value of an email form field because it may not be an email address.
-//later, this could be expanded to include a facebook id.
-		getUsernameFromCart : function()	{
-//			myControl.util.dump('BEGIN util.getUsernameFromCart');
-			var r = false;
-			if(myControl.util.isSet(myControl.data.cartItemsList.cart['login']))	{
-				r = myControl.data.cartItemsList.cart['login'];
-//				myControl.util.dump(' -> login was set. email = '+r);
-				}
-			else if(myControl.util.isSet(myControl.data.cartItemsList.cart['data.bill_email'])){
-				r = myControl.data.cartItemsList.cart['data.bill_email'];
-//				myControl.util.dump(' -> data.bill_email was set. email = '+r);
-				}
-			else if(!jQuery.isEmptyObject(myControl.vars.fbUser))	{
-//				myControl.util.dump(' -> user is logged in via facebook');
-				r = myControl.vars.fbUser.email;
-				}
-			return r;
 			}
+
+
+
 /*			
 ,
 getAllDataAttributes : function(node)	{

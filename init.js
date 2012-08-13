@@ -1,8 +1,10 @@
 
 
+
+
 // A list of all the extensions that are going to be used.
 //if an extension is 'required' for any page within the store to load properly, the extension should be added as a dependency within quickstart.js
-acApp.v.extensions = [
+app.v.extensions = [
 	{"namespace":"store_prodlist","filename":"extensions/store_prodlist.js"},
 	{"namespace":"convertSessionToOrder","filename":"extensions/checkout_passive/extension.js"},  /* checkout_passive does not require buyer to login */
 //	{"namespace":"convertSessionToOrder","filename":"extensions/checkout_nice/extension.js"},	/* checkout_nice prompts buyer to login */
@@ -17,7 +19,7 @@ acApp.v.extensions = [
 
 
 /*
-acApp.v.scripts is an object containing a list of scripts that are required/desired.
+app.v.scripts is an object containing a list of scripts that are required/desired.
 for each script, include:  
 	pass -> scripts are loaded in a loop. pass 1 is loaded before app gets initiated and should only include 'required' scripts. Use > 1 for other scripts.
 	location -> the location of the file. be sure to load a secure script on secure pages to avoid an ssl error.
@@ -25,81 +27,78 @@ for each script, include:
 optionally also include:
 	callback -> a function to execute after the script is loaded.
 */
-acApp.v.scripts = new Array();
+app.v.scripts = new Array();
 
 
 
-acApp.v.scripts.push({
+app.v.scripts.push({
 	'pass':1,
-	'location':acApp.v.baseURL+'controller.js',
+	'location':app.v.baseURL+'controller.js',
 	'validator':function(){return (typeof zController == 'function') ? true : false;},
-	'callback':function(){acApp.u.initMVC()} //the acApp.u.initMVC callback is what instantiates the controller.
+	'callback':function(){app.u.initMVC()} //the app.u.initMVC callback is what instantiates the controller.
 	})
 
 
-acApp.v.scripts.push({
+app.v.scripts.push({
 	'pass':1,
 	'location':(document.location.protocol == 'https:' ? 'https:' : 'http:')+'//ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/jquery-ui.js',
 	'validator':function(){return (typeof $ == 'function' && jQuery.ui) ? true : false;}
 	})
 //The config.js file is 'never' local. it's a remote file, so...
 //when opening the app locally, always use the nonsecure config file. Makes testing easier.
-//when opening the app remotely, use acApp.v.baseURL which will be http/https as needed.
+//when opening the app remotely, use app.v.baseURL which will be http/https as needed.
 
-acApp.v.scripts.push({
+app.v.scripts.push({
 	'pass':1,
-	'location':(document.location.protocol == 'file:') ? acApp.v.httpURL+'jquery/config.js' : acApp.v.baseURL+'jquery/config.js',
+	'location':(document.location.protocol == 'file:') ? app.v.httpURL+'jquery/config.js' : app.v.baseURL+'jquery/config.js',
 	'validator':function(){return (typeof zGlobals == 'object') ? true : false;}
 	})
 
-acApp.v.scripts.push({'pass':1,'location':acApp.v.baseURL+'model.js','validator':function(){return (typeof zoovyModel == 'function') ? true : false;}})
-acApp.v.scripts.push({'pass':1,'location':acApp.v.baseURL+'includes.js','validator':function(){return (typeof handlePogs == 'function') ? true : false;}})
+app.v.scripts.push({'pass':1,'location':app.v.baseURL+'model.js','validator':function(){return (typeof zoovyModel == 'function') ? true : false;}})
+app.v.scripts.push({'pass':1,'location':app.v.baseURL+'includes.js','validator':function(){return (typeof handlePogs == 'function') ? true : false;}})
 
 
 
 //used for making text editable (customer address). non-essential. loaded late.
-acApp.v.scripts.push({'pass':8,'location':acApp.v.baseURL+'jeditable.js','validator':function(){return (typeof $ == 'function' && jQuery.editable) ? true : false;}})
+app.v.scripts.push({'pass':8,'location':app.v.baseURL+'jeditable.js','validator':function(){return (typeof $ == 'function' && jQuery.editable) ? true : false;}})
 
 
-var acScriptsInPass;
-//don't execute script till both jquery AND the dom are ready.
-$(document).ready(function(){
-	acScriptsInPass = acApp.u.loadScriptsByPass(1,false)
-	});
+
 
 
 /*
 Will load all the scripts from pass X where X is an integer less than 10.
-This will load all of the scripts in the acApp.v.scripts object that have a matching 'pass' value.
+This will load all of the scripts in the app.v.scripts object that have a matching 'pass' value.
 
 */
 
-acApp.u.loadScriptsByPass = function(PASS,CONTINUE)	{
-//	acApp.u.dump("BEGIN acApp.u.loadScriptsByPass ["+PASS+"]");
-	var L = acApp.v.scripts.length;
+app.u.loadScriptsByPass = function(PASS,CONTINUE)	{
+//	app.u.dump("BEGIN app.u.loadScriptsByPass ["+PASS+"]");
+	var L = app.v.scripts.length;
 	var numIncludes = 0; //what is returned. The total number of includes for this pass.
 	for(var i = 0; i < L; i += 1)	{
-		if(acApp.v.scripts[i].pass == PASS)	{
+		if(app.v.scripts[i].pass == PASS)	{
 			numIncludes++
-			acApp.u.loadScript(acApp.v.scripts[i].location,acApp.v.scripts[i].callback);
+			app.u.loadScript(app.v.scripts[i].location,app.v.scripts[i].callback);
 			}
 		}
-	if(CONTINUE == true && PASS <= 10)	{acApp.u.loadScriptsByPass((PASS + 1),true)}
+	if(CONTINUE == true && PASS <= 10)	{app.u.loadScriptsByPass((PASS + 1),true)}
 	return numIncludes;
 	}
+
 
 /*
 This function is overwritten once the controller is instantiated. 
 Having a placeholder allows us to always reference the same messaging function, but not impede load time with a bulky error function.
 function could be used for warnings, errors or success. defaults to 'error'.
 */
-acApp.u.throwMessage = function(m)	{
+app.u.throwMessage = function(m)	{
 	alert(m); 
 	}
 
 
 //put any code that you want executed AFTER the app has been initiated in here.  This may include adding onCompletes or onInits for a given template.
-acApp.u.appInitComplete = function()	{
+app.u.appInitComplete = function()	{
 	
 //	myControl.util.dump("Executing myAppIsLoaded code...");
 //display product blob fields in tabbed format.
@@ -112,11 +111,11 @@ acApp.u.appInitComplete = function()	{
 
 //gets executed once controller.js is loaded.
 //check dependencies and make sure all other .js files are done, then init controller.
-//function will get re-executed if not all the scripts in acApp.v.scripts pass 1 are done loading.
+//function will get re-executed if not all the scripts in app.v.scripts pass 1 are done loading.
 //the 'attempts' var is incremented each time the function is executed.
 
-acApp.u.initMVC = function(attempts){
-//	acApp.u.dump("acApp.u.initMVC activated");
+app.u.initMVC = function(attempts){
+//	app.u.dump("app.u.initMVC activated");
 	var includesAreDone = true;
 
 //what percentage of completion a single include represents (if 10 includes, each is 10%). subtract 1 just to make sure percentComplete < 100
@@ -124,20 +123,20 @@ acApp.u.initMVC = function(attempts){
 	var percentComplete = 0; //used to sum how many includes have successfully loaded.
 	
 	if(!attempts){attempts = 1} //the number of attempts that have been made to load. allows for error handling
-	var L = acApp.v.scripts.length
-//	acApp.u.dump(" -> L: "+L+" and attempt: "+attempts);
+	var L = app.v.scripts.length
+//	app.u.dump(" -> L: "+L+" and attempt: "+attempts);
 //don't break out of the loop on the first false. better to loop the whole way through so that the progress bar can go up as quickly as possible.
 	for(var i = 0; i < L; i += 1)	{
-		if(acApp.v.scripts[i].pass == 1 && acApp.v.scripts[i].validator()){
+		if(app.v.scripts[i].pass == 1 && app.v.scripts[i].validator()){
 			//this file is loaded.
 			percentComplete += percentPerInclude;
 			}
-		else if(acApp.v.scripts[i].pass != 1)	{
+		else if(app.v.scripts[i].pass != 1)	{
 			//only first pass items are validated for instantiting the controller.
 			}
 		else	{
 			//file not loaded.
-			acApp.u.dump(" -> attempt "+attempts+" waiting on: "+acApp.v.scripts[i].location)
+			app.u.dump(" -> attempt "+attempts+" waiting on: "+app.v.scripts[i].location)
 			includesAreDone = false;
 			}
 		}
@@ -149,25 +148,43 @@ acApp.u.initMVC = function(attempts){
 		$.support.cors = true;  //cross site scripting for non cors sites. will b needed for IE10. IE8 & 9 don't support xss well.
 		myControl = new zController({
 			"release":"20120809090000" //increment this with each change. should solve caching issues.
-			},acApp.v.extensions);  //instantiate controller. handles all logic and communication between model and view.
+			},app.v.extensions);  //instantiate controller. handles all logic and communication between model and view.
 
 		//instantiate wiki parser.
 		myCreole = new Parse.Simple.Creole();
-		acApp.u.loadScriptsByPass(2,true);
+		app.u.loadScriptsByPass(2,true);
 		}
 	else if(attempts > 80)	{
-		acApp.u.dump("WARNING! something went wrong in init.js");
+		app.u.dump("WARNING! something went wrong in init.js");
 		//this is 10 seconds of trying. something isn't going well.
 		$('#appPreView').empty().append("<h2>Uh Oh. Something seems to have gone wrong. </h2><p>Several attempts were made to load the store but some necessary files were not found or could not load. We apologize for the inconvenience. Please try 'refresh' and see if that helps.<br><b>If the error persists, please contact the site administrator</b><br> - dev: see console.</p>");
 //throw some debugging at the console to report what didn't load.
 		for(var i = 0; i < L; i += 1)	{
-			if(acApp.v.scripts[i].pass == 1)	{
-				acApp.u.dump(" -> "+acApp.v.scripts[i].location+": "+acApp.v.scripts[i].validator());
+			if(app.v.scripts[i].pass == 1)	{
+				app.u.dump(" -> "+app.v.scripts[i].location+": "+app.v.scripts[i].validator());
 				}
 			}
 		
 		}
 	else	{
-		setTimeout("acApp.u.initMVC("+(attempts+1)+")",250);
+		setTimeout("app.u.initMVC("+(attempts+1)+")",250);
 		}
 	}
+
+
+
+
+
+
+//start the app.
+var acScriptsInPass;
+//don't execute script till both jquery AND the dom are ready.
+$(document).ready(function(){
+	acScriptsInPass = app.u.loadScriptsByPass(1,false)
+	});
+
+
+
+
+
+

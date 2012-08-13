@@ -218,10 +218,6 @@ formerly showCart
 			onSuccess : function(tagObj)	{
 //				myControl.util.dump('BEGIN myControl.ext.store_cart.callbacks.displayCart.onSuccess');
 				myControl.renderFunctions.translateTemplate(myControl.data.cartItemsList.cart,tagObj.parentID);
-				},
-			onError : function(d)	{
-				myControl.util.dump('BEGIN myControl.ext.store_cart.callbacks.displayCart.onError');
-				$('#modalCart').append(myControl.util.getResponseErrors(d)).toggle(true);
 				}
 			},
 
@@ -234,9 +230,6 @@ formerly showCart
 				myControl.util.dump(" -> stid: "+stid);
 				myControl.util.dump(" -> tagObj.parentID: "+tagObj.parentID);
 				myControl.renderFunctions.translateTemplate(myControl.data.cartItemsList.cart.stuff[stid],tagObj.parentID);
-				},
-			onError : function(responseData,uuid)	{
-				myControl.util.handleErrors(responseData,uuid)
 				}
 			}
 		}, //callbacks

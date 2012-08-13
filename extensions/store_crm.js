@@ -489,7 +489,6 @@ see jquery/api webdoc for required/optional param
 		showFAQTopics : {
 
 			onSuccess : function(tagObj)	{
-				myControl.util.dump('BEGIN store_crm.howFAQTopics.onSuccess ');
 				var $parent = $('#'+tagObj.parentID);
 				$parent.removeClass('loadingBG');
 				var L = myControl.data[tagObj.datapointer]['@topics'].length;
@@ -501,21 +500,16 @@ see jquery/api webdoc for required/optional param
 						myControl.util.dump(" -> TOPIC ID = "+topicID);
 						$parent.append(myControl.renderFunctions.transmogrify({'id':topicID,'data-topicid':topicID},tagObj.templateID,myControl.data[tagObj.datapointer]['@topics'][i]))
 						}
-					
 					}
 				else	{
 					$parent.append("There are no FAQ at this time.");
 					}
 				
-				},
-			onError : function(responseData,uuid)	{
-				myControl.util.handleErrors(responseData,uuid)
 				}
-			},
+			}, //showFAQTopics
 
 		showOrderHistory : {
 			onSuccess : function(tagObj)	{
-				myControl.util.dump('BEGIN myControl.ext.store_crm.showOrderHistory.onSuccess ');
 				var $parent = $('#'+tagObj.parentID);
 				var orderid;
 				var L = myControl.data[tagObj.datapointer]['@orders'].length;
@@ -529,15 +523,7 @@ see jquery/api webdoc for required/optional param
 				else	{
 					$parent.empty().removeClass('loadingBG').append("You have not placed an order with us.");
 					}
-				
-		
-				
-				},
-			onError : function(responseData,uuid)	{
-				myControl.util.handleErrors(responseData,uuid)
 				}
-			
-			
 			}, //showOrderHistory
 
 
@@ -547,19 +533,12 @@ see jquery/api webdoc for required/optional param
 				var $parent = $('#'+tagObj.parentID);
 				$parent.append(myControl.renderFunctions.createTemplateInstance(tagObj.templateID,"subscribeFormContainer"));
 				myControl.renderFunctions.translateTemplate(myControl.data[tagObj.datapointer],"subscribeFormContainer");
-				},
-			onError : function(responseData,uuid)	{
-				myControl.util.handleErrors(responseData,uuid)
 				}
 			}, //showSubscribeForm
 
 		showSubscribeSuccess : {
 			onSuccess : function(tagObj)	{
-				myControl.util.dump('BEGIN myControl.ext.store_crm.showSubscribeForm.onSuccess ');
 				$('#'+tagObj.parentID).empty("thank you!");
-				},
-			onError : function(responseData,uuid)	{
-				myControl.util.handleErrors(responseData,uuid)
 				}
 			} //showSubscribeSuccess
 
@@ -591,7 +570,6 @@ see jquery/api webdoc for required/optional param
 					return errors;
 				},
 			changePassword : function(obj)	{
-				myControl.util.dump("BEGIN store_crm.validate.subscribe");
 				myControl.util.dump(obj);
 				var valid = true;
 				if(obj.password == ''){valid = false}
@@ -599,7 +577,6 @@ see jquery/api webdoc for required/optional param
 				return valid;
 				},
 			subscribe : function(obj)	{
-				myControl.util.dump("BEGIN store_crm.validate.subscribe");
 				myControl.util.dump(obj);
 				var errors = '';
 				if(!obj.login)
@@ -667,7 +644,6 @@ if the P.pid and data-pid do not match, empty the modal before openeing/populati
 !!! incomplete.
 */
 			showReviewFrmInModal : function(P)	{
-				myControl.util.dump("BEGIN store_crm.util.showReviewFrmInModal");
 				if(!P.pid || !P.templateID)	{
 					myControl.util.dump(" -> pid or template id left blank");
 					}

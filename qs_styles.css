@@ -105,7 +105,7 @@ and offMenu is toggle off, hiding the change button.
 
 
 /* error handling css. some error css is defined in the jqueryui styles */
-.zMessage	{margin-bottom:3px;}
+.appMessage	{margin-bottom:3px;}
 .appMessage .ui-icon	{float:left; margin:auto 5px;}
 .appMessage {padding:5px;} /* add padding to children, not parent, that way we can empty the parent and no space is reserved */
 .appMessage ul	{margin-left:12px; font-size:.9em;}

@@ -100,14 +100,11 @@ function zoovyModel() {
 //pass in a json object and how many tier1 nodes are returned. handy.
 
 		countProperties : function(obj) {
-		//	myControl.util.dump('BEGIN: countProperties');
-		//	myControl.util.dump(obj);
 			var prop;
 			var propCount = 0;
 			for (prop in obj) {
 				propCount++;
 				}
-		//	myControl.util.dump('END: countProperties. count = '+propCount);
 			return propCount;
 			},//countProperties
 
@@ -151,10 +148,6 @@ function zoovyModel() {
 			else	{
 				QID = QID === undefined ? 'mutable' : QID; //default to the mutable Q, but allow for PDQ to be passed in.
 				var uuid = myControl.model.fetchUUID() //uuid is obtained, not passed in.
-	
-//				myControl.util.dump(' -> QID = '+QID);
-//				myControl.util.dump(' -> UUID = '+uuid);
-//				myControl.util.dump(" -> cmd = "+dispatch["_cmd"]);			
 				dispatch["_uuid"] = uuid;
 				dispatch["status"] = 'queued';
 				dispatch["_v"] = 'zmvc:'+myControl.model.version+'.'+myControl.vars.release+';'+myControl.vars.passInDispatchV;
@@ -162,8 +155,6 @@ function zoovyModel() {
 				myControl.q[QID][uuid] = dispatch;
 				r = uuid;
 				}
-	
-	//		myControl.util.dump('//END: addDispatchToQ. uuid = '+uuid);
 			return r;
 			},// addDispatchToQ
 	
@@ -229,20 +220,12 @@ function zoovyModel() {
 			return r;
 			},
 
-/* ### untested. unused.
-		abortAllRequests : function()	{
-			for(index in myControl.q)	{
-				myControl.util.dump("ABORTING all requests in "+index);
-				this.abortQ(myControl.q[index])
-				}
-			},
-*/
 //if a request is in progress and a immutable request is made, execute this function which will change the status's of the uuid(s) in question.
 //function is also run when model.abortQ is executed.
 //don't need a QID because only the general dispatchQ gets muted... for now. ### add support for multiple qids
 		handleDualRequests : function()	{
 			var inc = 0;
-	//		myControl.util.dump('BEGIN model.handleDualRequests');		
+//			myControl.util.dump('BEGIN model.handleDualRequests');		
 			for(var index in myControl.q.mutable) {
 				if(myControl.q.mutable[index].status == 'requesting')	{
 					myControl.model.changeDispatchStatusInQ('mutable',index,"muted"); //the task was dominated by another request
@@ -255,15 +238,15 @@ function zoovyModel() {
 
 //when an immutable request is in process, this is called which handles the re-attempts.
 		handleReDispatch : function(QID)	{
-			if(myControl.ajax.overrideAttempts < 25)	{
-				setTimeout("myControl.model.dispatchThis('"+QID+"')",750); //try again soon. if the first attempt is still in progress, this code block will get re-executed till it succeeds.
+			if(myControl.ajax.overrideAttempts < 30)	{
+				setTimeout("myControl.model.dispatchThis('"+QID+"')",500); //try again soon. if the first attempt is still in progress, this code block will get re-executed till it succeeds.
 				}
-			else if(myControl.ajax.overrideAttempts < 100)	{
+			else if(myControl.ajax.overrideAttempts < 60)	{
 // slow down a bit. try every second for a bit and see if the last response has completed.
-				setTimeout("myControl.model.dispatchThis('"+QID+"')",1250); //try again soon. if the first attempt is still in progress, this code block will get re-executed till it succeeds.
+				setTimeout("myControl.model.dispatchThis('"+QID+"')",1000); //try again. if the first attempt is still in progress, this code block will get re-executed till it succeeds or until
 				}
 			else	{
-				myControl.util.dump(' -> stopped trying to override because many attempts were already made.');
+				myControl.util.dump(' -> stopped trying to override because many attempts were already made.'); //!!! this needs to display an error message to the user saying connection seems to be lost or something.
 				}			
 			},
 			
@@ -284,11 +267,6 @@ function zoovyModel() {
 			return r;
 			},
 		
-		
-		ieBlows : function(d){
-			
-			},
-
 /*
 	
 sends dispatches with status of 'queued' in a single json request.
@@ -329,12 +307,7 @@ QID = Queue ID.  Defaults to the general dispatchQ but allows for the PDQ to be 
 				this.handleReDispatch(QID); //does the set timeout to relaunch, if needed.
 				r = false; //not moving forward with a dispatch because the one in process has priority.
 				}
-// commented out on 2012/07/13. no longer aborting any Q unless app does it.
-//			else if(QID == 'immutable')	{
-//				myControl.util.dump(" -> immutable request. no immutable's in progress. cancel any mutables and proceed with dispatch.");
-//				this.abortQ('mutable'); // aborts request. should only send 1 request at a time. empties 
-//				myControl.model.handleDualRequests(); //update status on the DQ items that just got aborted
-//				}
+
 			else	{
 //				myControl.util.dump(" -> DQ has queued dispatches. no request in process. Move along... Move along...");
 				}
@@ -355,12 +328,6 @@ don't move this. if it goes before some other checks, it'll resed the Qinuse var
 //this var is used to reference whether the q in use is immutable or not. Never use this during handleResponse or anywhere else.
 //it is constantly being overwritten, emptied, etc and by the time handle_response is running, another request could occur using a different Q
 //and your code breaks.
-
-//				myControl.util.dump(' -> Q In Use is '+QID);
-//				myControl.util.dump(' -> Q = ');
-//				myControl.util.dump(Q);
-//				myControl.util.dump("ajax URL: "+myControl.vars.jqurl);
-
 //if this point is reached, we are exeuting a dispatch. Any vars used for tracking overrides, last dispatch, etc get reset.
 
 myControl.ajax.lastDispatch = myControl.util.unixNow();
@@ -370,7 +337,7 @@ myControl.ajax.overrideAttempts = 0;
 //IMPORTANT
 /*
 
-IE < 10 doesn't support xss. the check is done during the init. for xss in IE < 10, jsonp requests are used.
+IE < 10 doesn't support xss. the check is done during the init. for xss in IE < 10, jsonp requests are used. !!! NOT WORKING. Need B to help solve. low priority.
 jsonp requests must use a GET. To keep the URL to a reasonable length, some fat is trimmed (_tag, specifically) and re-added in handleResponse
 
 the delete in the success AND error callbacks removes the ajax request from the requests array. 
@@ -449,10 +416,7 @@ else	{
 			myControl.util.dump(" -> REQUEST ERROR DISPATCH DETAILS: uuid: "+UUID+" and QID: "+QID+" and _cmd: "+DISPATCH['_cmd']);
 //			myControl.util.dump(j);
 			delete myControl.ajax.requests[QID][UUID];
-// !!! NOTE - commented out three lines below for testing.
-//			var Q = new Array(); Q.push(DISPATCH);
-//			myControl.model.handleReQ(Q,QID,true); //true will increment 'attempts' for the uuid so only three attempts are made.
-//			setTimeout("myControl.model.dispatchThis('"+QID+"')",1000); //try again. a dispatch is only attempted three times before it errors out.
+			myControl.util.throwMessage("Well this is a bit embarrasing. Something very bad happened. You can try to continue, but our app may not work as intended. You can try refreshing/restarting and that may help.");
 			});
 
 	
@@ -461,8 +425,7 @@ else	{
 	
 	
 		ieBlows : function(d) {
-			
-			myControl.util.dump(" -> Yes, IE does blow. ["+d['_uuid']+"] !!!!!!!!!!!!");
+			myControl.util.dump(" -> Yes, IE does blow. ["+d['_uuid']+"]");
 		//	myControl.util.dump(d);
 			if(!$.isEmptyObject(d))	{
 				var QID = myControl.model.whichQAmIFrom(d['_uuid']); 
@@ -475,8 +438,6 @@ else	{
 			else	{
 				myControl.util.dump(" -> UH OH! ieBlows executed but with an unknown paramter passed in.  d: "+d);
 				}
-			
-			
 			},
 	
 	/*
@@ -497,23 +458,22 @@ else	{
 	//execute callback error for each dispatch, if set.
 			for(var index in Q) {
 				uuid = Q[index]['_uuid'];
-	//			myControl.util.dump('    -> uuid = '+uuid);
-	//			myControl.util.dump('    -> attempts = '+myControl.q[QID][uuid].attempts);
-	//			myControl.util.dump('    -> callback = '+Q[index]['_tag']['callback']);
-	//			myControl.util.dump('    -> extension = '+Q[index]['_tag']['extension']);
-				
-	//once.  twice.  pheee times a mady....  stop trying after three attempts buckwheat!    
+//currently, we're only giving one attempt. see integer below (>+ #) to a higher number to try multiple times (not recommended)
 				if(myControl.q[QID][uuid].attempts >= 1)	{
-//					myControl.util.dump(' -> uuid '+uuid+' has had multiple attempts. changing status to: cancelledDueToErrors');
 					myControl.model.changeDispatchStatusInQ(QID,uuid,'cancelledDueToErrors');
 					//make sure a callback is defined.
 					if(Q[index]['_tag'] && Q[index]['_tag']['callback'])	{
 //						myControl.util.dump(' -> callback ='+Q[index]['_tag']['callback']);
 //executes the callback.onError and takes into account extension. saves entire callback object into callbackObj so that it can be easily validated and executed whether in an extension or root.
 						callbackObj = Q[index]['_tag']['extension'] ? myControl.ext[Q[index]['_tag']['extension']].callbacks[Q[index]['_tag']['callback']] : myControl.callbacks[Q[index]['_tag']['callback']];
-
 						if(callbackObj && typeof callbackObj.onError == 'function'){
 							callbackObj.onError({'errid':'ISE','errmsg':'It seems something went wrong. Please continue, refresh the page, or contact the site administrator if error persists. Sorry for any inconvenience. (mvc error: most likely a request failure after multiple attempts [uuid = '+uuid+'])'},uuid)
+							}
+						else if(typeof myControl.util.throwMessage === 'function')	{
+							myControl.util.throwMessage(responseData);
+							}
+						else	{
+							myControl.util.dump("no error handle (callback specific or otherwise) set for uuid: "+uuid);
 							}
 						}
 					else	{
@@ -524,10 +484,7 @@ else	{
 					if(adjustAttempts)	{myControl.q[QID][uuid].attempts += 1; }
 					myControl.model.changeDispatchStatusInQ(QID,uuid,'queued');
 					}
-				
-	//			myControl.util.dump('    -> attempts = '+myControl.q[QID][uuid].status);
 				}
-//			myControl.util.dump('END handleReQ.');
 			},
 	
 	
@@ -588,17 +545,10 @@ QID is the dispatchQ ID (either passive, mutable or immutable. required for the 
 					}
 //a solo successful request
 				else {
-//					myControl.util.dump(" -> Got to 'else' in handleResponse.");
-//					myControl.util.dump(" -> responseData['_rcmd']: "+responseData['_rcmd']);
-//					myControl.util.dump(responseData);
 //_tag is stripped on jsonP requests to keep URL as short as possible. It is readded to the responseData here as _rtag (which is how it is handled on a normal request)
 					if($.isEmptyObject(responseData['_rtag']))	{
 //						myControl.util.dump(" -> no rtag. set. use qid ["+QID+"] and uuid ["+uuid+"]");
 						responseData['_rtag'] = myControl.q[QID][uuid]['_tag']
-//						myControl.util.dump(" -> dataType is JSONP. _rtag:");
-//						myControl.util.dump(myControl.q[QID][uuid]['_tag']); 
-//						myControl.util.dump(responseData['_rtag']);
-
 						}
 					if(responseData['_rcmd'] && typeof this['handleResponse_'+responseData['_rcmd']] == 'function')	{
 	//					myControl.util.dump("CUSTOM handleresponse defined for "+responseData['_rcmd']);
@@ -612,10 +562,8 @@ QID is the dispatchQ ID (either passive, mutable or immutable. required for the 
 				}
 			else	{
 //if responseData isn't set, an uber-high level error occured.
-					alert("Uh oh! Something has gone very wrong with our app. We apologize for any inconvenience. Please try agian. If error persists, please contact the site administrator.");
+					myControl.util.throwMessage("Uh oh! Something has gone very wrong with our app. We apologize for any inconvenience. Please try agian. If error persists, please contact the site administrator.");
 				}
-			
-	//		myControl.util.dump('//END handleResponse');	
 			}, //handleResponse
 	
 	//gets called for each response in a pipelined request (or for the solo response in a non-pipelined request) in most cases. request-specific responses may opt to not run this, but most do.
@@ -653,6 +601,7 @@ QID is the dispatchQ ID (either passive, mutable or immutable. required for the 
 	
 //if no datapointer is set, the response data is not saved to local storage or into the myControl. (add to cart, ping, etc)
 //effectively, a request occured but no data manipulation is required and/or available.
+//likewise, if there's an error in the response, no point saving this locally. 
 			if(!$.isEmptyObject(responseData['_rtag']) && myControl.util.isSet(responseData['_rtag']['datapointer']) && hasErrors == false)	{
 				datapointer = responseData['_rtag']['datapointer'];
 //on a ping, it is possible a datapointer may be set but we DO NOT want to write the pings response over that data, so we ignore pings.
@@ -668,25 +617,23 @@ QID is the dispatchQ ID (either passive, mutable or immutable. required for the 
 			else	{
 	//			myControl.util.dump(' -> no datapointer set for uuid '+uuid);
 				}
-			
-//			myControl.util.dump(" -> datapointer: "+datapointer);
-			
+
 			if(hasErrors)	{
-				if(callback == false)	{
-					myControl.util.dump('WARNING response for uuid '+uuid+' had errors. no callback was defined.')
-					}
-				else if(!$.isEmptyObject(callbackObj) && typeof callbackObj.onError != 'undefined'){
-					myControl.util.dump('WARNING response for uuid '+uuid+' had errors. callback defined and executed.');
-/* below, responseData['_rtag'] was passed instead of uuid, but that's already available as part of the first var passed in.
+				if(callback && !$.isEmptyObject(callbackObj) && typeof callbackObj.onError == 'function'){
+//					myControl.util.dump('WARNING response for uuid '+uuid+' had errors. callback defined and executed.');
+/*
+below, responseData['_rtag'] was passed instead of uuid, but that's already available as part of the first var passed in.
 uuid is more useful because on a high level error, rtag isn't passed back in responseData. this way uuid can be used to look up originat _tag obj.
 */
-					callbackObj.onError(responseData,uuid); //execute a myControl. must be a myControl. view and model don't talk.
+					callbackObj.onError(responseData,uuid);
+					}
+				else if(typeof myControl.util.throwMessage === 'function')	{
+					myControl.util.throwMessage(responseData);
 					}
 				else{
 					myControl.util.dump('ERROR response for uuid '+uuid+'. callback defined but does not exist or is not valid type. callback = '+callback+' datapointer = '+datapointer)
 					}
 				status = 'error';
-	//			myControl.util.dump(' --> no callback set in original dispatch. dq set to completed for uuid ('+uuid+')');
 				}
 			else if(callback == false)	{
 				status = 'completed';
@@ -704,21 +651,7 @@ uuid is more useful because on a high level error, rtag isn't passed back in res
 					myControl.util.dump(' -> successful response for uuid '+uuid+'. callback defined ('+callback+') but does not exist or is not valid type.')
 					}
 				}
-	
-	//		myControl.util.dump(' -> q in use = '+QID);
-	//		myControl.util.dump(' -> cmd = '+responseData['_rcmd']);
-	//		myControl.util.dump(' -> uuid = '+uuid);
-	//		myControl.util.dump(' -> status = '+status);
-	//		myControl.util.dump(' -> callback = '+callback);
-	//		myControl.util.dump(' -> typeof myControl.DIQ = '+ typeof myControl.q[QID]);
-	//		myControl.util.dump(' -> length myControl.DIQ = '+ myControl.model.countProperties(myControl.q[QID]));
-	//		myControl.util.dump(' -> typeof myControl.DIQ.uuid = '+ typeof myControl.q[QID][uuid]);
-			
-		
-//			myControl.util.dump("which q am i from ("+uuid+") = "+myControl.model.whichQAmIFrom(uuid))
 			myControl.q[myControl.model.whichQAmIFrom(uuid)][Number(uuid)]['status'] = status;
-			
-	//		myControl.util.dump('//END handleResponse_defaultAction. uuid = '+uuid+' callback = '+callback+' datapointer = '+datapointer);
 			return status;
 		},
 	
@@ -775,11 +708,7 @@ so to ensure saving to appPageGet|.safe doesn't save over previously requested d
 			myControl.model.handleResponse_defaultAction(responseData);
 			}, //handleResponse_appPageGet
 
-
-
 //admin session returns a zjsid if response	
-// formerly authorizeAdminSession
-//		handleResponse_appAdminAuthenticate
 		handleResponse_appSessionStart: function(responseData)	{
 //			myControl.storageFunctions.deleteCookie('zjsid'); //nuke any previous zjsid cookie
 			myControl.util.dump("BEGIN model.handleResponse_appSessionStart . ("+responseData['_uuid']+")");
@@ -798,8 +727,6 @@ so to ensure saving to appPageGet|.safe doesn't save over previously requested d
 
 // formerly canIHaveSession
 		handleResponse_appCartExists : function(responseData)	{
-//			myControl.util.dump("BEGIN model.handleResponse_canIHaveSession . ("+responseData['_uuid']+")");
-//			myControl.util.dump(" -> exists = "+responseData.exists);
 			if(responseData.exists == 1)	{
 				this.handleResponse_appCartCreate(responseData); //saves session data locally and into control.
 				}
@@ -839,11 +766,14 @@ in most cases, the errors are handled well by the API and returned either as a s
 or as a series of messages (_msg_X_id) where X is incremented depending on the number of errors.
 */	
 		responseHasErrors : function(responseData)	{
-	//		myControl.util.dump('BEGIN model.responseHasErrors');
+//			myControl.util.dump('BEGIN model.responseHasErrors');
+//			myControl.util.dump(" -> responseData"); myControl.util.dump(responseData);
 //at the time of this version, some requests don't have especially good warning/error in the response.
 //as response error handling is improved, this function may no longer be necessary.
 			var r = false; //defaults to no errors found.
-			if(responseData['_rtag'] && responseData['_rtag'].forceError == 1)	{r = true}
+			if(responseData['_rtag'] && responseData['_rtag'].forceError == 1)	{r = true; responseData.errid = "MVC-M-000"; responseData.errtype = "intendedErr"; responseData.errmsg = "forceError is set to 1 on _tag. cmd = "+responseData['_rcmd']+" and uuid = "+responseData['_uuid'];
+//			myControl.util.dump(responseData);
+				}
 			else	{
 				switch(responseData['_rcmd'])	{
 					case 'appProductGet':
@@ -1265,9 +1195,9 @@ respond accordingly.
 							$('#globalMessaging').append("<div class='ui-state-error ui-corner-all'>Extension "+namespace+" contains the following error(s):<ul>"+errors+"<\/ul><\/div>");
 
 //the line above handles the errors. however, in some cases a template may want additional error handling so the errors are passed in to the onError callback.
-							if(myControl.ext[namespace].callbacks.init.onError)	{
+							if(myControl.ext[namespace].callbacks.onError)	{
 //								myControl.util.dump(" -> executing callback.onError.");
-								myControl.ext[namespace].callbacks.init.onError("<div>Extension "+namespace+" contains the following error(s):<ul>"+errors+"<\/ul><\/div>",'');
+								myControl.ext[namespace].callbacks.onError("<div>Extension "+namespace+" contains the following error(s):<ul>"+errors+"<\/ul><\/div>",'');
 								}							
 							}
 						else if(callback)	{

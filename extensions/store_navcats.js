@@ -227,9 +227,6 @@ obj.PATH = .cat.safe.id
 			onSuccess : function(tagObj)	{
 //				myControl.util.dump("BEGIN myControl.ext.store_navcats.callbacks.handleProduct.onSuccess");
 				myControl.ext.store_navcats.util.getRootCatsData(tagObj);
-				},
-			onError : function(responseData,uuid)	{
-				myControl.util.handleErrors(responseData,uuid)
 				}
 			},
 /*
@@ -256,9 +253,6 @@ templateID - the template id used (from myControl.templates)
 //					myControl.util.dump(" -> cat '"+myControl.data[tagObj.datapointer].pretty+"' is hidden. nuke it!");
 					$('#'+myControl.util.makeSafeHTMLId(tagObj.parentID+"_"+tagObj.datapointer.split('|')[1])).empty().remove();
 					}
-				},
-			onError : function(d)	{
-				$('#globalMessaging').append(myControl.util.getResponseErrors(d)).toggle(true);
 				}
 			},
 
@@ -274,9 +268,6 @@ templateID - the template id used (from myControl.templates)
 				tagObj.callback = 'addCatToDom'; //the tagObj will have 
 				myControl.ext.store_navcats.util.getChildDataOf(catSafeID,tagObj,'appCategoryDetail');  //generate nav for 'browse'. doing a 'max' because the page will use that anway.
 				myControl.model.dispatchThis();
-				},
-			onError : function(d)	{
-				myControl.util.handleErrors(responseData,uuid)
 				}
 			} //getChildData
 

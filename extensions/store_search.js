@@ -36,40 +36,7 @@ var store_search = function() {
 
 
 	calls : {
-/*
-THIS CALL IS DEPRECATED. use elastic.
-		searchResult : {
-			init : function(frmObj,tagObj)	{
-//				myControl.util.dump("BEGIN myControl.ext.store_search.calls.searchResult");
-//				myControl.util.dump(" -> selector = "+'#'+form.id);
-//				myControl.util.dump(" -> KEYWORDS = "+keywords);
-//				myControl.util.dump(frmObj);
-				var r = 0;
-				var keywords = $.trim(frmObj.KEYWORDS);
-				tagObj = typeof tagObj != 'object' ? {} : tagObj;
-//SANITY - issue with repeated calls and datapointer being shared. the extend here is to solve that.
-//test if this is changed, specifically using the getAlternativeQueries function.
-				var myTagObj = {};
-				myTagObj = $.extend(myTagObj,tagObj); 
-				myTagObj.datapointer = "searchResult|"+keywords; //for now, just the keywords is enough. most users only use one catalog.
-				if(myControl.model.fetchData(myTagObj.datapointer) == false)	{
-//					myControl.util.dump(" -> searchResult not in memory or local. refresh both.");
-					r += 1;
-					this.dispatch(frmObj,myTagObj)
-					}
-				else 	{
-//					myControl.util.dump(" -> searchResult local.");
-					myControl.util.handleCallback(myTagObj)
-					}
-				return r;
-				},
-			dispatch : function(frmObj,myTagObj)	{
-				frmObj['_cmd'] = "searchResult";
-				frmObj['_tag'] = myTagObj;
-				myControl.model.addDispatchToQ(frmObj);
-				}
-			}, //searchResult
-*/			
+			
 /*
 P is the params object. something like: 
 var P = {}
@@ -152,9 +119,6 @@ P.query = { 'and':{ 'filters':[ {'term':{'profile':'E31'}},{'term':{'tags':'IS_S
 				else	{
 					$parent.append(myControl.ext.store_search.util.getElasticResultsAsJQObject(tagObj));
 					}
-				},
-			onError : function(responseData,uuid)	{
-				myControl.util.handleErrors(responseData,uuid)
 				}
 			}
 

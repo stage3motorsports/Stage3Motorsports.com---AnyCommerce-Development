@@ -73,7 +73,7 @@ var myRIA = function() {
 //			myControl.util.dump(" -> window.onpopstate: "+typeof window.onpopstate);
 //			myControl.util.dump(" -> window.history.pushState: "+typeof window.history.pushState);
 //This will create the arrays for the template[templateID].onCompletes and onInits
-			myControl.ext.myRIA.util.createTemplateFunctions(); //should happen early so that the myRIA.template object exists, specifically for acApp.u.appInitComplete
+			myControl.ext.myRIA.util.createTemplateFunctions(); //should happen early so that the myRIA.template object exists, specifically for app.u.appInitComplete
 				
 //attach an event to the window that will execute code on 'back' some history has been added to the history.
 //if ?debug=anything is on URI, show all elements with a class of debug.
@@ -89,9 +89,9 @@ if(typeof window.onpopstate == 'object')	{
 else if ("onhashchange" in window)	{ // does the browser support the hashchange event?
 		_ignoreHashChange = false; //global var. when hash is changed from JS, set to true. see handleHashState for more info on this.
 		window.onhashchange = function () {
-			myControl.ext.myRIA.util.handleHashState();
-			}
+		myControl.ext.myRIA.util.handleHashState();
 		}
+	}
 else	{
 	// wow. upgrade your browser. should only get here if older than:
 	// Google Chrome 5, Safari 5, Opera 10.60, Firefox 3.6 and Internet Explorer 8 
@@ -104,12 +104,12 @@ else	{
 //get list of categories and append to DOM IF parent id exists
 				myControl.ext.store_navcats.calls.appCategoryList.init({"callback":"showRootCategories","extension":"myRIA"},'passive'); 
 				myControl.ext.store_navcats.calls.appCategoryDetailMax.init('.',{},'passive'); //have this handy.
-				if(acApp && acApp.u && typeof acApp.u.appInitComplete == 'function'){acApp.u.appInitComplete()}; //gets run prior to any page content so that it can be used to add renderformats of template functions.
+				if(app && app.u && typeof app.u.appInitComplete == 'function'){app.u.appInitComplete()}; //gets run prior to any page content so that it can be used to add renderformats of template functions.
 
 				var page = myControl.ext.myRIA.util.handleAppInit({"skipClearMessaging":true}); //checks url and will load appropriate page content. returns object {pageType,pageInfo}
 
 //get some info to have handy for when needed (cart, profile, etc)
-				myControl.calls.appProfileInfo.init(myControl.vars.profile,{'callback':'showLogo','extension':'myRIA'},'passive');
+				myControl.calls.appProfileInfo.init(myControl.vars.profile,{},'passive');
 
 				if(page.pageType == 'cart' || page.pageType == 'checkout')	{
 //if the page type is determined to be the cart or checkout onload, no need to request cart data. It'll be requested as part of showContent
@@ -135,9 +135,6 @@ myControl.ext.store_checkout.checkoutCompletes.push(function(P){
 				
 				$('.disableAtStart').removeAttr('disabled').removeAttr('disableAtStart'); //set disabledAtStart on elements that should be disabled prior to init completing.
 
-				},
-			onError : function(d)	{
-				$('#globalMessaging').append(myControl.util.getResponseErrors(d)).toggle(true);
 				}
 			}, //startMyProgram 
 
@@ -169,30 +166,8 @@ myControl.ext.store_checkout.checkoutCompletes.push(function(P){
 					}
 				myControl.ext.store_navcats.util.getChildDataOf('.',tagObj,'appCategoryDetailMax');  //generate nav for 'browse'. doing a 'max' because the page will use that anway.
 				myControl.model.dispatchThis();
-				},
-			onError : function(responseData,uuid)	{
-				myControl.util.handleErrors(responseData,uuid)
 				}
 			}, //showRootCategories
-
-
-//optional callback on getProfile which will display the logo in any element with a class of .logo
-// ### smarten this up so that it looks at img w/ logo class and grabs dimensions as needed. !!! test this.
-		showLogo :	{
-			onSuccess : function(tagObj)	{
-				if(myControl.data[tagObj.datapointer]['zoovy:logo_website'])	{
-					$('.logo').each(function(){
-						var $logo = $(this);
-						$logo.attr('src',myControl.util.makeImage({"name":myControl.data[tagObj.datapointer]['zoovy:logo_website'],"w":$logo.width(),"h":$logo.height(),"b":"TTTTTT","tag":0}));
-						});
-					}
-
-				},
-			onError : function(responseData,uuid)	{
-				myControl.util.dump('BEGIN myControl.ext.myRIA.callbacks.showLogo.onError');
-				myControl.util.handleErrors(responseData,uuid)
-				}
-			}, //itemAddedToCart
 
 //used for callback on showCartInModal function
 //
@@ -203,22 +178,14 @@ myControl.ext.store_checkout.checkoutCompletes.push(function(P){
 				myControl.renderFunctions.translateTemplate(myControl.data[tagObj.datapointer].cart,tagObj.parentID);				
 				tagObj.state = 'onCompletes'; //needed for handleTemplateFunctions.
 				myControl.ext.myRIA.util.handleTemplateFunctions(tagObj);
-				},
-			onError : function(responseData,uuid)	{
-				myControl.util.handleErrors(responseData,uuid)
 				}
 			}, //updateMCLineItems
-
-
 
 //used in init.
 		updateMCLineItems : 	{
 			onSuccess : function(tagObj)	{
 //				myControl.util.dump("BEGIN myRIA.callbacks.updateMCLineItems");
 				myControl.ext.myRIA.util.handleMinicartUpdate(tagObj);
-				},
-			onError : function(responseData,uuid)	{
-				myControl.util.handleErrors(responseData,uuid)
 				}
 			}, //updateMCLineItems
 
@@ -244,19 +211,16 @@ myControl.ext.store_checkout.checkoutCompletes.push(function(P){
 			onError : function(responseData,uuid)	{
 //				myControl.util.dump(responseData);
 				$('#mainContentArea').empty();
-				myControl.util.handleErrors(responseData,uuid)
+				myControl.util.throwMessage(responseData);
 				}
 			}, //showProd 
 
 
 		showCompany : 	{
 			onSuccess : function(tagObj)	{
-//				myControl.util.dump("BEGIN myRIA.callbacks.showCompany");
-//				myControl.util.dump(tagObj);
 				myControl.renderFunctions.translateTemplate(myControl.data[tagObj.datapointer],tagObj.parentID);
 				myControl.ext.myRIA.util.bindNav('#companyNav a');
 				myControl.ext.myRIA.util.showArticle(tagObj.infoObj);
-				
 				if(!tagObj.infoObj.templateID)	{
 					if(tagObj.infoObj.templateID){} //use existing value
 					else if(tagObj.templateID)	{tagObj.infoObj.templateID = 'companyTemplate'}
@@ -264,10 +228,6 @@ myControl.ext.store_checkout.checkoutCompletes.push(function(P){
 					}
 				tagObj.infoObj.state = 'onCompletes';
 				myControl.ext.myRIA.util.handleTemplateFunctions(tagObj.infoObj);				
-				
-				},
-			onError : function(responseData,uuid)	{
-				myControl.util.handleErrors(responseData,uuid)
 				}
 			}, //showProd 
 
@@ -287,7 +247,7 @@ myControl.ext.store_checkout.checkoutCompletes.push(function(P){
 				},
 			onError : function(responseData,uuid)	{
 				var $parent = $('#'+tagObj.parentID);
-				$('.changeLog',$parent).append(myControl.util.getResponseErrors(responseData))
+				$('.changeLog',$parent).append(myControl.util.formatResponseErrors(responseData))
 				$('button',$parent).removeAttr('disabled').removeClass('ui-state-disabled');
 				}
 			}, //showProd 
@@ -368,9 +328,6 @@ myControl.ext.store_checkout.checkoutCompletes.push(function(P){
 							}
 						})
 					}
-				},
-			onError : function(responseData,uuid)	{
-				myControl.util.handleErrors(responseData,uuid)
 				}
 			}, //showAddresses
 
@@ -391,9 +348,6 @@ myControl.ext.store_checkout.checkoutCompletes.push(function(P){
 //used as part of showContent for the home and category pages.
 		showPageContent : {
 			onSuccess : function(tagObj)	{
-//				myControl.util.dump("myRIA.callbacks.showPageContent.onSuccess");
-//				myControl.util.dump(tagObj);
-//				myControl.util.dump(" safeID: "+tagObj.navcat);
 //when translating a template, only 1 dataset can be passed in, so detail and page are merged and passed in together.
 				var tmp = {};
 				if(tagObj.navcat)	{
@@ -410,7 +364,6 @@ myControl.ext.store_checkout.checkoutCompletes.push(function(P){
 				else if(tagObj.pid)	{
 // the bulk of the product translation has already occured by now (attribs, reviews and session) via callbacks.showProd.
 // product lists are being handled through 'buildProductList'.
-//					myControl.util.dump(tmp);
 					}
 				var L = tagObj.searchArray.length;
 				var $parent;
@@ -421,9 +374,9 @@ myControl.ext.store_checkout.checkoutCompletes.push(function(P){
 				tagObj.state = 'onCompletes'; //needed for handleTemplateFunctions.
 				myControl.ext.myRIA.util.handleTemplateFunctions(tagObj);
 				},
-			onError : function(d)	{
-				myControl.util.dump("myRIA.callbacks.showPageContent.onError");
-				$('#mainContentArea').removeClass('loadingBG').append(myControl.util.getResponseErrors(d)).toggle(true);
+			onError : function(responseData,uuid)	{
+				$('#mainContentArea').removeClass('loadingBG')
+				myControl.util.throwMessage(responseData);
 				}
 			}, //showPageContent
 
@@ -444,9 +397,6 @@ myControl.ext.store_checkout.checkoutCompletes.push(function(P){
 					myControl.ext.store_prodlist.util.buildProductList({"templateID":"productListTemplate","withInventory":1,"withVariations":1,"parentID":tagObj.parentID,"csv":prods})
 					myControl.model.dispatchThis();
 					}
-				},
-			onError : function(responseData,uuid)	{
-				myControl.util.handleErrors(responseData,uuid)
 				}
 			}, //showList
 
@@ -463,47 +413,19 @@ myControl.ext.store_checkout.checkoutCompletes.push(function(P){
 					myControl.ext.store_prodlist.util.buildProductList({"templateID":tagObj.templateID,"parentID":tagObj.targetID,"csv":myControl.data[tagObj.datapointer]['@products']})
 					myControl.model.dispatchThis();
 					}
-				},
-			onError : function(responseData,uuid)	{
-				myControl.util.handleErrors(responseData,uuid)
 				}
 			}, //showList
-
-		authenticateThirdParty : {
-			onSuccess : function(tagObj)	{
-				
-				},
-			onError : function(responseData)	{
-				myControl.util.dump('BEGIN myControl.callbacks.authenticateThirdParty.onError');
-				$('#globalMessaging').append(myControl.util.getResponseErrors(responseData)).toggle(true);
-//_gaq.push(['_trackEvent','Authentication','User Event','Authentication for third party failed']);
-				}
-			}, //authenticateThirdParty
-
-
-
 		authenticateZoovyUser : {
 			onSuccess : function(tagObj)	{
-//				myControl.util.dump('BEGIN myRIA.callbacks.authenticateZoovyUser.onSuccess');
-//successful login.	
 				myControl.vars.cid = myControl.data[tagObj.datapointer].cid; //save to a quickly referencable location.
 				$('#loginSuccessContainer').show(); //contains 'continue' button.
 				$('#loginMessaging').empty().show().append("Thank you, you are now logged in."); //used for success and fail messaging.
 				$('#loginFormContainer').hide(); //contains actual form.
 				$('#recoverPasswordContainer').hide(); //contains password recovery form.
-
-				
-//_gaq.push(['_trackEvent','Authentication','User Event','Logged in through Store']);
-				},
-			onError : function(responseData,uuid)	{
-//				myControl.util.dump('BEGIN myControl.ext.convertSessionToOrder.callbacks.authenticateZoovyUser.onError');
-				$("#loginMessaging").append(myControl.util.getResponseErrors(responseData)).toggle(true)
-//_gaq.push(['_trackEvent','Authentication','User Event','Log in as Zoovy user attempt failed']);
-				}	
+				}
 			} //authenticateZoovyUser
 
 		}, //callbacks
-
 
 
 
@@ -532,12 +454,7 @@ need to be customized on a per-ria basis.
 
 
 
-
-
 ////////////////////////////////////   RENDERFORMATS    \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-
-
 
 
 
@@ -636,12 +553,7 @@ fallback is to just output the value.
 					}
 				if(!myControl.util.isSet(obj.IMG))	{$tag.remove()} //if the image isn't set, don't show the banner. if a banner is set, then unset, val may = ALT=&IMG=&LINK=
  				else	{
-//					myControl.util.dump(" -> banner hash: "+hash);
-//					myControl.util.dump(" -> banner pageInfo: ");
-//					myControl.util.dump(pageInfo);
 //if we don't have a valid pageInfo object AND a valid hash, then we'll default to what's in the obj.LINK value.
-
-				
 					$tag.attr('alt',obj.ALT);
 //if the link isn't set, no href is added. This is better because no 'pointer' is then on the image which isn't linked.
 					if(obj.LINK)	{
@@ -661,8 +573,6 @@ fallback is to just output the value.
 				
 //could be used for some legacy upgrades that used the old textbox/image element combo to create a banner.
 			legacyURLToRIA : function($tag,data)	{
-//				myControl.util.dump("BEGIN control.renderFormats.legacyURLToRIA");
-//				myControl.util.dump(" -> data.value: "+data.value);
 				if(data.value == '#')	{
 					$tag.removeClass('pointer');
 					}
@@ -1043,7 +953,8 @@ for legacy browsers. That means old browsers will use the anchor to retain 'back
 					r.navcat = '.'; //left with category.safe.id or category.safe.id/
 					}
 				else if(url.indexOf('quickstart.html') > -1)	{
-					$('#globalMessaging').append(myControl.util.formatMessage("Rename this file as index.html to decrease the likelyhood of accidentally saving over it."));
+					myControl.util.throwMessage('Rename this file as index.html to decrease the likelyhood of accidentally saving over it.');
+					myControl.ext.myRIA.util.changeCursor('auto'); //restore cursor.
 					}
 //the url in the domain may or may not have a slash at the end. Check for both
 				else if(url == zGlobals.appSettings.http_app_url || url+"/" == zGlobals.appSettings.http_app_url)	{
@@ -2006,8 +1917,7 @@ return r;
 				$('.cartTotal').text(myControl.util.formatMoney(total,'$',2,false));
 
 				},
-			
-			
+
 			createTemplateFunctions : function()	{
 
 				myControl.ext.myRIA.template = {};

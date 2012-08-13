@@ -178,7 +178,9 @@ The advantage of saving the data in memory and local storage is lost if the data
 				myControl.util.dump('BEGIN myControl.ext.store_prodlist.callbacks.init.onError');
 				}
 			},
-
+/*
+A special translate template for product so that reviews can be merged into the data passed into the template rendering engine.
+*/
 		translateTemplate : {
 			onSuccess : function(tagObj)	{
 //				myControl.util.dump("BEGIN myControl.ext.store_prodlist.callbacks.translateTemplate.onSuccess");
@@ -194,11 +196,9 @@ The advantage of saving the data in memory and local storage is lost if the data
 					tmp['reviews']['@reviews'] = myControl.data['appReviewsList|'+pid]['@reviews']
 					}
 				myControl.renderFunctions.translateTemplate(myControl.data[tagObj.datapointer],tagObj.parentID);
-				},
-			onError : function(responseData,uuid)	{
-				myControl.util.handleErrors(responseData,uuid)
 				}
 			},
+
 //put an array of sku's into memory for quick access. This array is what is used in filterProdlist to remove items from the forgetme list.
 		handleForgetmeList : {
 			onSuccess : function(tagObj)	{
@@ -207,9 +207,6 @@ The advantage of saving the data in memory and local storage is lost if the data
 				for(i = 0; i < L; i += 1)	{
 					myControl.ext.store_prodlist.vars.forgetmeContainer.csv.push(myControl.data['getCustomerList|forgetme']['@forgetme'][i].SKU)
 					}
-				},
-			onError : function(responseData,uuid)	{
-				myControl.util.handleErrors(responseData,uuid)
 				}
 			}
 

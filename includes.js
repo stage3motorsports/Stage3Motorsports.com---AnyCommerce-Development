@@ -1057,7 +1057,7 @@ this was necessary because otherwise the converted html was output as <a href...
 					
 
 					case ":popup" :
-						myControl.util.dump(":popup suffix: "+suffix);
+//						myControl.util.dump(":popup suffix: "+suffix);
 						if(linkCmdPointer && !$.isEmptyObject(myControl.ext[linkCmdPointer].wiki) && typeof myControl.ext[linkCmdPointer].wiki[":popup"] == 'function')
 							output = myControl.ext[linkCmdPointer].wiki[":popup"](suffix,phrase)
 						else

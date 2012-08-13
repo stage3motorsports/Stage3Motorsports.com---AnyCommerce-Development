@@ -270,7 +270,7 @@ _gaq.push(['_trackEvent','Checkout','App Event','Attempting to create order']);
 				},
 			onError : function(responseData,uuid)	{
 				$('#chkoutPlaceOrderBtn').removeAttr('disabled').removeClass('ui-state-disabled'); // re-enable checkout button on checkout page.
-				myControl.util.handleErrors(responseData,uuid);
+				myControl.util.throwMessage(responseData,uuid);
 				}
 			},
 
@@ -281,7 +281,7 @@ _gaq.push(['_trackEvent','Checkout','App Event','Attempting to create order']);
 				},
 			onError : function(responseData,uuid)	{
 				$('#chkoutPlaceOrderBtn').removeAttr('disabled').removeClass('ui-state-disabled'); // re-enable checkout button on cart page.
-				myControl.util.handleErrors(responseData,uuid);
+				myControl.util.throwMessage(responseData,uuid);
 				}
 			},
 
@@ -292,7 +292,7 @@ _gaq.push(['_trackEvent','Checkout','App Event','Attempting to create order']);
 //do NOT execute handlePaypalFormManipulation here. It's run in panel view.
 				},
 			onError : function(responseData,uuid)	{
-				myControl.util.handleErrors(responseData,uuid);
+				myControl.util.throwMessage(responseData,uuid);
 //nuke vars so user MUST go thru paypal again or choose another method.
 //nuke local copy right away too so that any cart logic executed prior to dispatch completing is up to date.
 				myControl.data.cartItemsList.cart['payment-pt'] = null;
@@ -337,11 +337,11 @@ _gaq.push(['_trackEvent','Checkout','App Event','Cart updated - inventory adjust
 					return r;
 					
 					},
-				onError : function(d)	{
+				onError : function(responseData,uuid)	{
 					myControl.util.dump('BEGIN myControl.ext.convertSessionToOrder.callbacks.handleInventoryUpdate.onError - ERROR!');
 					myControl.ext.convertSessionToOrder.panelContent.paymentOptions();
 //global errors are emptied when 'complete order' is pushed, so do not empty in the responses or any other errors will be lost.
-					$('#globalMessaging').append(myControl.util.getResponseErrors(d)).toggle(true);
+					myControl.util.throwMessage(responseData,uuid);
 					}
 				},	//handleInventoryUpdate
 
@@ -372,7 +372,8 @@ _gaq.push(['_trackEvent','Checkout','App Event','Server side validation passed']
 				$('#chkoutPlaceOrderBtn').removeAttr('disabled').removeClass('ui-state-disabled loadingButtonBg'); //make place order button appear and be clickable.
 				responseData['_rtag'] = $.isEmptyObject(responseData['_rtag']) ? {} : responseData['_rtag'];
 				responseData['_rtag'].targetID = 'chkoutSummaryErrors';
-				myControl.ext.store_checkout.util.showServerErrors(responseData,uuid);
+				myControl.util.throwMessage(responseData,uuid);
+//				myControl.ext.store_checkout.util.showServerErrors(responseData,uuid); //sends error messages to div b
 				
 _gaq.push(['_trackEvent','Checkout','App Event','Server side validation failed']);
 

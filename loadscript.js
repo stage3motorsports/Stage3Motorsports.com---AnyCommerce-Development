@@ -1,9 +1,8 @@
-acApp.u = {};
-
+app.u = {};
 
 //http://www.nczonline.net/blog/2009/07/28/the-best-way-to-load-external-javascript/
-acApp.u.loadScript = function(url, callback){
-	acApp.u.dump("load script: "+url)
+app.u.loadScript = function(url, callback){
+//	app.u.dump("load script: "+url);
     var script = document.createElement("script")
     script.type = "text/javascript";
 
@@ -29,7 +28,7 @@ acApp.u.loadScript = function(url, callback){
 
 
 // a function for dumping to the console. It is present in this first loading script because it is used as a diagnostic tool so frequently.
-acApp.u.dump = function(msg)	{
+app.u.dump = function(msg)	{
 //if the console isn't open, an error occurs, so check to make sure it's defined. If not, do nothing.
 	if(typeof console != 'undefined')	{
 		if(typeof console.dir == 'function' && typeof msg == 'object')	{

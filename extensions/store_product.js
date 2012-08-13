@@ -155,18 +155,26 @@ var store_product = function() {
 				myControl.util.dump('BEGIN myControl.ext.store_product.callbacks.init.onError');
 				}
 			}, //init
-			
+
+/*
+for this call, if parentID isn't set, the messaging is defaulted to a pid specific id (for use in both lists and/or product detail page).
+a parentID being passed may indicate the messaging is being throw to a minicart or cart modal
+*/
+
 		itemAddedToCart :	{
 			onSuccess : function(tagObj)	{
 //				myControl.util.dump('BEGIN myControl.ext.store_product.callbacks.itemAddedToCart.onSuccess');
 				$('.addToCartButton').removeAttr('disabled').removeClass('disabled').removeClass('ui-state-disabled'); //makes atc button clickable again.
-				$('#atcMessaging_'+myControl.data[tagObj.datapointer].product1).append(myControl.util.formatMessage({'message':'Item(s) added to the cart!','uiIcon':'check'}))
+				var msgObj = myControl.util.successMsgObject('Item(s) added to the cart!');
+				msgObj.parentID = (tagObj.parentID) ? tagObj.parentID : 'atcMessaging_'+myControl.data[tagObj.datapointer].product1
+				myControl.util.throwMessage(msgObj);
 				},
 			onError : function(responseData,uuid)	{
 				myControl.util.dump('BEGIN myControl.ext.myRIA.callbacks.itemAddedToCart.onError');
 //				myControl.util.dump(responseData);
 				$('.addToCartButton').removeAttr('disabled').removeClass('disabled').removeClass('ui-state-disabled'); //remove the disabling so users can push the button again, if need be.
-				$('#atcMessaging_'+responseData.product1).append(myControl.util.getResponseErrors(responseData))
+				if(responseData.tagObj && !responseData.tagObj.parentID)	{responseData.tagObj.parentID = 'atcMessaging_'+myControl.data[tagObj.datapointer].product1}
+				myControl.util.throwMessage(responseData);
 				}
 			} //itemAddedToCart
 
@@ -255,13 +263,17 @@ addToCart : function (pid){
 	//if errors occured, report them.
 		 if(valid == false)	{
 //			myControl.util.dump(errors);
-			$('#JSONpogErrors_'+pid).append(myControl.util.formatMessage("Uh oh! Looks like you left something out. Please make the following selection(s):<ul>"+errors+"<\/ul>"));
+			var errObj = myControl.util.youErrObject("Uh oh! Looks like you left something out. Please make the following selection(s):<ul>"+errors+"<\/ul>",'42');
+			errObj.parentID = 'JSONpogErrors_'+pid
+			myControl.util.throwMessage(errObj);
 			}
 	//if all options are selected AND checkinventory is on, do inventory check.
 		else if(valid == true && typeof zGlobals == 'object' && zGlobals.globalSettings.inv_mode > 1)	{
 	//		alert(thisSTID);
 			if(!$.isEmptyObject(myControl.data['appProductGet|'+pid]['@inventory']) && !$.isEmptyObject(myControl.data['appProductGet|'+pid]['@inventory'][thisSTID]) && myControl.data['appProductGet|'+pid]['@inventory'][thisSTID]['inv'] < 1)	{
-				$('#JSONpogErrors_'+pid).append(myControl.util.formatMessage("We're sorry, but the combination of selections you've made is not available. Try changing one of the following:<ul>"+inventorySogPrompts+"<\/ul>"));
+				var errObj = myControl.util.youErrObject("We're sorry, but the combination of selections you've made is not available. Try changing one of the following:<ul>"+inventorySogPrompts+"<\/ul>",'42');
+				errObj.parentID = 'JSONpogErrors_'+pid
+				myControl.util.throwMessage(errObj);
 				valid = false;
 				}
 	
