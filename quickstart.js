@@ -73,7 +73,7 @@ var myRIA = function() {
 //			myControl.util.dump(" -> window.onpopstate: "+typeof window.onpopstate);
 //			myControl.util.dump(" -> window.history.pushState: "+typeof window.history.pushState);
 //This will create the arrays for the template[templateID].onCompletes and onInits
-			myControl.ext.myRIA.util.createTemplateFunctions(); //should happen early so that the myRIA.template object exists, specifically for app.u.appInitComplete
+			myControl.ext.myRIA.util.createTemplateFunctions(); //should happen early so that the myRIA.template object exists, specifically for app.util..appInitComplete
 				
 //attach an event to the window that will execute code on 'back' some history has been added to the history.
 //if ?debug=anything is on URI, show all elements with a class of debug.
@@ -104,7 +104,7 @@ else	{
 //get list of categories and append to DOM IF parent id exists
 				myControl.ext.store_navcats.calls.appCategoryList.init({"callback":"showRootCategories","extension":"myRIA"},'passive'); 
 				myControl.ext.store_navcats.calls.appCategoryDetailMax.init('.',{},'passive'); //have this handy.
-				if(app && app.u && typeof app.u.appInitComplete == 'function'){app.u.appInitComplete()}; //gets run prior to any page content so that it can be used to add renderformats of template functions.
+				if(app && app.util && typeof app.util.appInitComplete == 'function'){app.util.appInitComplete()}; //gets run prior to any page content so that it can be used to add renderformats of template functions.
 
 				var page = myControl.ext.myRIA.util.handleAppInit({"skipClearMessaging":true}); //checks url and will load appropriate page content. returns object {pageType,pageInfo}
 

@@ -33,14 +33,15 @@ var zController = function(params,extensions) {
 		this.initialize(params,extensions);
 		}
 	}
-	
+
 jQuery.extend(zController.prototype, {
 	
 	initialize: function(P,E) {
 		myControl = this;
+//		myControl = $.extend(true,P,this); //deep extend to make sure nexted functions are preserved. If duplicates, 'this' will override P.
 		myControl.model = zoovyModel(); // will return model as object. so references are myControl.model.dispatchThis et all.
 		window.ieBlows = myControl.model.ieBlows; //global reference to JSONP callback function. a global is used to keep the url as short as possible for thejsonp req.
-		myControl.vars = {};
+		myControl.vars = myControl.vars || {};
 		myControl.vars['_admin'] = null; //set to null. could get overwritten in 'P' or as part of appAdminInit.
 		myControl.vars.platform = P.platform ? P.platform : 'webapp'; //webapp, ios, android
 		myControl.vars.cid = null; //gets set on login. ??? I'm sure there's a reason why this is being saved outside the normal  object. Figure it out and document it.
@@ -64,17 +65,13 @@ jQuery.extend(zController.prototype, {
 		myControl.vars.release = 'unspecified'; //will get overridden if set in P. this is defualt.
 
 //set after individual defaults so that what is passed in can override. Should give priority to vars set in P.
-		myControl.vars = jQuery.extend(myControl.vars,P);
+//		myControl.vars = jQuery.extend(myControl.vars,P);
 
 // += is used so that this is appended to anything passed in P.
 		myControl.vars.passInDispatchV += 'browser:'+myControl.util.getBrowserInfo()+";OS:"+myControl.util.getOSInfo()+';'; //passed in model as part of dispatch Version. can be app specific.
 		
 		myControl.ext = {}; //for holding extensions, including checkout.
 		myControl.data = {}; //used to hold all data retrieved from ajax requests.
-		
-/* some diagnostic reporting info */
-		myControl.util.dump(' -> v: '+myControl.model.version+'.'+myControl.vars.release);
-//		myControl.util.dump(' -> myControl.vars.passInDispatchV: '+myControl.vars.passInDispatchV)
 		
 /*
 myControl.templates holds a copy of each of the templates declared in an extension but defined in the view.
@@ -86,19 +83,17 @@ copying the template into memory was done for two reasons:
 		myControl.templates = {};
 
 		myControl.q = {};
-//queues are arrays, not objects, because order matters here.
-		myControl.q.mutable = new Array();  //used to store mutable ajax requests. an immutable dispatch will cancel all these.
-		myControl.q.passive = new Array();  //used to store immutable dispatches. when dispatched, will cancel all immutable requests. immutable requests can't, by default, be cancelled.
-		myControl.q.immutable = new Array();  //used to store all immutable ajax requests (for checkout). referred to as PDQ in comments.
+//queues are arrays, not objects, because order matters here. the model.js file outlines what each of these is used for.
+		myControl.q = {mutable : new Array(), passive: new Array(), immutable : new Array()};
 
+		myControl.ajax = {
+			dataType : myControl.model.whatAjaxDataType2Use(),
+			overrideAttempts : 0, //incremented when an override occurs. allows for a cease after X attempts.
+			lastDispatch : null, //timestamp.
+			numRequestsPerPipe : 50,
+			requests : {"mutable":{},"immutable":{},"passive":{}} //'holds' each ajax request. completed requests are removed.
+			}; //holds ajax related vars.
 
-		myControl.ajax = {}; //holds ajax related vars.
-		myControl.ajax.dataType = myControl.model.whatAjaxDataType2Use();
-//		myControl.util.dump("HEY JT - you have hard coded datatype to JSONP. don't forget to change this back.");
-		myControl.ajax.overrideAttempts = 0; //incremented when an override occurs. allows for a cease after X attempts.
-		myControl.ajax.lastDispatch = null; //timestamp.
-		myControl.ajax.numRequestsPerPipe = 50;
-		myControl.ajax.requests = {"mutable":{},"immutable":{},"passive":{}}; //'holds' each ajax request. completed requests are removed.
 		myControl.sessionId = false;
 		myControl.vars.extensions = E;
 /*
@@ -106,15 +101,17 @@ copying the template into memory was done for two reasons:
 session ID can be passed in via the params (for use in one page checkout on a non-ajax storefront). If one is passed, it must be validated as active session.
 if no session id is passed, the getValidSessionID function will look to see if one is in local storage and use it or request a new one.
 Exception - the controller is used for admin sessions too. if an admin session is being instantiated, forget about session id (zjsid) for now.
+
+A session ID could be passed in through vars, but myControl.sessionId isn't set until the session id has been verified OR the app is explicitly told to not validate the session.
 */
-		if(P.noVerifyzjsid && P.sessionId)	{
+		if(myControl.vars.noVerifyzjsid && myControl.vars.sessionId)	{
 //you'd get here in the UI.
-			myControl.sessionId = P.sessionId
+			myControl.sessionId = myControl.vars.sessionId
 			}
-		else if(P.noVerifyzjsid)	{
+		else if(myControl.vars.noVerifyzjsid)	{
 			//for now, do nothing.  this may change later.
 			}
-		else if(P.sessionId)	{
+		else if(myControl.vars.sessionId)	{
 			myControl.calls.appCartExists.init(P.sessionId,{'callback':'handleTrySession','datapointer':'appCartExists'});
 			myControl.model.dispatchThis('immutable');
 			}

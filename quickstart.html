@@ -13,21 +13,20 @@
 
 <script type="text/javascript">
 var _gaq = _gaq || {'push':function(){}} //here for testing. replace with actual GA code or delete at deployment.
-var myControl;
-var myCreole;
+var myCreole,myControl;
 
-var app = {};
-app.v = {
+var app = {vars:{
 	"release":"20120813102400",  //increment this with each change. should solve caching issues. format: YYYYMMDDHHMMSS
 	"baseURL":"",
 	"httpsURL":"https://ssl.zoovy.com/s=www.sporks.zoovy.com/",
 	"httpURL":"http://www.sporks.zoovy.com/"
-	};
+	},util:{}};
+
 //set base url so images, css, js, etc all load from appropriate location once deployed.
 //baseURL as blank lets loadScript function run off local copy when testing locally.
 if(document.location.protocol != 'file:')	{
-	app.v.baseURL  = "https:" == document.location.protocol ? app.v.httpsURL : app.v.httpURL; 
-	document.getElementsByTagName('base')[0].href = app.v.baseURL;
+	app.vars.baseURL  = "https:" == document.location.protocol ? app.vars.httpsURL : app.vars.httpURL; 
+	document.getElementsByTagName('base')[0].href = app.vars.baseURL;
 	}
 </script>
 
@@ -35,7 +34,7 @@ if(document.location.protocol != 'file:')	{
 <script type="text/javascript" src="loadscript.js"></script><!-- rename this to bootstrap -->
 
 <script type="text/javascript">
-app.u.loadScript(app.v.baseURL+"init.js");
+app.util.loadScript(app.vars.baseURL+"init.js");
 </script>
 </head>
 
