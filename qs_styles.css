@@ -104,11 +104,15 @@ and offMenu is toggle off, hiding the change button.
 /****** APP specific styles ******/
 
 
-/* error handling css. some error css is defined in the jqueryui styles */
+/* messaging css. some error css is defined in the jqueryui styles */
 .appMessage	{margin-bottom:3px;}
-.appMessage .ui-icon	{float:left; margin:auto 5px;}
+.appMessage .ui-icon	{float:left; margin:4px 5px;}
 .appMessage {padding:5px;} /* add padding to children, not parent, that way we can empty the parent and no space is reserved */
 .appMessage ul	{margin-left:12px; font-size:.9em;}
+
+.ui-state-success	{border:1px solid #aecdae; background:#dff6df; color:#333333;}
+.ui-state-warning	{border:1px solid #f58d48; background:#ffdfc9; color:#333333;}
+
 
 /* used in order history and faq (possibly other places) in a format similar to an accordian, but more than one panel can be open. */
 .appAccordianesque .ui-accordion-header {padding:3px 24px;}

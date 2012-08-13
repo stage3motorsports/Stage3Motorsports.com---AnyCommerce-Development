@@ -380,6 +380,7 @@ addToCart : function (pid){
 					$tag.hide().addClass('displayNone'); //hide input if item is not purchaseable.
 				},
 
+
 //add all the necessary fields for quantity inputs.
 			atcFixedQuantity : function($tag,data)	{
 				$tag.attr('id','quantity_'+data.value);
@@ -390,7 +391,7 @@ addToCart : function (pid){
 
 
 // in this case, we aren't modifying an attribute of $tag, we're appending to it. a lot.
-//this code requires the variations.js file.
+//this code requires the includes.js file.
 //it loops through the products options and adds them to the fieldset (or whatever $tag is, but a fieldset is a good idea).
 			atcVariations : function($tag,data)	{
 //				myControl.util.dump("BEGIN store_product.renderFormats.atcVariations");

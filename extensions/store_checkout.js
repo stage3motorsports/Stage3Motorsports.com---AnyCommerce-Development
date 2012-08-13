@@ -326,8 +326,8 @@ _gaq.push(['_trackEvent','Checkout','App Event','Attempting to create order']);
 							}
 						r += "<\/ul><\/div>";
 						
-						
-						$('#globalMessaging').toggle(true).append(myControl.util.formatMessage({'message':r,'uiIcon':'alert'}));
+						myControl.util.throwMessage(myControl.util.youErrObject(r));
+//						$('#globalMessaging').toggle(true).append(myControl.util.formatMessage({'message':r,'uiIcon':'alert'}));
 
 						}
 

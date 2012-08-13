@@ -1,4 +1,4 @@
-
+var app = app || {v:{},u:{}}; //make sure app exists.
 
 
 
@@ -147,7 +147,7 @@ app.u.initMVC = function(attempts){
 	if(includesAreDone == true && jQuery)	{
 		$.support.cors = true;  //cross site scripting for non cors sites. will b needed for IE10. IE8 & 9 don't support xss well.
 		myControl = new zController({
-			"release":"20120809090000" //increment this with each change. should solve caching issues.
+			"release":app.v.release
 			},app.v.extensions);  //instantiate controller. handles all logic and communication between model and view.
 
 		//instantiate wiki parser.

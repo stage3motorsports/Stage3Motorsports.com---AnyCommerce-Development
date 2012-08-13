@@ -12,8 +12,13 @@
 
 
 <script type="text/javascript">
+var _gaq = _gaq || {'push':function(){}} //here for testing. replace with actual GA code or delete at deployment.
+var myControl;
+var myCreole;
+
 var app = {};
 app.v = {
+	"release":"20120813102400",  //increment this with each change. should solve caching issues. format: YYYYMMDDHHMMSS
 	"baseURL":"",
 	"httpsURL":"https://ssl.zoovy.com/s=www.sporks.zoovy.com/",
 	"httpURL":"http://www.sporks.zoovy.com/"
@@ -30,13 +35,7 @@ if(document.location.protocol != 'file:')	{
 <script type="text/javascript" src="loadscript.js"></script><!-- rename this to bootstrap -->
 
 <script type="text/javascript">
-
-var _gaq = {'push':function(){}} //here for testing. replace with actual GA code or delete at deployment.
-var myControl;
-var myCreole;
-
 app.u.loadScript(app.v.baseURL+"init.js");
-
 </script>
 </head>
 

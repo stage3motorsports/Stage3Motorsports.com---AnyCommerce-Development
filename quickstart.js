@@ -144,8 +144,13 @@ myControl.ext.store_checkout.checkoutCompletes.push(function(P){
 			onSuccess : function(tagObj)	{
 //				myControl.util.dump('BEGIN myControl.ext.store_product.callbacks.itemAddedToCart.onSuccess');
 				$('.atcButton').removeAttr('disabled').removeClass('disabled'); //makes all atc buttons clickable again.
-				var htmlid = 'atcMessaging_'+myControl.data[tagObj.datapointer].product1;
-				$('#atcMessaging_'+myControl.data[tagObj.datapointer].product1).append(myControl.util.formatMessage({'message':'Item Added','htmlid':htmlid,'uiIcon':'check','timeoutFunction':"$('#"+htmlid+"').slideUp(1000);"}));
+				
+				var msgObj = myControl.util.successMsgObject('Item Added')
+				msgObj.parentID = 'atcMessaging_'+myControl.data[tagObj.datapointer].product1
+				var htmlid = myControl.util.throwMessage(msgObj);
+				setTimeout(function(){
+					$("#"+htmlid).slideUp(1000);
+					},5000);
 				},
 			onError : function(responseData,uuid)	{
 				myControl.util.dump('BEGIN myControl.ext.myRIA.callbacks.itemAddedToCart.onError');
@@ -589,34 +594,40 @@ fallback is to just output the value.
 //pass in the sku for the bindata.value so that the original data object can be referenced for additional fields.
 // will show price, then if the msrp is MORE than the price, it'll show that and the savings/percentage.
 			priceRetailSavingsDifference : function($tag,data)	{
-			var o; //output generated.
-			var pData = myControl.data['appProductGet|'+data.value]['%attribs'];
-//use original pdata vars for display of price/msrp. use parseInts for savings computation only.
-			var price = Number(pData['zoovy:base_price']);
-			var msrp = Number(pData['zoovy:prod_msrp']);
-			if(price > 0 && (msrp - price > 0))	{
+				var o; //output generated.
+				var pData = myControl.data['appProductGet|'+data.value]['%attribs'];
+	//use original pdata vars for display of price/msrp. use parseInts for savings computation only.
+				var price = Number(pData['zoovy:base_price']);
+				var msrp = Number(pData['zoovy:prod_msrp']);
+				if(price > 0 && (msrp - price > 0))	{
 					o = myControl.util.formatMoney(msrp-price,'$',2,true)
-				}
-			$tag.append(o);
-			}, //priceRetailSavings		
+					$tag.append(o);
+					}
+				else	{
+					$tag.hide(); //is msrp > price, don't show savings because it'll be negative.
+					}
+				}, //priceRetailSavings		
 
 
 //pass in the sku for the bindata.value so that the original data object can be referenced for additional fields.
 // will show price, then if the msrp is MORE than the price, it'll show that and the savings/percentage.
 			priceRetailSavingsPercentage : function($tag,data)	{
-			var o; //output generated.
-			var pData = myControl.data['appProductGet|'+data.value]['%attribs'];
-//use original pdata vars for display of price/msrp. use parseInts for savings computation only.
-			var price = Number(pData['zoovy:base_price']);
-			var msrp = Number(pData['zoovy:prod_msrp']);
-			if(price > 0 && (msrp - price > 0))	{
-				var savings = (( msrp - price ) / msrp) * 100;
-				o = savings.toFixed(0)+'%';
-				}
-			$tag.append(o);
-			} //priceRetailSavings	
+				var o; //output generated.
+				var pData = myControl.data['appProductGet|'+data.value]['%attribs'];
+	//use original pdata vars for display of price/msrp. use parseInts for savings computation only.
+				var price = Number(pData['zoovy:base_price']);
+				var msrp = Number(pData['zoovy:prod_msrp']);
+				if(price > 0 && (msrp - price > 0))	{
+					var savings = (( msrp - price ) / msrp) * 100;
+					o = savings.toFixed(0)+'%';
+					$tag.append(o);
+					}
+				else	{
+					$tag.hide(); //is msrp > price, don't show savings because it'll be negative.
+					}
+				} //priceRetailSavings	
 			
-		}, //renderFormats
+			}, //renderFormats
 
 
 
@@ -647,10 +658,7 @@ for legacy browsers. That means old browsers will use the anchor to retain 'back
 				infoObj.back = infoObj.back == 0 ? infoObj.back : -1; //0 is no 'back' action. -1 will add a pushState or hash change.
 				$(".ui-dialog-content").dialog("close"); //close all modal windows.
 
-//				myControl.util.dump(" -> infoObj follows:");
-//				myControl.util.dump(infoObj);
 				infoObj.state = 'onInits'; //needed for handleTemplateFunctions.
-				
 
 				switch(pageType)	{
 
@@ -661,7 +669,6 @@ for legacy browsers. That means old browsers will use the anchor to retain 'back
 							}
 						myControl.ext.myRIA.util.showProd(infoObj);
 						break;
-	
 	
 					case 'homepage':
 						infoObj.pageType = 'homepage';
@@ -753,8 +760,6 @@ for legacy browsers. That means old browsers will use the anchor to retain 'back
 //					myControl.util.dump("adding pushstate");
 //					myControl.util.dump(infoObj);
 				r = myControl.ext.myRIA.util.addPushState(infoObj);
-				$('html, body').animate({scrollTop : 0},200); //new page content loading. scroll to top.
-				
 				
 //r will = true if pushState isn't working (IE or local). so the hash is updated instead.
 //				myControl.util.dump(" -> R: "+r+" and infoObj.back: "+infoObj.back);
@@ -772,6 +777,9 @@ for legacy browsers. That means old browsers will use the anchor to retain 'back
 					$('#appPreView').slideUp(1000,function(){
 						$('#appView').slideDown(3000);
 						});
+					}
+				else	{
+					$('html, body').animate({scrollTop : 0},200); //new page content loading. scroll to top.
 					}
 				
 				return false; //always return false so the default action (href) is cancelled. hashstate will address the change.

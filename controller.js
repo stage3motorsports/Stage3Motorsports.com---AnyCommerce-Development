@@ -539,6 +539,7 @@ myControl.util.handleCallback(tagObj);
 			},
 
 //when sending the user into a waiting pattern, pass true.  This changes the cursor into the browser 'waiting' state
+//don't forget to turn this off when done.
 		handleWait : function (tfu){
 			if(tfu == true)	{
 				$('body').css({'cursor':'wait'})
@@ -568,8 +569,8 @@ returns the id of the message, so that an action can be easily added if needed (
 //			myControl.util.dump("BEGIN myControl.util.throwMessage");
 //			myControl.util.dump(" -> msg follows: "); myControl.util.dump(msg);
 			var $target; //where the app message will be appended.
-			var r = false; //what is returned. set to false if no good error message found. set to htmlID is error found. 
 			var htmlID = "appMessage_"+this.guidGenerator(); //the id added to the container of the message.
+			var r = htmlID; //what is returned. set to false if no good error message found. set to htmlID is error found. 
 			var $container = $("<div \/>").attr({'id':htmlID});
 //make sure the good-ole fallback destination for errors exists and is a modal.
 			var $globalDefault = $('#globalErrorMessaging')
@@ -591,11 +592,10 @@ returns the id of the message, so that an action can be easily added if needed (
 				$container.append(this.formatMessage(msg)).prependTo($target); //always put new messages at the top.
 				}
 			else if(typeof msg === 'object')	{
-				if(typeof msg['_rtag'] == 'object' && msg['_rtag'].parentID && $('#'+msg['_rtag'].parentID).length)	{$target = $('#'+msg['_rtag'].parentID);}
+				if(msg.parentID){$target = $('#'+msg.parentID);}
+				else if(typeof msg['_rtag'] == 'object' && msg['_rtag'].parentID && $('#'+msg['_rtag'].parentID).length)	{$target = $('#'+msg['_rtag'].parentID);}
 				else if(typeof msg['_rtag'] == 'object' && msg['_rtag'].targetID && $('#'+msg['_rtag'].targetID).length)	{$target = $('#'+msg['_rtag'].targetID)}
-				else if($('.appMessaging:visible').length > 0)	{
-					$target = $('.appMessaging');
-					}
+				else if($('.appMessaging:visible').length > 0)	{$target = $('.appMessaging');}
 				else	{
 					$target = $globalDefault;
 					$target.dialog('open');
@@ -604,6 +604,7 @@ returns the id of the message, so that an action can be easily added if needed (
 				}
 			else	{
 				myControl.util.dump("WARNING! - unknown type ["+typeof err+"] set on parameter passed into myControl.util.throwMessage");
+				r = false; //don't return an html id.
 				}
 			return r;
 			},
@@ -683,7 +684,7 @@ pass in additional information for more control, such as css class of 'error' an
 //the zMessage class is added so that these warning can be cleared (either universally or within a selector).
 			var r = "<div class='ui-widget appMessage'>";
 			r += "<div class='ui-state-"+obj.uiClass+" ui-corner-all'>";
-			r += "<div class='clearfix'><span style='float: left; margin-right: .3em;' class='ui-icon ui-icon-"+obj.uiIcon+"'></span>"+obj.message+"<\/div>";
+			r += "<div class='clearfix'><span class='ui-icon ui-icon-"+obj.uiIcon+"'></span>"+obj.message+"<\/div>";
 			r += "<\/div><\/div>";
 			return r;
 			},
@@ -693,7 +694,7 @@ pass in additional information for more control, such as css class of 'error' an
 // keep this simple. don't add support for icons or message type. If that degree of control is needed, build your own object and pass that in.
 // function used in store_product (and probably more)
 		successMsgObject : function(msg)	{
-			return {'_msgs':1,'_msg_1_txt':msg,'_msg_1_type':'success','uiIcon':'check','class':'success'}
+			return {'errid':'42','errmsg':msg,'errtype':'success','uiIcon':'check','uiClass':'success'}
 			},
 
 		youErrObject : function(errmsg,errid)	{

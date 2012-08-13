@@ -555,7 +555,7 @@ see jquery/api webdoc for required/optional param
 
 		validate : {
 			addReview : function(obj)	{
-				myControl.util.dump(obj);
+//				myControl.util.dump(obj);
 				var errors = '';
 				if(!obj.SUBJECT)
 					errors += 'please enter a subject.<br \/>';
@@ -570,14 +570,14 @@ see jquery/api webdoc for required/optional param
 					return errors;
 				},
 			changePassword : function(obj)	{
-				myControl.util.dump(obj);
+//				myControl.util.dump(obj);
 				var valid = true;
 				if(obj.password == ''){valid = false}
 				if(obj.password != obj.password2)	{valid = false}
 				return valid;
 				},
 			subscribe : function(obj)	{
-				myControl.util.dump(obj);
+//				myControl.util.dump(obj);
 				var errors = '';
 				if(!obj.login)
 					errors += '<li>please enter an email address.</li>';
@@ -679,7 +679,9 @@ if the P.pid and data-pid do not match, empty the modal before openeing/populati
 					}
 				else	{
 					//report errors.
-					$('#'+formID).prepend(myControl.util.formatMessage(isValid));
+					var errObj = myControl.util.youErrObject(isValid,'42');
+					errObj.parentID = formID
+					myControl.util.throwMessage(errObj);
 					}
 				},
 /*
@@ -729,18 +731,22 @@ will output a newsletter form into 'parentid' using 'templateid'.
 				csvArray = $.grep(csvArray,function(n){return(n);}); //remove blanks
 				return csvArray;
 				},
+
 			handleChangePassword : function(formID,tagObj)	{
-$('#'+formID+' .zMessage').empty().remove(); //clear any existing messaging
+$('#'+formID+' .appMessage').empty().remove(); //clear any existing messaging
 var formObj = $('#'+formID).serializeJSON();
 if(myControl.ext.store_crm.validate.changePassword(formObj)){
 	myControl.ext.store_crm.calls.buyerPasswordUpdate.init(formObj.password,tagObj);
 	myControl.model.dispatchThis('immutable');
 	}
 else{
-	$('#'+formID).prepend(myControl.util.formatMessage("The two passwords entered do not match."));
+	var errObj = myControl.util.youErrObject("The two passwords do not match.",'42');
+	errObj.parentID = formID
+	myControl.util.throwMessage(errObj);
 	}
 				
 				},
+
 			handleSubscribe : function(formID,tagObj)	{
 				myControl.util.dump("BEGIN store_crm.util.handleSubscribe");
 				frmObj = $('#'+formID).serializeJSON();
@@ -756,8 +762,11 @@ else{
 					myControl.model.dispatchThis();
 					}
 				else	{
+					$('#'+formID+' .appMessage').empty().remove(); //clear any existing messaging
 //report errors
-					$('#'+formID).append(myControl.util.formatMessage("<ul>"+isValid+"<\/ul>"));
+					var errObj = myControl.util.youErrObject("<ul>"+isValid+"<\/ul>",'42');
+					errObj.parentID = formID
+					myControl.util.throwMessage(errObj);
 					}
 				}
 			} //util		
