@@ -36,7 +36,7 @@ var analytics_google = function() {
 		callbacks : {
 			init : {
 				onSuccess : function()	{
-	//				myControl.util.dump('BEGIN myControl.ext.store_navcats.init.onSuccess ');
+	//				app.u.dump('BEGIN app.ext.store_navcats.init.onSuccess ');
 					var r = true; //return false if extension won't load for some reason (account config, dependencies, etc).
 					if(typeof _gaq != 'object')	{
 						r = false;
@@ -46,28 +46,28 @@ var analytics_google = function() {
 				onError : function()	{
 	//errors will get reported for this callback as part of the extensions loading.  This is here for extra error handling purposes.
 	//you may or may not need it.
-					myControl.util.dump('BEGIN myControl.ext.store_navcats.callbacks.init.onError');
+					app.u.dump('BEGIN app.ext.store_navcats.callbacks.init.onError');
 					}
 				},
 
 			addGATriggers : {
 				onSuccess : function(){
 //make sure that not only has myRIA been loaded, but that the createTemplateFunctions has executed
-					if(myControl.ext.myRIA && myControl.ext.myRIA.template)	{
+					if(app.ext.myRIA && app.ext.myRIA.template)	{
 
-myControl.util.dump("BEGIN analytics_google.callbacks.addGATriggers");
-myControl.ext.myRIA.template.homepageTemplate.onCompletes.push(function(P) {_gaq.push(['_trackPageview', '/index.html']);})
-myControl.ext.myRIA.template.categoryTemplate.onCompletes.push(function(P) {_gaq.push(['_trackPageview', '/category/'+P.navcat]);})
-myControl.ext.myRIA.template.productTemplate.onCompletes.push(function(P) {_gaq.push(['_trackPageview', '/product/'+P.pid]);})
-myControl.ext.myRIA.template.companyTemplate.onCompletes.push(function(P) {_gaq.push(['_trackPageview', '/company/'+P.show]);})
-myControl.ext.myRIA.template.customerTemplate.onCompletes.push(function(P) {_gaq.push(['_trackPageview', '/customer/'+P.show]);}) 
-myControl.ext.myRIA.template.checkoutTemplate.onInits.push(function(P) {_gaq.push(['_trackPageview', '/checkout']);}) 
-myControl.ext.myRIA.template.pageNotFoundTemplate.onCompletes.push(function(P) {_gaq.push(['_trackPageview', '/404.html?page=' + document.location.pathname + document.location.search + '&from=' + document.referrer]);})
+app.u.dump("BEGIN analytics_google.callbacks.addGATriggers");
+app.ext.myRIA.template.homepageTemplate.onCompletes.push(function(P) {_gaq.push(['_trackPageview', '/index.html']);})
+app.ext.myRIA.template.categoryTemplate.onCompletes.push(function(P) {_gaq.push(['_trackPageview', '/category/'+P.navcat]);})
+app.ext.myRIA.template.productTemplate.onCompletes.push(function(P) {_gaq.push(['_trackPageview', '/product/'+P.pid]);})
+app.ext.myRIA.template.companyTemplate.onCompletes.push(function(P) {_gaq.push(['_trackPageview', '/company/'+P.show]);})
+app.ext.myRIA.template.customerTemplate.onCompletes.push(function(P) {_gaq.push(['_trackPageview', '/customer/'+P.show]);}) 
+app.ext.myRIA.template.checkoutTemplate.onInits.push(function(P) {_gaq.push(['_trackPageview', '/checkout']);}) 
+app.ext.myRIA.template.pageNotFoundTemplate.onCompletes.push(function(P) {_gaq.push(['_trackPageview', '/404.html?page=' + document.location.pathname + document.location.search + '&from=' + document.referrer]);})
 							
-myControl.ext.store_checkout.checkoutCompletes.push(function(P){
+app.ext.store_checkout.checkoutCompletes.push(function(P){
 	
-	myControl.util.dump("BEGIN analytics_google code pushed on store_checkout.checkoutCompletes");
-	var order = myControl.data['order|'+P.orderID].cart;
+	app.u.dump("BEGIN analytics_google code pushed on store_checkout.checkoutCompletes");
+	var order = app.data['order|'+P.orderID].cart;
 	_gaq.push(['_addTrans',
 		  P.orderID,           // order ID - required
 		  '', // affiliation or store name
@@ -80,10 +80,10 @@ myControl.ext.store_checkout.checkoutCompletes.push(function(P){
 	   ]);
 
 	var L = order.stuff.length;
-	myControl.util.dump(" -> "+L+" items in stuff");
+	app.u.dump(" -> "+L+" items in stuff");
 
 	for(var i = 0; i < L; i += 1)	{
-//		myControl.util.dump(" -> "+i+": stid = "+order.stuff[i].stid+" and qty = "+order.stuff[i]['qty']);
+//		app.u.dump(" -> "+i+": stid = "+order.stuff[i].stid+" and qty = "+order.stuff[i]['qty']);
 		_gaq.push(['_addItem',
 			P.orderID,         // order ID - necessary to associate item with transaction
 			order.stuff[i].product,         // SKU/code - required
@@ -99,7 +99,7 @@ myControl.ext.store_checkout.checkoutCompletes.push(function(P){
 
 						}
 					else	{
-						setTimeout(function(){myControl.ext.analytics_google.callbacks.addGATriggers.onSuccess()},250);
+						setTimeout(function(){app.ext.analytics_google.callbacks.addGATriggers.onSuccess()},250);
 						}
 
 					},

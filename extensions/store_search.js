@@ -48,7 +48,7 @@ P.query = { 'and':{ 'filters':[ {'term':{'profile':'E31'}},{'term':{'tags':'IS_S
 */
 		appPublicProductSearch : {
 			init : function(P,tagObj,Q)	{
-//				myControl.util.dump("BEGIN myControl.ext.store_search.calls.appPublicSearch");
+//				app.u.dump("BEGIN app.ext.store_search.calls.appPublicSearch");
 				this.dispatch(P,tagObj,Q)
 				return 1;
 				},
@@ -56,8 +56,8 @@ P.query = { 'and':{ 'filters':[ {'term':{'profile':'E31'}},{'term':{'tags':'IS_S
 				P['_cmd'] = "appPublicSearch";
 				P.type = 'product';
 				P['_tag'] = tagObj;
-//				myControl.util.dump(P);
-				myControl.model.addDispatchToQ(P,Q);
+//				app.u.dump(P);
+				app.model.addDispatchToQ(P,Q);
 				}
 			}, //appPublicSearch
 
@@ -65,15 +65,15 @@ P.query = { 'and':{ 'filters':[ {'term':{'profile':'E31'}},{'term':{'tags':'IS_S
 // to get a good handle on what datapointers should look like.
 		appPublicSearch : {
 			init : function(obj,tagObj,Q)	{
-//				myControl.util.dump("BEGIN myControl.ext.store_search.calls.appPublicSearch");
-//				myControl.util.dump(obj);
+//				app.u.dump("BEGIN app.ext.store_search.calls.appPublicSearch");
+//				app.u.dump(obj);
 				this.dispatch(obj,tagObj,Q)
 				return 1;
 				},
 			dispatch : function(obj,tagObj,Q)	{
 				obj['_cmd'] = "appPublicSearch";
 				obj['_tag'] = tagObj;
-				myControl.model.addDispatchToQ(obj,Q);
+				app.model.addDispatchToQ(obj,Q);
 				}
 			} //appPublicSearch
 
@@ -94,14 +94,14 @@ P.query = { 'and':{ 'filters':[ {'term':{'profile':'E31'}},{'term':{'tags':'IS_S
 //the callback is auto-executed as part of the extensions loading process.
 		init : {
 			onSuccess : function()	{
-//				myControl.util.dump('BEGIN myControl.ext.store_navcats.init.onSuccess ');
+//				app.u.dump('BEGIN app.ext.store_navcats.init.onSuccess ');
 				var r = true; //return false if extension won't load for some reason (account config, dependencies, etc).
 				return r;
 				},
 			onError : function()	{
 //errors will get reported for this callback as part of the extensions loading.  This is here for extra error handling purposes.
 //you may or may not need it.
-				myControl.util.dump('BEGIN myControl.ext.store_navcats.callbacks.init.onError');
+				app.u.dump('BEGIN app.ext.store_navcats.callbacks.init.onError');
 				}
 			},
 
@@ -110,14 +110,14 @@ P.query = { 'and':{ 'filters':[ {'term':{'profile':'E31'}},{'term':{'tags':'IS_S
 // parentID, templateID (template used on each item in the results) and datapointer.
 		handleElasticResults : {
 			onSuccess : function(tagObj)	{
-				myControl.util.dump("BEGIN myRIA.callbacks.handleElasticResults.onSuccess.");
-				var L = myControl.data[tagObj.datapointer]['_count'];
+				app.u.dump("BEGIN myRIA.callbacks.handleElasticResults.onSuccess.");
+				var L = app.data[tagObj.datapointer]['_count'];
 				$parent = $('#'+tagObj.parentID).empty().removeClass('loadingBG')
 				if(L == 0)	{
 					$parent.append("Your query returned zero results.");
 					}
 				else	{
-					$parent.append(myControl.ext.store_search.util.getElasticResultsAsJQObject(tagObj));
+					$parent.append(app.ext.store_search.u.getElasticResultsAsJQObject(tagObj));
 					}
 				}
 			}
@@ -126,27 +126,27 @@ P.query = { 'and':{ 'filters':[ {'term':{'profile':'E31'}},{'term':{'tags':'IS_S
 
 
 
-////////////////////////////////////   UTIL    \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+////////////////////////////////////   UTIL [u]    \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
-		util : {
+		u : {
 			
 			
 			getAlternativeQueries : function(keywords,tagObj)	{
 				var keywordsArray = new Array();
 			
 				keywordsArray = keywords.split(' ');
-//				myControl.util.dump(" -> number of words = "+keywordsArray.length);
+//				app.u.dump(" -> number of words = "+keywordsArray.length);
 				
 				var permutations = this.getPermutationsOfArray(keywordsArray);
-//				myControl.util.dump(" -> number of permutations = "+permutations.length);
+//				app.u.dump(" -> number of permutations = "+permutations.length);
 				var L = permutations.length;
 				var mode = $('#headerModeInput').val();
 				var catalog = $('#headerCatalog').val();
 				var thisKeyword;
 				for(var i = 0; i < L; i += 1)	{
 					thisKeyword = this.getPermArrayIntoString(permutations[i]);
-					myControl.ext.store_search.calls.searchResult.init({"KEYWORDS":thisKeyword,"CATALOG":catalog,"MODE":mode},tagObj);
+					app.ext.store_search.calls.searchResult.init({"KEYWORDS":thisKeyword,"CATALOG":catalog,"MODE":mode},tagObj);
 					}
 
 				}, //getAlternativeQueries
@@ -156,7 +156,7 @@ P.query = { 'and':{ 'filters':[ {'term':{'profile':'E31'}},{'term':{'tags':'IS_S
 				for(var i = 0; i < a.length; i +=1)	{
 					r += a[i]+' ';
 					}
-//				myControl.util.dump("permArrayToString = "+r);
+//				app.u.dump("permArrayToString = "+r);
 				return r;
 				},
 //pass in an array of keywords and all combinations will be returned.
@@ -199,23 +199,23 @@ return combine(keywordsArray);
 Will return the results a jquery object for display. append the return from this function to your list (or other element)
 
 P should contain the following:
-P.datapointer - pointer to where in myControl.data the results are stored.
+P.datapointer - pointer to where in app.data the results are stored.
 P.templateID - what productList template to use
-P.parentID - The parent ID is used as the pointer in the multipage controls object. myControl.ext.store_prodlist.vars[POINTER]
+P.parentID - The parent ID is used as the pointer in the multipage controls object. app.ext.store_prodlist.vars[POINTER]
 #### note - not all these are used yet, but will be soon.
 */
 
 			getElasticResultsAsJQObject : function(P)	{
-//				myControl.util.dump("BEGIN store_search.util.getElasticResultsAsJQObject ["+P.datapointer+"]")
+//				app.u.dump("BEGIN store_search.u.getElasticResultsAsJQObject ["+P.datapointer+"]")
 				var pid;//recycled shortcut to product id.
-				var L = myControl.data[P.datapointer]['_count'];
+				var L = app.data[P.datapointer]['_count'];
 				var $r = $("<ul />"); //when this was a blank jquery object, it didn't work. so instead, we append all content to this imaginary list, then just return the children.
-//				myControl.util.dump(" -> parentID: "+P.parentID); //resultsProductListContainer
-//				myControl.util.dump(" -> L: "+L);
+//				app.u.dump(" -> parentID: "+P.parentID); //resultsProductListContainer
+//				app.u.dump(" -> L: "+L);
 				for(var i = 0; i < L; i += 1)	{
-					pid = myControl.data[P.datapointer].hits.hits[i]['_id'];
-//					myControl.util.dump(" -> "+i+" pid: "+pid);
-					$r.append(myControl.renderFunctions.transmogrify({'id':pid,'pid':pid},P.templateID,myControl.data[P.datapointer].hits.hits[i]['_source']));
+					pid = app.data[P.datapointer].hits.hits[i]['_id'];
+//					app.u.dump(" -> "+i+" pid: "+pid);
+					$r.append(app.renderFunctions.transmogrify({'id':pid,'pid':pid},P.templateID,app.data[P.datapointer].hits.hits[i]['_source']));
 					}
 				return $r.children();
 				},
@@ -228,8 +228,8 @@ P.parentID - The parent ID is used as the pointer in the multipage controls obje
 				qObj.query =  {"query_string" : {"query" : keywords}};
 				if(typeof tagObj != 'object')	{tagObj = {}};
 				tagObj.datapointer = "appPublicSearch|"+keywords
-				myControl.ext.store_search.calls.appPublicSearch.init(qObj,tagObj);
-				myControl.model.dispatchThis();
+				app.ext.store_search.calls.appPublicSearch.init(qObj,tagObj);
+				app.model.dispatchThis();
 				}
 				
 			} //util

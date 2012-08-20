@@ -1,9 +1,9 @@
-var app = app || {vars:{},util:{}}; //make sure app exists.
+var app = app || {vars:{},u:{}}; //make sure app exists.
 
 //http://www.nczonline.net/blog/2009/07/28/the-best-way-to-load-external-javascript/
-app.util.loadScript = function(url, callback){
-	app.util.dump("load script: "+url);
-    var script = document.createElement("script")
+app.u.loadScript = function(url, callback){
+	app.u.dump("load script: "+url);
+    var script = document.createElement("script");
     script.type = "text/javascript";
     if (script.readyState){  //IE
         script.onreadystatechange = function(){
@@ -26,7 +26,7 @@ app.util.loadScript = function(url, callback){
 this function gets overwritten when the control object is instantiated.
 keep this small and light.
 */
-app.util.dump = function(msg)	{
+app.u.dump = function(msg)	{
 //if the console isn't open, an error occurs, so check to make sure it's defined. If not, do nothing.
 	if(typeof console != 'undefined')	{console.log(msg);}
 	} //dump

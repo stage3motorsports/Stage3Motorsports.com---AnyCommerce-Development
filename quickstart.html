@@ -4,8 +4,7 @@
 <meta charset="utf-8">
 <title>QuickStart</title>
 
-<link rel="stylesheet" type="text/css" href="qs_styles.css" />
-<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/cupertino/jquery-ui.css" />
+
 
 <base href='' /><!-- leave blank so it works for a local file -->
 
@@ -13,14 +12,15 @@
 
 <script type="text/javascript">
 var _gaq = _gaq || {'push':function(){}} //here for testing. replace with actual GA code or delete at deployment.
-var myCreole,myControl;
+var myCreole;
 
 var app = {vars:{
 	"release":"20120813102400",  //increment this with each change. should solve caching issues. format: YYYYMMDDHHMMSS
 	"baseURL":"",
+	"ada":"xyz",
 	"httpsURL":"https://ssl.zoovy.com/s=www.sporks.zoovy.com/",
 	"httpURL":"http://www.sporks.zoovy.com/"
-	},util:{}};
+	},u:{}};
 
 //set base url so images, css, js, etc all load from appropriate location once deployed.
 //baseURL as blank lets loadScript function run off local copy when testing locally.
@@ -30,16 +30,22 @@ if(document.location.protocol != 'file:')	{
 	}
 </script>
 
+
+<!-- all css includes need to be after the js that changes the base url -->
+<link rel="stylesheet" type="text/css" href="qs_styles.css" />
+<link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/cupertino/jquery-ui.css" />
+
 <script type="text/javascript" src="jquery-1.7.2.min.js"></script>
 <script type="text/javascript" src="loadscript.js"></script><!-- rename this to bootstrap -->
 
 <script type="text/javascript">
-app.util.loadScript(app.vars.baseURL+"init.js");
+app.u.loadScript(app.vars.baseURL+"init.js");
 </script>
+
+
 </head>
 
 <body>
-
 <!-- DELETE THIS WHEN YOU GET STARTED -->
 <h1>WELCOME TO QUICKSTART</h1>
 This file is intended to go along with the 10-step tutorial at: 
@@ -277,7 +283,7 @@ this will likely become more flexible in the future. ###
 <table id='prodViewerTable' class='prodViewerContainer'>
 <tr>
 	<td class='imageContainer'>
-<div onClick='myControl.ext.store_product.util.showPicsInModal({"pid":$(this).attr("data-pid")});' class='pointer clearfix'  data-bind='var:product(pid);format:assignAttribute; attribute:data-pid;'>
+<div onClick='app.ext.store_product.u.showPicsInModal({"pid":$(this).attr("data-pid")});' class='pointer clearfix'  data-bind='var:product(pid);format:assignAttribute; attribute:data-pid;'>
 
 	<div data-bind="var: product(zoovy:prod_is_tags); format:addTagSpans;" class='tagsContainer'></div>
 	<img src='blank.gif' class='prodBigImage' data-bind='var: product(zoovy:prod_image1); format:imageURL;' width='340' height='340' />
@@ -286,11 +292,11 @@ this will likely become more flexible in the future. ###
 
 	<div data-bind='var:product(pid);format:assignAttribute; attribute:data-pid;' class='prodThumbs'>
 	
-<div onClick='myControl.ext.store_product.util.showPicsInModal({"pid":$(this).parent().attr("data-pid"),"int":"2"});' class='pointer'><img src='blank.gif' data-bind='var: product(zoovy:prod_image2); format:imageURL;' width='100' height='100' /></div>
+<div onClick='app.ext.store_product.u.showPicsInModal({"pid":$(this).parent().attr("data-pid"),"int":"2"});' class='pointer'><img src='blank.gif' data-bind='var: product(zoovy:prod_image2); format:imageURL;' width='100' height='100' /></div>
 	
-<div onClick='myControl.ext.store_product.util.showPicsInModal({"pid":$(this).parent().attr("data-pid"),"int":"3"});' class='pointer'><img src='blank.gif' data-bind='var: product(zoovy:prod_image3); format:imageURL;' width='100' height='100' /></div>
+<div onClick='app.ext.store_product.u.showPicsInModal({"pid":$(this).parent().attr("data-pid"),"int":"3"});' class='pointer'><img src='blank.gif' data-bind='var: product(zoovy:prod_image3); format:imageURL;' width='100' height='100' /></div>
 	
-<div onClick='myControl.ext.store_product.util.showPicsInModal({"pid":$(this).parent().attr("data-pid"),"int":"4"});' class='pointer'><img src='blank.gif' data-bind='var: product(zoovy:prod_image4); format:imageURL;' width='100' height='100' /></div>
+<div onClick='app.ext.store_product.u.showPicsInModal({"pid":$(this).parent().attr("data-pid"),"int":"4"});' class='pointer'><img src='blank.gif' data-bind='var: product(zoovy:prod_image4); format:imageURL;' width='100' height='100' /></div>
 	
 	</div>
 
@@ -321,7 +327,7 @@ this will likely become more flexible in the future. ###
 you'll likely want to something MUCH more custom here. this just simply adds it to the cart and reports a success. it can be used, if desired. 
 -->	
 	
-	<form data-bind='var: product(pid); format:atcForm; extension:store_product;' class='prodViewerAddToCartForm clearfix' id='prodViewerAddToCartFrm' action='#' onSubmit="myControl.ext.myRIA.util.handleAddToCart(this.id,{'action':'modal'});  return false;">
+	<form data-bind='var: product(pid); format:atcForm; extension:store_product;' class='prodViewerAddToCartForm clearfix' id='prodViewerAddToCartFrm' action='#' onSubmit="app.ext.myRIA.u.handleAddToCart(this.id,{'action':'modal'});  return false;">
 	
 		<fieldset data-bind='var: product(pid); format:atcVariations; extension:store_product;' class='borderNone'></fieldset>
 		<fieldset data-bind='var: product(pid); format:atcQuantityInput; extension:store_product; pretext:Quantity: ;' class='borderNone'></fieldset>
@@ -339,7 +345,7 @@ you'll likely want to something MUCH more custom here. this just simply adds it 
 	
 	<menu data-bind='var:product(pid);format:assignAttribute; attribute:data-pid;' id='CRMButtonMenu'>
 
-	<a href='#' onClick='myControl.ext.store_crm.util.showReviewFrmInModal({"pid":$(this).attr("data-pid"),"templateID":"reviewFrmTemplate"}); return false;' data-bind='var:product(pid);format:assignAttribute; attribute:data-pid;'>Write Review</a>	
+	<a href='#' onClick='app.ext.store_crm.u.showReviewFrmInModal({"pid":$(this).attr("data-pid"),"templateID":"reviewFrmTemplate"}); return false;' data-bind='var:product(pid);format:assignAttribute; attribute:data-pid;'>Write Review</a>	
 	
 	</menu>
 
@@ -373,7 +379,7 @@ you'll likely want to something MUCH more custom here. this just simply adds it 
 	<div id="prodReviews">
 		
 		<div class='clearfix alignRight'>
-			<button class='ui-button-text ui-button ui-state-default ui-corner-all' onClick='myControl.ext.store_crm.util.showReviewFrmInModal({"pid":$(this).attr("data-pid"),"templateID":"reviewFrmTemplate"});' data-bind='var:product(pid);format:assignAttribute; attribute:data-pid;'>Write Review</button>
+			<button class='ui-button-text ui-button ui-state-default ui-corner-all' onClick='app.ext.store_crm.u.showReviewFrmInModal({"pid":$(this).attr("data-pid"),"templateID":"reviewFrmTemplate"});' data-bind='var:product(pid);format:assignAttribute; attribute:data-pid;'>Write Review</button>
 		</div>
 		
 		<ul class='listStyleNone clearfix productReviewsList' id='prodViewerReviews' data-bind="var: reviews(@reviews); format:reviewList; extension:store_product; loadsTemplate:productReviewsTemplateDetail;"></ul>
@@ -491,7 +497,7 @@ adding classes is not likely to have any bad effects.
 	
 		<div id='contactArticle' class='displayNone textContentArea'>
 			<h1>Contact Information</h1>
-			<form action='#' onSubmit="myControl.ext.store_crm.calls.appSendMessage.init($(this).serializeArray(),{'callback':'showMessaging','parentID':'contactFormMessaging','message':'Thank you, your message has been sent'},'immutable'); return false;" id='contactForm' name='contactForm'>
+			<form action='#' onSubmit="app.ext.store_crm.calls.appSendMessage.init($(this).serializeArray(),{'callback':'showMessaging','parentID':'contactFormMessaging','message':'Thank you, your message has been sent'},'immutable'); return false;" id='contactForm' name='contactForm'>
 			<fieldset>
 				<legend>Contact Us</legend>
 				<div id='contactFormMessaging'></div>
@@ -605,7 +611,7 @@ adding classes is not likely to have any bad effects.
 		<div id='myaccountArticle' class='displayNone textContentArea'>
 			<h1>My Account</h1>
 			<div id='logMessaging'></div>
-			<div><a href="#" onClick="myControl.util.logBuyerOut(); return false;">Log Out</a></div>
+			<div><a href="#" onClick="app.u.logBuyerOut(); return false;">Log Out</a></div>
 			
 			<section id='buyerAddresses' class='clearfix'>
 
@@ -638,7 +644,7 @@ adding classes is not likely to have any bad effects.
 			<h1>Change Password</h1>
 			<div id='changepasswordContainer'>
 
-<form action='#' id='changePasswordForm' name='changePasswordForm' onSubmit="myControl.ext.store_crm.util.handleChangePassword('changePasswordForm',{'callback':'showMessaging','message':'Thank you, your password has been changed','targetID':'changepasswordContainer'}); return false">
+<form action='#' id='changePasswordForm' name='changePasswordForm' onSubmit="app.ext.store_crm.u.handleChangePassword('changePasswordForm',{'callback':'showMessaging','message':'Thank you, your password has been changed','targetID':'changepasswordContainer'}); return false">
 <fieldset>
 
 <div class='marginBottom'><label for='changePassword'>Password</label><input type='password' name='password' id='changePassword' size='35' /></div>
@@ -818,10 +824,10 @@ So the cart template should contain these two elements and the extension should 
 
 	<div class='cartZipCodeContainer'>
 	<label for='data-ship_zip'>Zip/Postal Code:</label>
-	<input type='text' size='6'  name='data.ship_zip' id='data-ship_zip' value='' data-bind='var: cart(data.ship_zip); format:popVal;' maxlength='10' onChange="myControl.calls.cartSet.init({'data.ship_zip':this.value});
-	myControl.ext.store_cart.util.updateCartSummary();
-	myControl.ext.store_cart.calls.cartShippingMethodsWithUpdate.init();
-	myControl.model.dispatchThis('immutable');"  />
+	<input type='text' size='6'  name='data.ship_zip' id='data-ship_zip' value='' data-bind='var: cart(data.ship_zip); format:popVal;' maxlength='10' onChange="app.calls.cartSet.init({'data.ship_zip':this.value});
+	app.ext.store_cart.u.updateCartSummary();
+	app.ext.store_cart.calls.cartShippingMethodsWithUpdate.init();
+	app.model.dispatchThis('immutable');"  />
 	</div>
 
 	
@@ -877,7 +883,7 @@ So the cart template should contain these two elements and the extension should 
 		<div class='ztable_row_small stid' data-bind='var: product(sku); format:text; className: stid; pretext: Sku: ;'></div>
 		
 		<div>
-		qty: <input type='number' class='qtyInput' onChange="myControl.ext.store_cart.util.updateCartQty($(this)); myControl.model.dispatchThis('immutable');"  data-bind='var: product(qty); format:cartItemQty;extension:store_cart;' size='3' />
+		qty: <input type='number' class='qtyInput' onChange="app.ext.store_cart.u.updateCartQty($(this)); app.model.dispatchThis('immutable');"  data-bind='var: product(qty); format:cartItemQty;extension:store_cart;' size='3' />
 		<button class='displayNone'>update</button><!-- here to stop 'enter' in input above from closing modal -->
 		<span data-bind='var: product(price); format:money; currencySign: $;  hideZero:false; pretext: x ;' ></span>
 		<span data-bind='var: product(extended); format:money; currencySign: $; hideZero:false; pretext: = ;'></span>
@@ -963,7 +969,7 @@ used for store_crm.js
 
 <div id='reviewFrmTemplate'>
 
-<form name="reviewFrm" id="reviewFrm" action="#" onSubmit="myControl.ext.store_crm.util.handleReviews('reviewFrm'); return false;">
+<form name="reviewFrm" id="reviewFrm" action="#" onSubmit="app.ext.store_crm.u.handleReviews('reviewFrm'); return false;">
 <input type='hidden' name='pid' id='reviewsPid' value='' data-bind='var: product(pid); format:popVal;' />
 
 <label for='reviewsCustomerName'>Your Name:</label>
@@ -1005,7 +1011,7 @@ used for store_crm.js
 
 
 <div id='subscribeFormTemplate'>
-<form action='#' id='subscribeFrm' name='subscribeFrm' onSubmit="myControl.ext.store_crm.util.handleSubscribe('subscribeFrm'); return false">
+<form action='#' id='subscribeFrm' name='subscribeFrm' onSubmit="app.ext.store_crm.u.handleSubscribe('subscribeFrm'); return false">
 
 <fieldset class='userInfo'>
 <div>
@@ -1035,7 +1041,7 @@ used for store_crm.js
 
 <section id='orderLineItemTemplate' class='appAccordianesque'>
 	
-	<div onClick="myControl.ext.myRIA.util.showOrderDetails($(this).attr('data-orderid'));" class='ui-accordion-header ui-helper-reset ui-state-default ui-corner-top ui-corner-bottom' data-bind='var:order(ORDERID);format:assignAttribute; attribute:data-orderid;'>
+	<div onClick="app.ext.myRIA.u.showOrderDetails($(this).attr('data-orderid'));" class='ui-accordion-header ui-helper-reset ui-state-default ui-corner-top ui-corner-bottom' data-bind='var:order(ORDERID);format:assignAttribute; attribute:data-orderid;'>
 	<span class="ui-icon ui-icon-triangle-1-e"></span>
 	<span data-bind='var:order(ORDERID);format:text;pretext:Order ID: ;'></span>
 	<span data-bind='var:order(MODIFIED_GMT);format:unix2mdy; pretext: Placed on ;'></span>
@@ -1057,7 +1063,7 @@ likely, this will be used anywhere an invoice is shown. Potentially on the last 
 <tr>
 	<td colspan='2'>
 <div class='floatRight ui-state-default ui-corner-all'>
-<a href='#' onClick="myControl.ext.myRIA.action.printByElementID($(this).closest('table').attr('id')); return false;"  class="ui-icon ui-icon-print">Print</a>
+<a href='#' onClick="app.ext.myRIA.a.printByElementID($(this).closest('table').attr('id')); return false;"  class="ui-icon ui-icon-print">Print</a>
 </div>
 
 <h3 data-bind='var:order(data.pool);format:text; pretext:Order Status: ;'></h3>
@@ -1145,7 +1151,7 @@ If this gets recycled, test in order history after making changes.
 
 	<div class='ztable_row_small prodOptions' data-bind='var: order(*options); format:selectedOptionsDisplay;'></div>
 
-<button class='ui-button-text ui-button ui-state-default ui-corner-all' onClick='myControl.ext.store_crm.util.showReviewFrmInModal({"pid":$(this).attr("data-pid"),"templateID":"reviewFrmTemplate"});' data-bind='var:product(product);format:assignAttribute; attribute:data-pid;'>Write Review</button>
+<button class='ui-button-text ui-button ui-state-default ui-corner-all' onClick='app.ext.store_crm.u.showReviewFrmInModal({"pid":$(this).attr("data-pid"),"templateID":"reviewFrmTemplate"});' data-bind='var:product(product);format:assignAttribute; attribute:data-pid;'>Write Review</button>
 
 	
 </div>
@@ -1159,7 +1165,7 @@ If this gets recycled, test in order history after making changes.
 
 <section  id='faqTopicTemplate'>
 	
-	<div class='ui-accordion-header ui-helper-reset ui-state-default ui-corner-top ui-corner-bottom' data-bind='var:faq(TOPIC_ID);format:assignAttribute; attribute:data-topicid;' onClick="myControl.ext.myRIA.action.showFAQbyTopic($(this).attr('data-topicid'));">
+	<div class='ui-accordion-header ui-helper-reset ui-state-default ui-corner-top ui-corner-bottom' data-bind='var:faq(TOPIC_ID);format:assignAttribute; attribute:data-topicid;' onClick="app.ext.myRIA.a.showFAQbyTopic($(this).attr('data-topicid'));">
 	<span class="ui-icon ui-icon-triangle-1-e"></span>
 	<span data-bind='var:faq(TOPIC_TITLE);format:text;'></span>
 	</div>
@@ -1285,7 +1291,7 @@ The 'data-action' attribute is used to assign an onclick.
 <p id='loginMessaging' class='marginBottom'></p>
 
 <div id='loginFormContainer'>
-<form action='#' onSubmit='myControl.ext.myRIA.util.loginFrmSubmit($("#modalLoginlogin").val(),$("#modalLoginpassword").val()); return false;' id='modalLoginForm'>
+<form action='#' onSubmit='app.ext.myRIA.u.loginFrmSubmit($("#modalLoginlogin").val(),$("#modalLoginpassword").val()); return false;' id='modalLoginForm'>
 <input type='hidden' name='loginCallback' id='loginCallback' value='' /><!-- used to save a callback action in -->
 	<fieldset>
 	
@@ -1310,7 +1316,7 @@ The 'data-action' attribute is used to assign an onclick.
 
 <h3 class='marginBottom'>Recover Password</h3>
 <div id='recoverPasswordMessaging'></div>
-<form action='#' onSubmit="myControl.ext.store_crm.calls.appBuyerPasswordRecover.init($('#passwordRecoveryLogin').val(),{'callback':'showMessaging','message':'Thank you, will receive an email shortly','targetID':'recoverPasswordMessaging'}); myControl.model.dispatchThis('immutable'); return false;">
+<form action='#' onSubmit="app.ext.store_crm.calls.appBuyerPasswordRecover.init($('#passwordRecoveryLogin').val(),{'callback':'showMessaging','message':'Thank you, will receive an email shortly','targetID':'recoverPasswordMessaging'}); app.model.dispatchThis('immutable'); return false;">
 <fieldset>
 <div class='marginBottom'><label for='passwordRecoveryLogin'>Login/Email</label> <input type='text' name='login' required='required' id='passwordRecoveryLogin' size='25' /></div>
 
@@ -1339,20 +1345,32 @@ The 'data-action' attribute is used to assign an onclick.
 	<li><a href='#' onClick="return showContent('customer',{'show':'orders'});">Orders</a></li>
 	<li><a href='#' onClick="return showContent('cart',{'show':'cart'});">Cart</a></li>
 	<li><a href='#' onClick="return showContent('company',{'show':'return'});">Returns</a></li>
+	<li><a href='#category?navcat=.subcategories.subcat_9' class='bindByAnchor'>.subcategories.subcat_9</a></li>
 </menu>
 	<button class='ui-button-text ui-button ui-state-default ui-corner-all' onClick="localStorage.clear(); return false;">Clear Local Storage</button>
-	<button class='ui-button-text ui-button ui-state-default ui-corner-all' onClick="myControl.util.dump(myControl); return false;">Control to Console</button>
+	<button class='ui-button-text ui-button ui-state-default ui-corner-all' onClick="app.u.dump(app); return false;">Control to Console</button>
 
 
 
-<button class='ui-button-text ui-button ui-state-default ui-corner-all' onClick="myControl.ext.store_crm.calls.buyerOrderPaymentAdd.init({'tender':'CREDIT',
+<button class='ui-button-text ui-button ui-state-default ui-corner-all' onClick="app.ext.store_crm.calls.buyerOrderPaymentAdd.init({'tender':'CREDIT',
 'amt':'5.00',
 'payment.cc':'4111111111111111',
 'payment.mm':'03',
 'payment.yy':'2013',
 'payment.cv':'123',
 'orderid':'2012-01-396'
-}); myControl.model.dispatchThis('immutable'); return false;">Buyer Order Macro test</button>
+}); app.model.dispatchThis('immutable'); return false;">Buyer Order Macro test</button>
+
+
+<form name='headerSearchFrm' action='#' class='productSearchForm' method="get">
+	<fieldset>
+	<legend>Search</legend>
+	<input type='search' name='KEYWORDS' value='Enter Search Term' class="productSearchKeyword handleDefault" />
+	<input type='hidden' name='CATALOG' value='' class="productSearchCatalog" />
+	</fieldset>
+	<input class="search" type="submit" value="Search" />
+</form>
+
 
 </div>
 

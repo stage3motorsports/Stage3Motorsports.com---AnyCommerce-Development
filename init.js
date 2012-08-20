@@ -1,4 +1,4 @@
-var app = app || {vars:{},util:{}}; //make sure myControl exists.
+var app = app || {vars:{},u:{}}; //make sure app exists.
 
 
 // A list of all the extensions that are going to be used.
@@ -20,7 +20,7 @@ app.vars.extensions = [
 /*
 app.vars.scripts is an object containing a list of scripts that are required/desired.
 for each script, include:  
-	pass -> scripts are loaded in a loop. pass 1 is loaded before myControl gets initiated and should only include 'required' scripts. Use > 1 for other scripts.
+	pass -> scripts are loaded in a loop. pass 1 is loaded before app gets initiated and should only include 'required' scripts. Use > 1 for other scripts.
 	location -> the location of the file. be sure to load a secure script on secure pages to avoid an ssl error.
 	validator -> a function returning true or false if the script is loaded. Used primarily on pass 1.
 optionally also include:
@@ -34,7 +34,7 @@ app.vars.scripts.push({
 	'pass':1,
 	'location':app.vars.baseURL+'controller.js',
 	'validator':function(){return (typeof zController == 'function') ? true : false;},
-	'callback':function(){app.util.initMVC()} //the app.util.initMVC callback is what instantiates the controller.
+	'callback':function(){app.u.initMVC()} //the app.u.initMVC callback is what instantiates the controller.
 	})
 
 
@@ -71,17 +71,17 @@ This will load all of the scripts in the app.vars.scripts object that have a mat
 
 */
 
-app.util.loadScriptsByPass = function(PASS,CONTINUE)	{
-//	app.util.dump("BEGIN app.util.loadScriptsByPass ["+PASS+"]");
+app.u.loadScriptsByPass = function(PASS,CONTINUE)	{
+//	app.u.dump("BEGIN app.u.loadScriptsByPass ["+PASS+"]");
 	var L = app.vars.scripts.length;
 	var numIncludes = 0; //what is returned. The total number of includes for this pass.
 	for(var i = 0; i < L; i += 1)	{
 		if(app.vars.scripts[i].pass == PASS)	{
 			numIncludes++
-			app.util.loadScript(app.vars.scripts[i].location,app.vars.scripts[i].callback);
+			app.u.loadScript(app.vars.scripts[i].location,app.vars.scripts[i].callback);
 			}
 		}
-	if(CONTINUE == true && PASS <= 10)	{app.util.loadScriptsByPass((PASS + 1),true)}
+	if(CONTINUE == true && PASS <= 10)	{app.u.loadScriptsByPass((PASS + 1),true)}
 	return numIncludes;
 	}
 
@@ -91,19 +91,19 @@ This function is overwritten once the controller is instantiated.
 Having a placeholder allows us to always reference the same messaging function, but not impede load time with a bulky error function.
 function could be used for warnings, errors or success. defaults to 'error'.
 */
-app.util.throwMessage = function(m)	{
+app.u.throwMessage = function(m)	{
 	alert(m); 
 	}
 
 
 //put any code that you want executed AFTER the app has been initiated in here.  This may include adding onCompletes or onInits for a given template.
-app.util.appInitComplete = function()	{
+app.u.appInitComplete = function()	{
 	
-	app.util.dump("Executing myAppIsLoaded code...");
+	app.u.dump("Executing myAppIsLoaded code...");
 //display product blob fields in tabbed format.
-	myControl.ext.myRIA.template.productTemplate.onCompletes.push(function(P) {$( "#tabbedProductContent" ).tabs()}) 
+	app.ext.myRIA.template.productTemplate.onCompletes.push(function(P) {$( "#tabbedProductContent" ).tabs()}) 
 //sample for adding a onInit
-	myControl.ext.myRIA.template.homepageTemplate.onInits.push(function(P) {
+	app.ext.myRIA.template.homepageTemplate.onInits.push(function(P) {
 		//do something.
 		}) //display product blob fields in tabbed format.
 	}
@@ -113,8 +113,8 @@ app.util.appInitComplete = function()	{
 //function will get re-executed if not all the scripts in app.vars.scripts pass 1 are done loading.
 //the 'attempts' var is incremented each time the function is executed.
 
-app.util.initMVC = function(attempts){
-//	app.util.dump("app.util.initMVC activated");
+app.u.initMVC = function(attempts){
+//	app.u.dump("app.u.initMVC activated");
 	var includesAreDone = true;
 
 //what percentage of completion a single include represents (if 10 includes, each is 10%). subtract 1 just to make sure percentComplete < 100
@@ -123,7 +123,7 @@ app.util.initMVC = function(attempts){
 	
 	if(!attempts){attempts = 1} //the number of attempts that have been made to load. allows for error handling
 	var L = app.vars.scripts.length
-//	app.util.dump(" -> L: "+L+" and attempt: "+attempts);
+//	app.u.dump(" -> L: "+L+" and attempt: "+attempts);
 //don't break out of the loop on the first false. better to loop the whole way through so that the progress bar can go up as quickly as possible.
 	for(var i = 0; i < L; i += 1)	{
 		if(app.vars.scripts[i].pass == 1 && app.vars.scripts[i].validator()){
@@ -135,7 +135,7 @@ app.util.initMVC = function(attempts){
 			}
 		else	{
 			//file not loaded.
-			app.util.dump(" -> attempt "+attempts+" waiting on: "+app.vars.scripts[i].location)
+			app.u.dump(" -> attempt "+attempts+" waiting on: "+app.vars.scripts[i].location)
 			includesAreDone = false;
 			}
 		}
@@ -145,26 +145,29 @@ app.util.initMVC = function(attempts){
 	
 	if(includesAreDone == true && jQuery)	{
 		$.support.cors = true;  //cross site scripting for non cors sites. will b needed for IE10. IE8 & 9 don't support xss well.
-		myControl = new zController(app.vars,app.vars.extensions);  //instantiate controller. handles all logic and communication between model and view.
+//instantiate controller. handles all logic and communication between model and view.
+//passing in app will extend app so all previously declared functions will exist in addition to all the built in functions.
+//tmp is a throw away variable. app is what should be used as is referenced within the mvc.
+		var tmp = new zController(app);
 
 		//instantiate wiki parser.
 		myCreole = new Parse.Simple.Creole();
-		app.util.loadScriptsByPass(2,true);
+
 		}
 	else if(attempts > 80)	{
-		app.util.dump("WARNING! something went wrong in init.js");
+		app.u.dump("WARNING! something went wrong in init.js");
 		//this is 10 seconds of trying. something isn't going well.
 		$('#appPreView').empty().append("<h2>Uh Oh. Something seems to have gone wrong. </h2><p>Several attempts were made to load the store but some necessary files were not found or could not load. We apologize for the inconvenience. Please try 'refresh' and see if that helps.<br><b>If the error persists, please contact the site administrator</b><br> - dev: see console.</p>");
 //throw some debugging at the console to report what didn't load.
 		for(var i = 0; i < L; i += 1)	{
 			if(app.vars.scripts[i].pass == 1)	{
-				app.util.dump(" -> "+app.vars.scripts[i].location+": "+app.vars.scripts[i].validator());
+				app.u.dump(" -> "+app.vars.scripts[i].location+": "+app.vars.scripts[i].validator());
 				}
 			}
 		
 		}
 	else	{
-		setTimeout("app.util.initMVC("+(attempts+1)+")",250);
+		setTimeout("app.u.initMVC("+(attempts+1)+")",250);
 		}
 	}
 
@@ -177,7 +180,7 @@ app.util.initMVC = function(attempts){
 var acScriptsInPass;
 //don't execute script till both jquery AND the dom are ready.
 $(document).ready(function(){
-	acScriptsInPass = app.util.loadScriptsByPass(1,false)
+	acScriptsInPass = app.u.loadScriptsByPass(1,false)
 	});
 
 
