@@ -279,7 +279,7 @@ QID = Queue ID.  Defaults to the general dispatchQ but allows for the PDQ to be 
 */
 	
 		dispatchThis : function(QID)	{
-//			app.u.dump('BEGIN model.dispatchThis');
+			app.u.dump("'BEGIN model.dispatchThis ["+QID+"]");
 			var r = true; //set to false if no dispatch occurs. return value.
 			QID = QID === undefined ? 'mutable' : QID; //default to the general Q, but allow for priorityQ to be passed in.
 //			app.u.dump(' -> Focus Q = '+QID);

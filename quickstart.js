@@ -894,7 +894,6 @@ for legacy browsers. That means old browsers will use the anchor to retain 'back
 				P.uriParams = app.u.getParametersAsObject('?'+window.location.href.split('?')[1]);
 				if(P.uriParams.META)	{
 					app.calls.cartSet.init({'META':P.uriParams.META},{},'passive');
-					app.model.dispatchThis('passive');
 					}
 //				app.u.dump(" -> P follows:");
 //				app.u.dump(P);
@@ -1524,21 +1523,19 @@ return r;
 //will add an onclick event of showContent().  uses the href value to set params.
 //href should be ="#customer?show=myaccount" or "#company?show=shipping" or #product?pid=PRODUCTID" or #category?navcat=.some.cat.id
 			bindNav : function(selector)	{
-				app.u.dump("BEGIN bindNav ("+selector+")");
+//				app.u.dump("BEGIN bindNav ("+selector+")");
 				$(selector).each(function(){
 					var $this = $(this);
-					app.u.dump($this.attr('href'));
+//					app.u.dump($this.attr('href'));
 					var P = app.ext.myRIA.u.parseAnchor($this.attr('href'));
 					if(P.pageType == 'category' && P.navcat){
 						app.ext.store_navcats.calls.appCategoryDetailMax.init(P.navcat,{},'passive');
 						}
 					$this.click(function(event){
-						app.u.dump(P);
 //						event.preventDefault(); //cancels any action on the href. keeps anchor from jumping.
 						return app.ext.myRIA.a.showContent('',P)
 						});
 					});
-				app.model.dispatchThis('passive');
 				}, //bindNav
 
 		
