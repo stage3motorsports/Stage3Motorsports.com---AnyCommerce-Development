@@ -279,7 +279,7 @@ QID = Queue ID.  Defaults to the general dispatchQ but allows for the PDQ to be 
 */
 	
 		dispatchThis : function(QID)	{
-			app.u.dump("'BEGIN model.dispatchThis ["+QID+"]");
+//			app.u.dump("'BEGIN model.dispatchThis ["+QID+"]");
 			var r = true; //set to false if no dispatch occurs. return value.
 			QID = QID === undefined ? 'mutable' : QID; //default to the general Q, but allow for priorityQ to be passed in.
 //			app.u.dump(' -> Focus Q = '+QID);
@@ -470,7 +470,7 @@ else	{
 							callbackObj.onError({'errid':'ISE','errmsg':'It seems something went wrong. Please continue, refresh the page, or contact the site administrator if error persists. Sorry for any inconvenience. (mvc error: most likely a request failure after multiple attempts [uuid = '+uuid+'])'},uuid)
 							}
 						else if(typeof app.u.throwMessage === 'function')	{
-							app.u.throwMessage(responseData);
+							app.u.throwMessage({'errid':'ISE','errmsg':'It seems something went wrong. Please continue, refresh the page, or contact the site administrator if error persists. Sorry for any inconvenience. (mvc error: most likely a request failure after multiple attempts [uuid = '+uuid+'])'});
 							}
 						else	{
 							app.u.dump("no error handle (callback specific or otherwise) set for uuid: "+uuid);

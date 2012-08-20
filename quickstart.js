@@ -26,7 +26,7 @@ var myRIA = function() {
 	vars : {
 //a list of the templates used by this extension.
 //if this is a custom extension and you are loading system extensions (prodlist, etc), then load ALL templates you'll need here.
-		"templates" : ['productTemplate','mpControlSpec','categoryTemplate','categoryListTemplate','productListTemplate','cartTemplate','productListTemplateCart','productListTemplateChildren','productReviewsTemplateDetail','reviewFrmTemplate','subscribeFormTemplate','breadcrumbTemplate','orderLineItemTemplate','orderContentsTemplate','productListTemplateInvoice','companyTemplate','customerTemplate','homepageTemplate','searchTemplate','faqTopicTemplate','faqQnATemplate','billAddressTemplate','shipAddressTemplate','productListTemplateResults','categoryListTemplateRootCats','pageNotFoundTemplate'],
+		"templates" : ['productTemplate','mpControlSpec','categoryTemplate','categoryListTemplate','productListTemplate','productListTemplateATC','cartTemplate','productListTemplateCart','productListTemplateChildren','productReviewsTemplateDetail','reviewFrmTemplate','subscribeFormTemplate','breadcrumbTemplate','orderLineItemTemplate','orderContentsTemplate','productListTemplateInvoice','companyTemplate','customerTemplate','homepageTemplate','searchTemplate','faqTopicTemplate','faqQnATemplate','billAddressTemplate','shipAddressTemplate','productListTemplateResults','categoryListTemplateRootCats','pageNotFoundTemplate'],
 		"session" : {
 			"recentSearches" : [],
 			"recentlyViewedItems" : [],
