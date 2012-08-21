@@ -463,21 +463,16 @@ app.u.throwMessage(responseData); is the default error handler.
 				}
 			
 			}, //translateTemplate
-// a generic callback to allow for success messaging to be added. pass a parentID and the message will be PREPENDED to that id (at the top) and will shrink after a few seconds.
-//for more precise control of destination and no shrinkage, pass a targetID.
+// a generic callback to allow for success messaging to be added. 
 // pass message for what will be displayed.  For error messages, the system messaging is used.
 		showMessaging : {
 			onSuccess : function(tagObj)	{
 //				app.u.dump("BEGIN app.callbacks.showMessaging");
-				if(tagObj.parentID)	{
-					var htmlid = 'random_'+Math.floor(Math.random()*10001); //give message an ID so the a timeout is supported.
-					$('#'+tagObj.parentID).removeClass('loadingBG').prepend(app.u.formatMessage({'message':tagObj.message,'htmlid':htmlid,'uiIcon':'check','timeoutFunction':"$('#"+htmlid+"').slideUp(1000);"}));
-					}
-				else if(tagObj.targetID)	{
-					$('#'+tagObj.targetID).removeClass('loadingBG').append(app.u.formatMessage({'message':tagObj.message,'uiIcon':'check'}));
-					}
+				var msg = app.u.successMsgObject(tagObj.message);
+//pass in tagObj as well, as that contains info for parentID.
+				app.u.throwMessage($.extend(msg,tagObj));
 				}
-			},
+			}, //showMessaging
 /*
 By default, error messaging is thrown to the appMessaging class. Sometimes, this needs to be suppressed. Add this callback and no errors will show.
 ex: whoAmI call executed during app init. Don't want "we have no idea who you are" displayed as an error.
@@ -578,9 +573,9 @@ returns the id of the message, so that an action can be easily added if needed (
 //			app.u.dump("BEGIN app.u.throwMessage");
 //			app.u.dump(" -> msg follows: "); app.u.dump(msg);
 			var $target; //where the app message will be appended.
-			var htmlID = "appMessage_"+this.guidGenerator(); //the id added to the container of the message.
-			var r = htmlID; //what is returned. set to false if no good error message found. set to htmlID is error found. 
-			var $container = $("<div \/>").attr({'id':htmlID});
+			var messageClass = "appMessage_"+this.guidGenerator(); //the class added to the container of the message. message 'may' appear in multiple locations, so a class is used instead of an id.
+			var r = messageClass; //what is returned. set to false if no good error message found. set to htmlID is error found. 
+			var $container = $("<div \/>").addClass(messageClass);
 //make sure the good-ole fallback destination for errors exists and is a modal.
 			var $globalDefault = $('#globalErrorMessaging')
 			if	($globalDefault.length == 0)	{
@@ -615,9 +610,32 @@ returns the id of the message, so that an action can be easily added if needed (
 				app.u.dump("WARNING! - unknown type ["+typeof err+"] set on parameter passed into app.u.throwMessage");
 				r = false; //don't return an html id.
 				}
+			if(typeof msg == 'string' || (typeof msg == 'object' && !msg.skipAutoHide))	{
+				setTimeout(function(){
+					$('.'+messageClass).slideUp(2000);
+					},8000); //shrink message after a short display period
+				}
 			return r;
 			},
 
+
+
+// The next functions are simple ways to create success or error objects.
+// pass in a message and the entire success object is returned.
+// keep this simple. don't add support for icons or message type. If that degree of control is needed, build your own object and pass that in.
+// function used in store_product (and probably more)
+		successMsgObject : function(msg)	{
+			return {'errid':'#','errmsg':msg,'errtype':'success','uiIcon':'check','uiClass':'success'}
+			},
+		errMsgObject : function(msg,errid)	{
+			return {'errid':errid,'errmsg':msg,'errtype':'apperr','uiIcon':'alert','uiClass':'error'}
+			},
+		statusMsgObject : function(msg)	{
+			return {'errid':'#','errmsg':msg,'errtype':'statusupdate','uiIcon':'transferthick-e-w','uiClass':'statusupdate'}
+			},
+		youErrObject : function(errmsg,errid)	{
+			return {'errid':errid,'errmsg':errmsg,'errtype':'youerr','uiIcon':'alert','uiClass':'highlight'}
+			},
 
 /*
 pass in the responseData from the api request and this will return all the errors as their own lineitems.
@@ -647,10 +665,10 @@ This function will have both cases.
 //					app.u.dump("WARNGING! error occured. id: "+d.errid+" and type: "+d.errtype+" and msg: "+errmsg);
 					}
 //the validate order request returns a list of issues.
-				else if(responseData['@issues'])	{
-					var L = responseData['@issues'].length;
+				else if(d['@issues'])	{
+					var L = d['@issues'].length;
 					for(var i = 0; i < L; i += 1)	{
-						r += "<div>"+responseData['@issues'][i][3]+"<\/div>";
+						r += "<div>"+d['@issues'][i][3]+"<\/div>";
 						}
 					}
 				d.message = r; //pass in entire original object as it may contain uiClass and/or uiIcon or other params
@@ -698,17 +716,6 @@ pass in additional information for more control, such as css class of 'error' an
 			return r;
 			},
 
-// The next functions are simple ways to create success or error objects.
-// pass in a message and the entire success object is returned.
-// keep this simple. don't add support for icons or message type. If that degree of control is needed, build your own object and pass that in.
-// function used in store_product (and probably more)
-		successMsgObject : function(msg)	{
-			return {'errid':'42','errmsg':msg,'errtype':'success','uiIcon':'check','uiClass':'success'}
-			},
-
-		youErrObject : function(errmsg,errid)	{
-			return {'errid':errid,'errmsg':errmsg,'errtype':'youerr','uiIcon':'alert','uiClass':'highlight'}
-			},
 /*
 
 URI PARAM

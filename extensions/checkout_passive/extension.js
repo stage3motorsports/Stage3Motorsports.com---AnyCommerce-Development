@@ -251,39 +251,34 @@ _gaq.push(['_trackEvent','Checkout','User Event','Create order button pushed (va
 		init : {
 			onSuccess : function()	{
 //				app.u.dump('BEGIN app.ext.convertSessionToOrder.init.onSuccess');
-				var r; //returns false if checkout can't load due to account config conflict.
+				var r =false; //returns false if checkout can't load due to account config conflict.
 //				app.u.dump('BEGIN app.ext.convertSessionToOrder.init.onSuccess');
 //start this process as early as possible. Errors will be reported independantly of init (result of ajax req. for templates).
 				app.model.fetchNLoadTemplates('extensions/checkout_passive/templates.html',theseTemplates);
-
+				var msg = false
 				if(!zGlobals || $.isEmptyObject(zGlobals.checkoutSettings))	{
-					$('#globalMessaging').toggle(true).append(app.u.formatMessage({'message':'<strong>Uh Oh!<\/strong> It appears an error occured. Please try again. If error persists, please contact the site administrator.','uiClass':'error','uiIcon':'alert'}));
-					r = false;
+					msg = app.u.errMsgObject("Uh Oh! It appears an error occured. Please try again. If error persists, please contact the site administrator.");
 					}
-//store configuration is set to require login, which this version of checkout is not compatible with this version of checkout.
-				else if(zGlobals.checkoutSettings.preference_require_login == 1)	{
-//					app.u.dump(" -> zGlobals.checkoutSettings.preference_require_login == 1");
-					$('#globalMessaging').toggle(true).append(app.u.formatMessage({'message':'<strong>Uh Oh!<\/strong> There appears to be an issue with the store configuration. Please change your checkout setting to \'passive\' if you wish to use this layout.','uiClass':'error','uiIcon':'alert'}));
-					r = false;
-					}
+//store configuration is set to require login, which this version of checkout is not compatible with this version of checkout or
 //user's store setting is set to request a login, which is not compatible with this version of checkout.
-				else if(zGlobals.checkoutSettings.preference_request_login == 1)	{
-//					app.u.dump(" -> zGlobals.checkoutSettings.preference_request_login == 1");
-					$('#globalMessaging').toggle(true).append(app.u.formatMessage({'message':'<strong>Uh Oh!<\/strong> There appears to be an issue with the store configuration. Please change your checkout setting to \'passive\' if you wish to use this layout.','uiClass':'error','uiIcon':'alert'}));
-					r = false;
+				else if(zGlobals.checkoutSettings.preference_require_login == 1 || zGlobals.checkoutSettings.preference_request_login == 1)	{
+					msg = app.u.errMsgObject("Uh Oh! There appears to be an issue with the store configuration. Please change your checkout setting to 'passive' if you wish to use this layout.","MVC-INIT-CHECKOUT_PASSIVE_1000");
 					}
-				else if(typeof _gaq === 'undefined')	{
-//					app.u.dump(" -> _gaq is undefined");
-					$('#globalMessaging').toggle(true).append(app.u.formatMessage({'message':'<strong>Uh Oh!<\/strong> It appears you are not using the Asynchronous version of Google Analytics. It is required to use this checkout.','uiClass':'error','uiIcon':'alert'}));
-					r = false;					
+				else if(typeof _gaq == 'undefined')	{
+					msg = app.u.errMsgObject("Uh Oh! It appears you are not using the Asynchronous version of Google Analytics. It is required to use this checkout.","MVC-INIT-CHECKOUT_PASSIVE_1001");
 					}
 //messaging for the test harness 'success'.
 				else if(app.u.getParameterByName('_testharness'))	{
-					$('#globalMessaging').toggle(true).append(app.u.formatMessage({'message':'<strong>Excellent!<\/strong> Your store meets the requirements to use this one page checkout extension.','uiIcon':'circle-check','uiClass':'success'}));
-					$('#'+app.ext.convertSessionToOrder.vars.containerID).removeClass('loadingBG').append("");
+					msg = app.u.successMsgObject("<strong>Excellent!<\/strong> Your store meets the requirements to use this one page checkout extension.")
 					}
 				else	{
 					r = true;
+					}
+
+//display any messaging.
+				if(msg)	{
+					msg.skipAutoHide = true;
+					app.u.throwMessage(msg);
 					}
 
 				if(r == false)	{
@@ -293,7 +288,7 @@ _gaq.push(['_trackEvent','Checkout','User Event','Create order button pushed (va
 					}
 
 				return r;
-//				app.u.dump('END app.ext.convertSessionToOrder.init.onSuccess');
+
 				},
 			onError : function()	{
 				app.u.dump('BEGIN app.ext.convertSessionToOrder.callbacks.init.error');

@@ -646,7 +646,6 @@ fallback is to just output the value.
 // -> unshift is used in the case of 'recent' so that the 0 spot always holds the most recent and also so the length can be maintained (kept to a reasonable #).
 			showContent : function(pageType,infoObj)	{
 //				app.u.dump("BEGIN showContent.");
-//				app.ext.myRIA.u.changeCursor('wait');
 /*
 what is returned. is set to true if pop/pushState NOT supported. 
 if the onclick is set to return showContent(... then it will return false for browser that support push/pop state but true
@@ -660,7 +659,8 @@ for legacy browsers. That means old browsers will use the anchor to retain 'back
 				else if(pageType == '')	{pageType = infoObj.pageType}
 				
 				infoObj.back = infoObj.back == 0 ? infoObj.back : -1; //0 is no 'back' action. -1 will add a pushState or hash change.
-				$(".ui-dialog-content").dialog("close"); //close all modal windows.
+
+				app.ext.myRIA.u.closeAllModals();  //close any open modal dialogs. important cuz a 'showpage' could get executed via wiki in a modal window.
 
 				infoObj.state = 'onInits'; //needed for handleTemplateFunctions.
 
@@ -840,6 +840,38 @@ for legacy browsers. That means old browsers will use the anchor to retain 'back
 				return false;
 				},
 
+//P.listid and p.sku are required.
+//optional params include: qty, priority, note, and replace. see API docs for explanation.
+			add2BuyerList : function(P){
+				var authState = app.ext.store_checkout.u.determineAuthentication();
+				if(typeof P != 'object' || !P.pid || !P.listid)	{
+					app.u.throwMessage("Uh Oh! Something went wrong. Please try that again or contact the site administrator if error persists. err: required param for add2buyerList was missing. see console for details.");
+					app.u.dump("ERROR! params missing for add2BuyerList. listid and pid required. params: "); app.u.dump(P);
+					}
+				else if(authState != 'authenticated')	{
+					app.ext.myRIA.u.showLoginModal();
+					$('#loginSuccessContainer').empty(); //empty any existing login messaging (errors/warnings/etc)
+//this code is here instead of in showLoginModal (currently) because the 'showCustomer' code is bound to the 'close' on the modal.
+					$('<button>').addClass('stdMargin ui-state-default ui-corner-all  ui-state-active').attr('id','modalLoginContinueButton').text('Add Item to List').click(function(){
+						$('#loginFormForModal').dialog('close');
+						app.ext.myRIA.a.add2BuyerList(P) //will re-execute function so after successful login, item is actually submitted to list.
+						}).appendTo($('#loginSuccessContainer'));	
+					}
+				else	{
+					var parentID = 'listUpdateMsgContainer';
+					var $parent = $('#'+parentID)
+					if($parent.length == 0)	{
+						$parent = $("<div \/>").attr({'id':parentID,'title':'List Activity'}).appendTo('body');
+						$parent.dialog({'autoOpen':false});
+						}
+					$parent.dialog('open');
+					var msg = app.u.statusMsgObject('adding item '+P.pid+' to list: '+P.listid);
+					msg.parentID = parentID;
+					app.u.throwMessage(msg);
+					app.ext.store_crm.calls.buyerProductListAppendTo.init(P,{'parentID':parentID,'callback':'showMessaging','message':'Item '+P.pid+' successfully added to list: '+P.listid},'immutable');
+					app.model.dispatchThis('immutable');
+					}
+				},
 
 			saveAddressChange : function()	{
 				
@@ -871,7 +903,7 @@ for legacy browsers. That means old browsers will use the anchor to retain 'back
 				} //showFAQbyTopic
 		
 		
-			},
+			}, //action [a]
 
 
 
@@ -904,37 +936,27 @@ for legacy browsers. That means old browsers will use the anchor to retain 'back
 //				app.u.dump("BEGIN myRIA.u.changeCursor ["+style+"]");
 				$('html, body').css('cursor',style);
 				},
+
 //executed on initial app load AND in some elements where user/merchant defined urls are present (banners).
 // Determines what page is in focus and returns appropriate object (r.pageType)
 // if no page content can be determined based on the url, the hash is examined and if appropriately formed, used (ex: #company?show=contact or #category?navcat=.something)
 // should be renamed getPageInfoFromURL
 			detectRelevantInfoToPage : function(URL)	{
 				var r = {}; //what is returned. r.pageInfo and r.navcat or r.show or r.pid
-//				app.u.dump("BEGIN myRIA.u.detectRelevantInfoToPage");
-//				app.u.dump(" -> url before hashsplit = "+url);
 				var url = URL; //leave original intact.
 				var hashObj;
 				if(url.indexOf('#') > -1)	{
-//					app.u.dump(" -> url contains hash (#)");
 					var tmp = url.split("#");
 					url = tmp[0]; //strip off everything after hash (#)
 					hashObj = this.getPageInfoFromHash(tmp[1]); //will be an object if the hash was a valid pageInfo anchor. otherwise false.
-					
-//					app.u.dump("url: "+url);
-//					app.u.dump("hashObj: ");
-//					app.u.dump(hashObj);
-					
 					}
 
 				if(url.indexOf('?') > -1) {
 					var tmp = url.split('?')[1];
-//					r.uriParams = app.u.getParametersAsObject(tmp);
 					r.uriParams = tmp; //a simple string of uri params. used to add back onto uri in pushState.
 					url = url.split('?')[0] //get rid of any uri vars.
 					} //keep the params handy 
 
-				
-//				app.u.dump(" -> url after hashsplit = "+url);
 				if(url.indexOf('/product/') > -1)	{
 					r.pageType = 'product';
 					r.pid = url.split('/product/')[1]; //should be left with SKU or SKU/something_seo_friendly.html
@@ -945,7 +967,6 @@ for legacy browsers. That means old browsers will use the anchor to retain 'back
 					r.navcat = url.split('/category/')[1]; //left with category.safe.id or category.safe.id/
 
 					if(r.navcat.charAt(r.navcat.length-1) == '/')	{r.navcat = r.navcat.slice(0, -1)} //strip trailing /
-//					app.u.dump(" after strip trailing slash, r = "+r.navcat);
 					if(r.navcat.charAt(0) != '.')	{r.navcat = '.'+r.navcat}
 					}
 				else if(url.indexOf('/customer/') > -1)	{
@@ -968,16 +989,13 @@ for legacy browsers. That means old browsers will use the anchor to retain 'back
 					r.navcat = '.'; //left with category.safe.id or category.safe.id/
 					}
 				else if(url.indexOf('quickstart.html') > -1)	{
-					app.u.throwMessage('Rename this file as index.html to decrease the likelyhood of accidentally saving over it.');
-					app.ext.myRIA.u.changeCursor('auto'); //restore cursor.
+					var msg = app.u.errMsgObject('Rename this file as index.html to decrease the likelyhood of accidentally saving over it.',"MVC-INIT-MYRIA_1000")
+					msg.skipAutoHide = true;
+					app.u.throwMessage(msg);
+					r.pageType = '404';
 					}
 //the url in the domain may or may not have a slash at the end. Check for both
-				else if(url == zGlobals.appSettings.http_app_url || url+"/" == zGlobals.appSettings.http_app_url)	{
-					r.pageType = 'homepage'
-					r.navcat = '.'; //left with category.safe.id or category.safe.id/
-					}
-//the url in the domain may or may not have a slash at the end. Check for both
-				else if(url == zGlobals.appSettings.https_app_url || url+"/" == zGlobals.appSettings.https_app_url)	{
+				else if(url == zGlobals.appSettings.http_app_url || url+"/" == zGlobals.appSettings.http_app_url || url == zGlobals.appSettings.https_app_url || url+"/" == zGlobals.appSettings.https_app_url)	{
 					r.pageType = 'homepage'
 					r.navcat = '.'; //left with category.safe.id or category.safe.id/
 					}
@@ -1539,6 +1557,15 @@ return r;
 				}, //bindNav
 
 		
+			closeAllModals : function(){
+				$(".ui-dialog-content").each(function(){
+					var $dialog = $(this);
+					if($dialog.dialog('option','dialog') == true)	{
+						$dialog.dialog("close"); //close all modal windows.
+						}
+					});
+				},
+		
 			showLoginModal : function()	{
 //make sure form is showing and previous messaging is removed/reset.
 				$('#loginSuccessContainer').hide(); //contains 'continue' button.
@@ -1597,12 +1624,11 @@ return r;
 					}
 				$('#recentSearchesList').html(o);
 				},
-
+//best practice would be to NOT call this function directly. call showContent.
 			showPage : function(P)	{
 
 //app.u.dump("BEGIN myRIA.u.showPage("+P.navcat+")");
 
-$(".ui-dialog-content").dialog("close");  //close any open dialogs. important cuz a 'showpage' could get executed via wiki in a modal window.
 if(!app.u.isSet(P.skipClearMessaging))	{
 	$('#globalMessaging').empty();  //when app inits, don't clear messaing because it may include load errors
 	}

@@ -466,11 +466,12 @@ else	{
 //						app.u.dump(' -> callback ='+Q[index]['_tag']['callback']);
 //executes the callback.onError and takes into account extension. saves entire callback object into callbackObj so that it can be easily validated and executed whether in an extension or root.
 						callbackObj = Q[index]['_tag']['extension'] ? app.ext[Q[index]['_tag']['extension']].callbacks[Q[index]['_tag']['callback']] : app.callbacks[Q[index]['_tag']['callback']];
+//skipautohide is NOT defined if a callback is defined. let the callback itself make that decision.
 						if(callbackObj && typeof callbackObj.onError == 'function'){
 							callbackObj.onError({'errid':'ISE','errmsg':'It seems something went wrong. Please continue, refresh the page, or contact the site administrator if error persists. Sorry for any inconvenience. (mvc error: most likely a request failure after multiple attempts [uuid = '+uuid+'])'},uuid)
 							}
 						else if(typeof app.u.throwMessage === 'function')	{
-							app.u.throwMessage({'errid':'ISE','errmsg':'It seems something went wrong. Please continue, refresh the page, or contact the site administrator if error persists. Sorry for any inconvenience. (mvc error: most likely a request failure after multiple attempts [uuid = '+uuid+'])'});
+							app.u.throwMessage({'errid':'ISE','skipAutoHide':true,'errmsg':'It seems something went wrong. Please continue, refresh the page, or contact the site administrator if error persists. Sorry for any inconvenience. (mvc error: most likely a request failure after multiple attempts [uuid = '+uuid+'])'});
 							}
 						else	{
 							app.u.dump("no error handle (callback specific or otherwise) set for uuid: "+uuid);

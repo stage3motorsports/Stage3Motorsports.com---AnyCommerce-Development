@@ -209,14 +209,14 @@ NOT SUPPORTED.
 //sku can be a fully qualified stid (w/ options)
 //formerly addToCustomerList
 		buyerProductListAppendTo : {
-			init : function(obj,tagObj)	{
-				this.dispatch(obj,tagObj);
+			init : function(obj,tagObj,Q)	{
+				this.dispatch(obj,tagObj,Q);
 				return 1;
 				},
-			dispatch : function(obj,tagObj)	{
+			dispatch : function(obj,tagObj,Q)	{
 				obj['_cmd'] = "buyerProductListAppendTo"
 				obj['_tag'] = tagObj;
-				app.model.addDispatchToQ(obj);	
+				app.model.addDispatchToQ(obj,Q);	
 				}
 			},//buyerProductListAppendTo
 
@@ -720,7 +720,8 @@ will output a newsletter form into 'parentid' using 'templateid'.
 
 
 //assumes the list is already in memory
-			getSkusFromList : function(listID)	{
+//formerly getSkusFromList
+			getSkusFromBuyerList : function(listID)	{
 				app.u.dump("BEGIN store_crm.u.getSkusFromList ("+listID+")");
 				var L = app.data['buyerProductListDetail|'+listID]['@'+listID].length;
 				var csvArray = new Array(); //array of skus. What is returned.
@@ -730,9 +731,10 @@ will output a newsletter form into 'parentid' using 'templateid'.
 					}
 				csvArray = $.grep(csvArray,function(n){return(n);}); //remove blanks
 				return csvArray;
-				},
+				}, //getSkusFromList
 
 			handleChangePassword : function(formID,tagObj)	{
+				
 $('#'+formID+' .appMessage').empty().remove(); //clear any existing messaging
 var formObj = $('#'+formID).serializeJSON();
 if(app.ext.store_crm.validate.changePassword(formObj)){
@@ -745,7 +747,7 @@ else{
 	app.u.throwMessage(errObj);
 	}
 				
-				},
+				}, //handleChangePassword
 
 			handleSubscribe : function(formID,tagObj)	{
 				app.u.dump("BEGIN store_crm.u.handleSubscribe");

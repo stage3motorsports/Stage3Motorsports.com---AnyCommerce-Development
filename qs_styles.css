@@ -111,7 +111,7 @@ and offMenu is toggle off, hiding the change button.
 .appMessage ul	{margin-left:12px; font-size:.9em;}
 .appMessage ul li	{margin:0; padding:0;}
 
-.ui-state-success	{border:1px solid #aecdae; background:#dff6df; color:#333333;}
+.ui-state-success, .ui-state-statusupdate	{border:1px solid #aecdae; background:#dff6df; color:#333333;}
 .ui-state-warning	{border:1px solid #f58d48; background:#ffdfc9; color:#333333;}
 
 
