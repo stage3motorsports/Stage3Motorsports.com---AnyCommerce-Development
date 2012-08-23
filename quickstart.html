@@ -33,7 +33,7 @@ if(document.location.protocol != 'file:')	{
 
 <!-- all css includes need to be after the js that changes the base url -->
 <link rel="stylesheet" type="text/css" href="qs_styles.css" />
-<link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/cupertino/jquery-ui.css" />
+<link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/redmond/jquery-ui.css" />
 
 <script type="text/javascript" src="jquery-1.7.2.min.js"></script>
 <script type="text/javascript" src="loadscript.js"></script><!-- rename this to bootstrap -->
@@ -113,7 +113,7 @@ This file is intended to go along with the 10-step tutorial at:
 -->
 
 
-<div id='appTemplates'>
+<div id='appTemplates' class='displayNone'>
 
 
 <!--
@@ -168,7 +168,7 @@ don't modify the 'data-templateid' unless you are changing template names and up
 	
 	<ul data-bind="var: category(@subcategoryDetail); format: subcategoryList; extension: myRIA; loadsTemplate: categoryListTemplate;" class='listStyleNone fluidList clearfix noPadOrMargin categoryList'></ul>
 
-	<ul data-bind="var: category(@products); format: productList; editor: finder; extension: store_prodlist; loadsTemplate: productListTemplate;" class='listStyleNone fluidList clearfix noPadOrMargin productList'></ul>
+	<ul data-bind="var: category(@products); format: productList; editor: finder; extension: store_prodlist; loadsTemplate: productListTemplate; withReviews:1;" class='listStyleNone fluidList clearfix noPadOrMargin productList'></ul>
 	
 	<p data-bind="var: page(description2); format:wiki; wikiFormats:myRIA; editor: textarea;"></p>
 
@@ -210,7 +210,7 @@ remember to NOT put the button inside the 'onclick' container or two events will
 -->
 <li id='productListTemplate' class='loadingBG  ' >
 	<div onClick="showContent('product',{'pid':$(this).attr('data-pid')})" data-bind='var:product(pid);format:assignAttribute; attribute:data-pid;' class='pointer'>
-		<div class='prodThumbContainer'>
+		<div class='prodThumbContainer' data-bind='var:product(pid); format:addPicSlider; extension:myRIA;'>
 		<img src='blank.gif' class='prodThumb' data-bind='var: product(zoovy:prod_image1); format:imageURL;' width='120' height='120' />
 		</div>
 		
@@ -229,7 +229,7 @@ for product lists with addToCart feature (accessories, for example)
 container ul should have lineItemProdlist class on it instead of productList
 -->
 <li id='productListTemplateATC' class='loadingBG  ' >
-	<div data-bind='var:product(pid);format:assignAttribute; attribute:data-pid;' class='pointer'>
+	<div data-bind='var:product(pid);format:assignAttribute; attribute:data-pid;'>
 
 		<div class='prodThumbContainer floatLeft'>
 		<img src='blank.gif' class='prodThumb' data-bind='var: product(zoovy:prod_image1); format:imageURL;' width='120' height='120' />
@@ -250,6 +250,44 @@ container ul should have lineItemProdlist class on it instead of productList
 			<input type='hidden' value='1' size='3' name='quantity' />
 		
 		</form>
+
+	</div>
+</li>
+
+
+<li id='productListTemplateBuyerList' class='loadingBG clearfix' >
+	<div data-bind='var:product(pid);format:assignAttribute; attribute:data-pid;' >
+
+		<div class='prodThumbContainer floatLeft'>
+			<div class='ui-widget ui-widget-content ui-corner-all'>
+				<img src='blank.gif' class='prodThumb' data-bind='var: product(zoovy:prod_image1); format:imageURL;' width='160' height='160' />
+				<div class='buttonList ui-widget ui-widget-header ui-corner-all alignCenter'>
+
+<button class='ui-state-default ui-corner-all' title='add item to cart' onClick="showContent('product',{'pid':$(this).closest('[data-pid]').attr('data-pid')});">
+<span class="ui-icon ui-icon-cart"></span>
+</button>
+		
+<button class='ui-state-default ui-corner-all' title='more information'>
+<span class="ui-icon ui-icon-info"></span>
+</button>
+
+<button class='ui-state-default ui-corner-all' title='write a review for this item' onClick="app.ext.store_crm.u.showReviewFrmInModal({'pid':$(this).closest('[data-pid]').attr('data-pid'),'templateID':'reviewFrmTemplate'});">
+<span class="ui-icon ui-icon-star"></span>
+</button>
+
+<button class='ui-state-default ui-corner-all' title='remove item from list' onClick="app.ext.myRIA.a.removeItemFromBuyerList({'stid':$(this).closest('[data-pid]').attr('data-pid'),'listID':$(this).closest('[data-buyerlistid]').attr('data-buyerlistid')},{'parentID':$(this).closest('li').attr('id')});">
+<span class="ui-icon ui-icon-trash"></span>
+</button>
+			
+				</div>
+			</div>
+		</div>
+		<span data-bind='var: reviews(average); format:addClass; className:review_;' class='reviewSprite floatRight' ></span>
+
+		<h5 data-bind='var: product(zoovy:prod_name); format:text;'></h5>
+	
+		<h6 data-bind='var: product(zoovy:base_price); format:money; currencySign: $;  hideZero:true; className:price; pretext: Our Price: ;'></h6>
+		
 
 	</div>
 </li>
@@ -379,9 +417,9 @@ you'll likely want to something MUCH more custom here. this just simply adds it 
 	<menu data-bind='var:product(pid);format:assignAttribute; attribute:data-pid;' id='CRMButtonMenu'>
 
 	<a href='#' onClick='app.ext.store_crm.u.showReviewFrmInModal({"pid":$(this).parent().attr("data-pid"),"templateID":"reviewFrmTemplate"}); return false;'>Write Review</a>	
-	<!--
+
 	<a href='#' onClick="app.ext.myRIA.a.add2BuyerList({pid:$(this).parent().attr('data-pid'),'listid':'wishlist'}); return false;">Add to Wishlist</a>
-	-->
+
 	</menu>
 
 	
@@ -632,6 +670,7 @@ adding classes is not likely to have any bad effects.
 		<li><a href='#customer?show=myaccount' id='navLink_myaccount'>My Account</a></li>
 		<li><a href='#customer?show=changepassword' id='navLink_changepassword'>Change Password</a></li>
 		<li><a href='#customer?show=orders' id='navLink_orders'>Order History</a></li>
+		<li><a href='#customer?show=lists' id='navLink_orders'>Manage Lists</a></li>
 	</ul>
 	</nav>
 	</div>
@@ -691,9 +730,12 @@ adding classes is not likely to have any bad effects.
 			</div>
 		</div>
 	
-		<div id='wishlistArticle' class='displayNone textContentArea'>
-			<h1>Your Wishlist</h1>
-			<ul id='wishlistContainer' class='prodlist loadingBG'></ul>
+		<div id='listsArticle' class='displayNone textContentArea'>
+			<h1>List Manager</h1>
+			<div id='listsContainer' class='prodlist loadingBG'></div>
+			
+			<div id='listEditorContainer' class='displayNone loadingBG'></div><!-- editor for a given list gets added here -->
+			
 		</div>
 	
 		<div id='forgetmeArticle' class='displayNone textContentArea'>

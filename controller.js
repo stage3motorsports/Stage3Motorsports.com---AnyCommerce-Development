@@ -559,8 +559,14 @@ app.u.handleCallback(tagObj);
 		jumpToAnchor : function(id)	{
 			window.location.hash=id;
 			},
-
-
+//uses throw message, but always adds the same generic message. value of 'err' is output w/ dump.
+//this should only be used for app errors (errors thrown from within the MVC, not as a result of an API call, in which case throwMessage should be used (handles request errors nicely)
+		throwGMessage : function(err,parentID){
+			var msg = this.errMsgObject("Well this is embarrassing. Something bad happened. Please try that again. If this error persists, please contact the site administrator.","#");
+			if(parentID)	{msg.parentID = parentID}
+			this.throwMessage(msg);
+			app.u.dump(err);
+			},
 /*
 err could be a string or an object.
 if an object, could be: {errid,errmsg,errtype}   OR   {msg_X_txt,msg_X_type,msg_X_id}

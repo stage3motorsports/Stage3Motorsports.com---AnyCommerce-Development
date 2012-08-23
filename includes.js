@@ -1541,3 +1541,97 @@ if (!this.JSON) {
 // remove the JSON parse function.
 
 }());
+
+
+
+
+
+
+
+
+
+
+
+/*
+############################################################
+
+
+
+
+A fairly simple pic slider class
+
+
+
+############################################################
+
+*/
+
+
+
+
+
+
+
+
+
+
+/*
+
+A class designed for a fairly simple slider, intended to be used when a mouse goes over a product photo in a product list.
+
+*/
+
+var imgSlider = function($jObjUl) {
+	this.init($jObjUl);
+	}
+
+jQuery.extend(imgSlider.prototype, {
+	init : function($jObjUl){
+		this.$jObjUl = $jObjUl; //Jquery Object of the Unordered List
+		this.direction = 'left'; //will toggle left/right as slideshow goes one direction or the other. used to execute which slide occurs.
+		this.focusSlide = 0; //which slide is in focus. 0 = pic1
+		this.to; //will hold timeout. allows cancellation if desired. (see kill)
+		this.numSlides = this.$jObjUl.children().length;
+		this.width = this.getWidth(); // sum width of all slides. used to computes width of individual slides.
+//assuming all slides are same width, this will compute the slide width.
+		this.slideWidth = (this.width / this.numSlides); 
+		this.pause = 200; //first pic has been displayed, so start rotation quickly.
+		this.handleAnime(); //start the slideshow
+		this.pause = 3500; //used to determine length of time before slide leaves. takes into account time it takes to slide in (but not depart)
+		},
+	getWidth : function(){
+		var r = 0; //what is returned. sum width;
+		this.$jObjUl.children().each(function(){
+			r += $(this).outerWidth(true);
+			});
+		return r;
+		},
+	handleAnime : function(){
+//		console.log("slide: "+this.focusSlide+"/"+this.numSlides);
+		var bob = this;  // 'this' loses it's meaning inside the anonymous function below, so a new var is created to reference
+		if(this.focusSlide >= (this.numSlides - 1))	{
+			this.direction = 'right'
+			}
+		else if(this.focusSlide <= 0)	{
+			this.direction = 'left';
+			}
+		else	{
+//shouldn't get here.
+			}
+		this.to = setTimeout(function(){bob['slide'+bob.direction]()},bob.pause); //the animation takes 1.5 seconds, so a 3.5 second timeout gives 2 seconds per pic of non movement.
+		},
+	slideleft : function()	{
+		this.focusSlide += 1;
+		this.$jObjUl.animate({left: "-="+this.slideWidth}, 1500, this.handleAnime());
+		},
+	slideright : function()	{
+		this.focusSlide -= 1;
+		this.$jObjUl.animate({left: "+="+this.slideWidth}, 1500, this.handleAnime());
+		},
+	kill : function(){
+		clearTimeout(this.to); //makes sure anything set to run in the timeout is killed.
+		this.$jObjUl.stop(); //kill current animation.
+		this.$jObjUl.animate({'left':0},1000); //return slideshow so image1 is displayed.
+		}
+	});
+

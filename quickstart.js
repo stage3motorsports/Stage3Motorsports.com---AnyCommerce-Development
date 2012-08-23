@@ -389,21 +389,41 @@ app.ext.store_checkout.checkoutCompletes.push(function(P){
 				}
 			}, //showPageContent
 
+//this is used for showing a customer list of product, such as wish or forget me lists
+		showBuyerLists : {
+			onSuccess : function(tagObj)	{
+//				app.u.dump('BEGIN app.ext.myRIA.showList.onSuccess ');
+var $parent = $('#'+tagObj.parentID);
+var $ul = app.ext.store_crm.u.getBuyerListsAsUL(tagObj.datapointer);
+var numRequests = 0;
+$ul.children().each(function(){
+	var $li = $(this);
+	var listID = $li.data('buyerlistid');
+	$li.wrapInner("<a href='#"+listID+"Contents'></a>"); //adds href for tab selection
+	$parent.append($("<div>").attr({'id':listID+'Contents','data-buyerlistid':listID}).append($("<ul>").addClass('listStyleNone clearfix noPadOrMargin lineItemProdlist').attr('id','prodlistBuyerList_'+listID))); //containers for list contents and ul for productlist
+	numRequests += app.ext.store_crm.calls.buyerProductListDetail.init(listID,{'callback':'buyerListAsProdlist','extension':'myRIA','parentID':'prodlistBuyerList_'+listID})
+	});
+$parent.removeClass('loadingBG').prepend($ul).tabs();
+app.model.dispatchThis('mutable');
+				}
+			}, //showBuyerList
+
 
 
 //this is used for showing a customer list of product, such as wish or forget me lists
-		showList : {
+//formerly showlist
+		buyerListAsProdlist : {
 			onSuccess : function(tagObj)	{
 //				app.u.dump('BEGIN app.ext.myRIA.showList.onSuccess ');
 				var listID = tagObj.datapointer.split('|')[1];
-				var prods = app.ext.store_crm.u.getSkusFromList(listID);
+				var prods = app.ext.store_crm.u.getSkusFromBuyerList(listID);
 				if(prods.length < 1)	{
 //list is empty.
 					app.u.formatMessage('This list ('+listID+') appears to be empty.');
 					}
 				else	{
 //					app.u.dump(prods);
-					app.ext.store_prodlist.u.buildProductList({"templateID":"productListTemplate","withInventory":1,"withVariations":1,"parentID":tagObj.parentID,"csv":prods})
+					app.ext.store_prodlist.u.buildProductList({"templateID":"productListTemplateBuyerList","withInventory":1,"withVariations":1,"parentID":tagObj.parentID,"csv":prods,withInventory:1,withReviews:1,withVariations:1})
 					app.model.dispatchThis();
 					}
 				}
@@ -496,6 +516,20 @@ need to be customized on a per-ria basis.
 					}
 				}, //subcategoryList
 
+			addPicSlider : function($tag,data)	{
+				app.u.dump("BEGIN myRIA.renderFormats.addPicSlider: "+data.value);
+				if(app.data['appProductGet|'+data.value])	{
+					var pdata = app.data['appProductGet|'+data.value]['%attribs'];
+//if image 1 or 2 isn't set, likely there are no secondary images. stop.
+					if(app.u.isSet(pdata['zoovy:prod_image1']) && app.u.isSet(pdata['zoovy:prod_image2']))	{
+						app.u.dump(" -> image1 ["+pdata['zoovy:prod_image1']+"] and image2 ["+pdata['zoovy:prod_image2']+"] both are set.");
+//adding this as part of mouseenter means pics won't be downloaded till/unless needed.
+// no anonymous function in mouseenter. We'll need this fixed to ensure no double add (most likely) if template re-rendered.
+//							$tag.unbind('mouseenter.myslider'); // ensure event is only binded once.
+							$tag.bind('mouseenter.myslider',app.ext.myRIA.u.addPicSlider2UL).bind('mouseleave',function(){window.slider.kill()})
+						}
+					}
+				},
 
 			youtubeThumbnail : function($tag,data)	{
 				$tag.attr('src',"https://i3.ytimg.com/vi/"+data.value+"/default.jpg");
@@ -789,6 +823,53 @@ for legacy browsers. That means old browsers will use the anchor to retain 'back
 				return false; //always return false so the default action (href) is cancelled. hashstate will address the change.
 				}, //showContent
 
+/*
+add as an action to a button.
+First check to see if item is purchaseable. If not, jump to product detail page. could be that inventory/variations weren't retrieved or that the item is a parent.
+If item has variations, will go to detail page.
+if item has no variations and does have inventory, will add to cart.
+supports same actions as default add to cart.
+assumes product record is in memory.
+*/
+/*
+			add2CartOrDetails : function(sku,P)	{
+P.pageType = 'product';
+P.pid = sku;
+if(sku && app.data['appProductGet|'+sku])	{
+	if(app.ext.store_product.u.productIsPurchaseable(sku))	{
+		if(app.data['appProductGet|'+sku]['@variations'] && $.isEmptyObject(app.data['appProductGet|'+sku]['@variations'])	{showContent(P);} //either variations weren't retrieved or item HAS variations. 
+		else if(){}
+	else	{
+//for some reason, the item isn't purchaseable. could be that it's a parent, that variations or inventory haven't been retrieved. jump to detail page.
+		showContent(P);
+		}
+	}
+else	{
+	app.u.throwMessage("Oops. It seems we weren't quite ready for you to do that or the developer made a mistake. Please try again momentarily and if the error persists, please let us know. <br />err: sku ["+sku+"] not passed into myRIA.u.add2CartOrDetails or data not in memory.");
+	}
+				
+				},
+
+*/
+
+/*
+required:
+P.stid
+P.listID (buyer list id)
+*/
+			removeItemFromBuyerList : function(P,tagObj)	{
+				app.u.dump(P);
+				if(P.stid && P.listID)	{
+					app.ext.store_crm.calls.buyerProductListRemoveFrom.init(P.listID,P.stid,tagObj,'immutable');
+					app.ext.store_crm.calls.buyerProductListDetail.init(P.listID,{},'immutable'); //update list in memory
+					app.model.dispatchThis('immutable');
+					if(tagObj.parentID) {$('#'+tagObj.parentID).empty().remove();}
+					}
+				else	{
+					app.u.throwGMessage("ERROR! either stid ["+P.stid+"] or listID ["+P.listID+"] not passed into myRIA.a.removeItemFromBuyerList.",P.parentID)
+					}
+				},
+			
 //guts of this found here: http://www.dynamicdrive.com/dynamicindex9/addbook.htm
 			bookmarkThis : function()	{
 				var url = window.location;
@@ -932,6 +1013,45 @@ for legacy browsers. That means old browsers will use the anchor to retain 'back
 				app.ext.myRIA.a.showContent('',P);
 				return P //returning this saves some additional looking up in the appInit
 				},
+
+//obj is going to be the container around the img. probably a div.
+//the internal img tag gets nuked in favor of an ordered list.
+			addPicSlider2UL : function(){
+				app.u.dump("BEGIN myRIA.u.addPicSlider2UL");
+				
+				var $obj = $(this);
+				if($obj.data('slider') == 'rendered')	{
+					//do nothing. list has aready been generated.
+					app.u.dump("the slideshow has already been rendered. re-init");
+					window.slider.kill(); //make sure it was nuked.
+					window.slider = new imgSlider($('ul',$obj))
+					}
+				else	{
+					$obj.data('slider','rendered'); //used to determine if the ul contents have already been added.
+					var pid = $obj.closest('[data-pid]').attr('data-pid');
+					app.u.dump(" -> pid: "+pid);
+					var data = app.data['appProductGet|'+pid]['%attribs'];
+					var $img = $obj.find('img')
+					var width = $img.attr('width'); //using width() and height() here caused unusual results in the makeImage function below.
+					var height = $img.attr('height');
+					$obj.width(width).height(height).css({'overflow':'hidden','position':'relative'});
+					var $ul = $('<ul>').addClass('slideMe').css({'height':height+'px'});
+					$ul.append($img.wrap("<li>")); //move the original image into the list instead of re-requesting it.
+					var $li; //recycled.
+					for(var i = 2; i <= 10; i += 1)	{
+						if(data['zoovy:prod_image'+i])	{
+							$li = $('<li>').append(app.u.makeImage({"name":data['zoovy:prod_image'+i],"w":width,"h":height,"b":"FFFFFF","tag":1}));
+							$li.appendTo($ul);
+							}
+						else	{break} //end loop at first empty image spot.
+						}
+	
+					$obj.append($ul); //kill existing image. will b replaced w/ imagery in ul.
+//					$img.remove(); //get rid of original img instance.
+					window.slider = new imgSlider($('ul',$obj))
+					}
+				},	
+				
 			changeCursor : function(style)	{
 //				app.u.dump("BEGIN myRIA.u.changeCursor ["+style+"]");
 				$('html, body').css('cursor',style);
@@ -1481,8 +1601,8 @@ return r;
 						case 'orders':
 							app.ext.store_crm.calls.buyerPurchaseHistory.init({'parentID':'orderHistoryContainer','templateID':'orderLineItemTemplate','callback':'showOrderHistory','extension':'store_crm'});
 							break;
-						case 'wishlist':
-							app.ext.store_crm.calls.buyerProductLists.init('wishlist',{'parentID':'wishlistContainer','callback':'showList','extension':'myRIA'});
+						case 'lists':
+							app.ext.store_crm.calls.buyerProductLists.init({'parentID':'listsContainer','callback':'showBuyerLists','extension':'myRIA'});
 							break;
 						case 'myaccount':
 //							app.u.dump(" -> myaccount article loaded. now show addresses...");
@@ -1513,7 +1633,7 @@ return r;
 				switch(P.show)	{
 					case 'myaccount':
 					case 'changepassword':
-					case 'forgetme':
+					case 'lists':
 					case 'orders':
 						r = true;
 						break;

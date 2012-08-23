@@ -160,43 +160,33 @@ NOT SUPPORTED.
 
 //formerly getAllCustomerLists
 		buyerProductLists : {
-			init : function(tagObj)	{
+			init : function(tagObj,Q)	{
 				var r = 0;
 				tagObj = $.isEmptyObject(tagObj) ? {} : tagObj; 
 				tagObj.datapointer = "buyerProductLists"
 				if(app.model.fetchData(tagObj.datapointer) == false)	{
-					app.u.dump(" -> buyerProductLists is not local. go get her Ray!");
 					r = 1;
 					this.dispatch(tagObj);
 					}
 				else	{
 //					app.u.dump(' -> data is local');
-					app.u.handleCallback(tagObj);
+					app.u.handleCallback(tagObj,Q);
 					}
 				return r;
 				},
-			dispatch : function(tagObj)	{
+			dispatch : function(tagObj,Q)	{
 				app.model.addDispatchToQ({"_cmd":"buyerProductLists","_tag" : tagObj});	
 				}
 			},//buyerProductLists
 
 
-//formerly getCustomerList
+//formerly getCustomerList. always get lists.
 		buyerProductListDetail : {
 			init : function(listID,tagObj,Q)	{
-				var r = 0;
 				tagObj = $.isEmptyObject(tagObj) ? {} : tagObj; 
 				tagObj.datapointer = "buyerProductListDetail|"+listID
-				if(app.model.fetchData(tagObj.datapointer) == false)	{
-					app.u.dump(" -> buyerProductListDetail is not local. go get her Ray!");
-					r = 1;
-					this.dispatch(listID,tagObj,Q);
-					}
-				else	{
-//					app.u.dump(' -> data is local');
-					app.u.handleCallback(tagObj);
-					}
-				return r;
+				this.dispatch(listID,tagObj,Q);
+				return 1;
 				},
 			dispatch : function(listID,tagObj,Q)	{
 				app.model.addDispatchToQ({"_cmd":"buyerProductListDetail","listid":listID,"_tag" : tagObj},Q);	
@@ -222,12 +212,12 @@ NOT SUPPORTED.
 
 //formerly removeFromCustomerList
 		buyerProductListRemoveFrom : {
-			init : function(listID,stid,tagObj)	{
-				this.dispatch(listID,stid,tagObj);
+			init : function(listID,stid,tagObj,Q)	{
+				this.dispatch(listID,stid,tagObj,Q);
 				return 1;
 				},
-			dispatch : function(listID,stid,tagObj)	{
-				app.model.addDispatchToQ({"_cmd":"buyerProductListRemoveFrom","listid":listID,"sku":stid,"_tag" : tagObj});	
+			dispatch : function(listID,stid,tagObj,Q)	{
+				app.model.addDispatchToQ({"_cmd":"buyerProductListRemoveFrom","listid":listID,"sku":stid,"_tag" : tagObj},Q);	
 				}
 			},//buyerProductListRemoveFrom
 
@@ -718,6 +708,28 @@ will output a newsletter form into 'parentid' using 'templateid'.
 				return url;
 				},
 
+			getAllBuyerListsDetails : function(datapointer,tagObj)	{
+var data = app.data[datapointer]['@lists']; //shortcut
+var L = data.length;
+var numRequests = 0;
+for(var i = 0; i < L; i += 1)	{
+	numRequests += app.ext.store_crm.calls.buyerProductListDetail.init(data[i].id,tagObj)
+	}
+return numRequests;
+				},
+
+			getBuyerListsAsUL : function(datapointer)	{
+
+var data = app.data[datapointer]['@lists']; //shortcut
+var L = data.length;
+var $r = $("<ul>");
+var $li; //recycled
+for(var i = 0; i < L; i += 1)	{
+	$li = $("<li\/>").data("buyerlistid",data[i].id).text(data[i].id+" ("+data[i].items+" items)");
+	$li.appendTo($r);
+	}
+return $r;
+				},
 
 //assumes the list is already in memory
 //formerly getSkusFromList
