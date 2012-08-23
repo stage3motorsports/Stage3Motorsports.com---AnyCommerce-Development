@@ -1036,7 +1036,7 @@ P.listID (buyer list id)
 					var height = $img.attr('height');
 					$obj.width(width).height(height).css({'overflow':'hidden','position':'relative'});
 					var $ul = $('<ul>').addClass('slideMe').css({'height':height+'px'});
-					$ul.append($img.wrap("<li>")); //move the original image into the list instead of re-requesting it.
+					
 					var $li; //recycled.
 					for(var i = 2; i <= 10; i += 1)	{
 						if(data['zoovy:prod_image'+i])	{
@@ -1045,7 +1045,8 @@ P.listID (buyer list id)
 							}
 						else	{break} //end loop at first empty image spot.
 						}
-	
+					$li = $("<li>").append($img);
+					$ul.prepend($li); //move the original image to the front of the list instead of re-requesting it. prevents a 'flicker' from happening
 					$obj.append($ul); //kill existing image. will b replaced w/ imagery in ul.
 //					$img.remove(); //get rid of original img instance.
 					window.slider = new imgSlider($('ul',$obj))

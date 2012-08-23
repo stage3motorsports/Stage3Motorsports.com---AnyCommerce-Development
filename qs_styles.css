@@ -103,6 +103,15 @@ and offMenu is toggle off, hiding the change button.
 .editEnabled	{border:1px solid #ffcc00; min-width:25px; min-height:22px; width:200px; display:inline-block; padding:2px; margin-bottom:2px;} /* added to any editable field once editor is enabled. */
 .edited		{border:1px solid #390;} /* added if a field is changed */
 
+
+
+.marginLeft	{margin-left:12px;}
+.marginRight	{margin-right:12px;}
+.marginTop	{margin-top:12px;}
+.marginBottom	{margin-bottom:12px;}
+.stdMargin	{margin:12px;}
+
+
 /****** APP specific styles ******/
 
 
