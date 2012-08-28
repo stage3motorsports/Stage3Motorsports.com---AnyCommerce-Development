@@ -1,6 +1,5 @@
 var app = app || {vars:{},u:{}}; //make sure app exists.
 
-
 // A list of all the extensions that are going to be used.
 //if an extension is 'required' for any page within the store to load properly, the extension should be added as a dependency within quickstart.js
 app.vars.extensions = [
@@ -12,6 +11,8 @@ app.vars.extensions = [
 	{"namespace":"store_search","filename":"extensions/store_search.js"},
 	{"namespace":"store_product","filename":"extensions/store_product.js"},
 	{"namespace":"store_cart","filename":"extensions/store_cart.js"},
+//	{"namespace":"analytics_google","filename":"extensions/analytics_google.js","callback":"addTriggers"},
+	{"namespace":"bonding_buysafe","filename":"extensions/bonding_buysafe.js","callback":"addTriggers"},
 	{"namespace":"store_crm","filename":"extensions/store_crm.js"},
 	{"namespace":"myRIA","filename":"quickstart.js","callback":"startMyProgram"}
 	];
@@ -60,7 +61,6 @@ app.vars.scripts.push({'pass':1,'location':app.vars.baseURL+'includes.js','valid
 
 //used for making text editable (customer address). non-essential. loaded late.
 app.vars.scripts.push({'pass':8,'location':app.vars.baseURL+'jeditable.js','validator':function(){return (typeof $ == 'function' && jQuery.editable) ? true : false;}})
-
 
 
 

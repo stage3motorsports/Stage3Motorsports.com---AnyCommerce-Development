@@ -1231,10 +1231,22 @@ respond accordingly.
 			},
 
 		executeExtensionCallback : function(namespace,callback)	{
-//			app.u.dump("BEGIN model.executeExtensionCallback");
-			if(typeof callback == 'function'){eval(callback)}
-			else if(typeof callback == 'string')	{app.ext[namespace].callbacks[callback].onSuccess()}
-			else	{app.u.dump("!Unknown type ["+typeof callback+"] for extension callback ");}
+			app.u.dump("BEGIN model.executeExtensionCallback ["+namespace+"]");
+			if(namespace && callback)	{
+				if(typeof callback == 'function'){eval(callback)}
+				else if(typeof callback == 'string' && typeof app.ext[namespace] == 'object' && typeof app.ext[namespace].callbacks[callback] == 'object')	{
+					app.ext[namespace].callbacks[callback].onSuccess()
+					}
+				else if(typeof callback == 'string')	{
+					app.u.dump("WARNING! callback ["+callback+"] defined for namespace: "+namespace+" but something went wrong");
+					app.u.dump(" -> typeof app.ext[namespace]: "+typeof app.ext[namespace]);
+					if(typeof app.ext[namespace] == 'object')	{app.u.dump(app.ext[namespace].callbacks[callback]);}
+					}
+				else	{app.u.dump("!Unknown type ["+typeof callback+"] for extension callback ");}
+				}
+			else	{
+				app.u.dump("WARNING!  either namespace ["+namespace+"] or callback ["+callback+"] was undefined in model.executeExtensionCallback");
+				}
 			},
 			
 //see big comment block above fetch for more info.

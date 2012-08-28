@@ -752,15 +752,19 @@ URI PARAM
 //check for ? to avoid js error which results when no uri params are present
 			if(string || url.indexOf('?') > 0)	{
 				url = url.replace('?', '').replace(/&amp;/g, '&'); //uri may be encoded or not. normalize.
+				url = decodeURIComponent(url);
 //				app.u.dump(" -> URL after tweaking: "+url);
 				if(app.u.isSet(url))	{
 					var queries = url.split('&');
 					for(var q in queries) {
 						var param = queries[q].split('=');
-						params[ param[0] ] = decodeURIComponent(param[1].replace(/\+/g, " ")); //may want to move this up further. may be more efficient to decode when url var is created.
+						if(param[1])	{
+							params[ param[0] ] = param[1].replace(/\+/g, " "); 
+							}
 						}
 					}
 				}
+//			app.u.dump(" -> params: "); app.u.dump(params);
 			return params;
 			},
 

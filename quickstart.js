@@ -104,8 +104,12 @@ else	{
 
 
 //get list of categories and append to DOM IF parent id exists
-				app.ext.store_navcats.calls.appCategoryList.init({"callback":"showRootCategories","extension":"myRIA"},'passive'); 
-				app.ext.store_navcats.calls.appCategoryDetailMax.init('.',{},'passive'); //have this handy.
+				app.ext.store_navcats.calls.appCategoryList.init({"callback":"showRootCategories","extension":"myRIA"},'passive');
+//get homepage info passively. do it later so that if it is already requested as part of another process, no double request occurs.
+				setTimeout(function(){
+					app.ext.store_navcats.calls.appCategoryDetailMax.init('.',{},'passive');
+					},7000); //throw this into the q to have handy. do it later 
+				
 				if(app && app.u && typeof app.u.appInitComplete == 'function'){app.u.appInitComplete()}; //gets run prior to any page content so that it can be used to add renderformats of template functions.
 
 				var page = app.ext.myRIA.u.handleAppInit({"skipClearMessaging":true}); //checks url and will load appropriate page content. returns object {pageType,pageInfo}
@@ -349,7 +353,8 @@ app.ext.store_checkout.checkoutCompletes.push(function(P){
 				},
 			onError : function(responseData)	{
 				app.u.throwMessage(responseData);
-				$('#mainContentArea').removeClass('loadingBG');
+				$('.loadingBG',$('#mainContentArea')).removeClass('loadingBG'); //nuke all loading gfx.
+				app.ext.myRIA.u.changeCursor('auto'); //revert cursor so app doesn't appear to be in waiting mode.
 				}
 			}, //fetchPageContent
 
@@ -359,6 +364,7 @@ app.ext.store_checkout.checkoutCompletes.push(function(P){
 			onSuccess : function(tagObj)	{
 //when translating a template, only 1 dataset can be passed in, so detail and page are merged and passed in together.
 				var tmp = {};
+//cat page handling.
 				if(tagObj.navcat)	{
 					if(typeof app.data['appCategoryDetail|'+tagObj.navcat] == 'object' && !$.isEmptyObject(app.data['appCategoryDetail|'+tagObj.navcat]))	{
 						tmp = app.data['appCategoryDetail|'+tagObj.navcat]
@@ -370,10 +376,15 @@ app.ext.store_checkout.checkoutCompletes.push(function(P){
 //a category page gets translated. A product page does not because the bulk of the product data has already been output. prodlists are being handled via buildProdlist
 					app.renderFunctions.translateTemplate(tmp,tagObj.parentID);
 					}
+//product page handline
 				else if(tagObj.pid)	{
 // the bulk of the product translation has already occured by now (attribs, reviews and session) via callbacks.showProd.
 // product lists are being handled through 'buildProductList'.
 					}
+				else	{
+					app.u.dump("WARNING! showPageContent has no pid or navcat defined");
+					}
+
 				var L = tagObj.searchArray.length;
 				var $parent;
 				for(var i = 0; i < L; i += 1)	{
@@ -382,6 +393,7 @@ app.ext.store_checkout.checkoutCompletes.push(function(P){
 					}
 				tagObj.state = 'onCompletes'; //needed for handleTemplateFunctions.
 				app.ext.myRIA.u.handleTemplateFunctions(tagObj);
+
 				},
 			onError : function(responseData,uuid)	{
 				$('#mainContentArea').removeClass('loadingBG')
@@ -517,12 +529,12 @@ need to be customized on a per-ria basis.
 				}, //subcategoryList
 
 			addPicSlider : function($tag,data)	{
-				app.u.dump("BEGIN myRIA.renderFormats.addPicSlider: "+data.value);
+//				app.u.dump("BEGIN myRIA.renderFormats.addPicSlider: "+data.value);
 				if(app.data['appProductGet|'+data.value])	{
 					var pdata = app.data['appProductGet|'+data.value]['%attribs'];
 //if image 1 or 2 isn't set, likely there are no secondary images. stop.
 					if(app.u.isSet(pdata['zoovy:prod_image1']) && app.u.isSet(pdata['zoovy:prod_image2']))	{
-						app.u.dump(" -> image1 ["+pdata['zoovy:prod_image1']+"] and image2 ["+pdata['zoovy:prod_image2']+"] both are set.");
+//						app.u.dump(" -> image1 ["+pdata['zoovy:prod_image1']+"] and image2 ["+pdata['zoovy:prod_image2']+"] both are set.");
 //adding this as part of mouseenter means pics won't be downloaded till/unless needed.
 // no anonymous function in mouseenter. We'll need this fixed to ensure no double add (most likely) if template re-rendered.
 //							$tag.unbind('mouseenter.myslider'); // ensure event is only binded once.
@@ -1017,12 +1029,12 @@ P.listID (buyer list id)
 //obj is going to be the container around the img. probably a div.
 //the internal img tag gets nuked in favor of an ordered list.
 			addPicSlider2UL : function(){
-				app.u.dump("BEGIN myRIA.u.addPicSlider2UL");
+//				app.u.dump("BEGIN myRIA.u.addPicSlider2UL");
 				
 				var $obj = $(this);
 				if($obj.data('slider') == 'rendered')	{
 					//do nothing. list has aready been generated.
-					app.u.dump("the slideshow has already been rendered. re-init");
+//					app.u.dump("the slideshow has already been rendered. re-init");
 					window.slider.kill(); //make sure it was nuked.
 					window.slider = new imgSlider($('ul',$obj))
 					}
@@ -1035,7 +1047,7 @@ P.listID (buyer list id)
 					var width = $img.attr('width'); //using width() and height() here caused unusual results in the makeImage function below.
 					var height = $img.attr('height');
 					$obj.width(width).height(height).css({'overflow':'hidden','position':'relative'});
-					var $ul = $('<ul>').addClass('slideMe').css({'height':height+'px'});
+					var $ul = $('<ul>').addClass('slideMe').css({'height':height+'px','width':'20000px'}); /* inline width to override inheretance */
 					
 					var $li; //recycled.
 					for(var i = 2; i <= 10; i += 1)	{
@@ -1609,12 +1621,6 @@ return r;
 //							app.u.dump(" -> myaccount article loaded. now show addresses...");
 							app.ext.store_crm.calls.buyerAddressList.init({'callback':'showAddresses','extension':'myRIA'},'mutable');
 							break;
-						case 'faq':
-							app.ext.store_crm.calls.appFAQsAll.init({'parentID':'faqContent','callback':'showFAQTopics','extension':'store_crm','templateID':'faqTopicTemplate'});
-							break;
-						case 'forgetme':
-							app.ext.store_crm.calls.buyerProductLists.init('forgetme',{'parentID':'forgetmeContainer','callback':'showList','extension':'myRIA'}); 
-							break;
 						default:
 							app.u.dump("WARNING - unknown article/show ["+P.show+" in showCustomer. ");
 						}
@@ -1667,8 +1673,13 @@ return r;
 					var $this = $(this);
 //					app.u.dump($this.attr('href'));
 					var P = app.ext.myRIA.u.parseAnchor($this.attr('href'));
-					if(P.pageType == 'category' && P.navcat){
-						app.ext.store_navcats.calls.appCategoryDetailMax.init(P.navcat,{},'passive');
+					if(P.pageType == 'category' && P.navcat && P.navcat != '.'){
+//for bindnavs, get info to have handy. the timeout is so that the app has time to load/init and this has no impact.
+//also to reduce # of mutliple requests (init may get this cat already because it's in focus, for instance).
+setTimeout(function(){
+	app.ext.store_navcats.calls.appCategoryDetailMax.init(P.navcat,{},'passive');
+	},7000); //throw this into the q to have handy. do it later 
+						
 						}
 					$this.click(function(event){
 //						event.preventDefault(); //cancels any action on the href. keeps anchor from jumping.
@@ -1692,7 +1703,7 @@ return r;
 				$('#loginSuccessContainer').hide(); //contains 'continue' button.
 				$('#loginMessaging, #recoverPasswordMessaging').empty(); //used for success and fail messaging.
 				$('#loginFormContainer, #recoverPasswordContainer').show(); //contains actual form and password recovery form (second id)
-				$('#loginFormForModal').dialog({modal: true,width:400,autoOpen:false});
+				$('#loginFormForModal').dialog({modal: true,width:550,autoOpen:false});
 				$('#loginFormForModal').dialog('open');
 				}, //showLoginModal
 

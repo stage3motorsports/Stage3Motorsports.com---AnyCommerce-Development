@@ -112,6 +112,8 @@ and offMenu is toggle off, hiding the change button.
 .stdMargin	{margin:12px;}
 
 
+
+
 /****** APP specific styles ******/
 
 
@@ -174,7 +176,7 @@ and override using classes or id's as needed.
 
 /* used for the picture slider mouse over effect in some product lists */
 
-.slideMe	{position:absolute; top:0px; width:20000px;}
+.slideMe	{position:absolute; top:0px;}
 .slideMe, .slideMe li	{list-style:none; margin:0; padding:0;}
 .slideMe li	{float:left; margin-right:2px;}
 
@@ -302,7 +304,7 @@ CUSTOMER PAGES
 /****** NEWSLETTER SUBSCRIBE/ACCOUNT CREATE ******/
 #subscribeFormContainer .userInfo div	{margin-bottom:6px;}
 #subscribeFormContainer li	{list-style:none;}
-#subscribeFormContainer .userInfo label	{width:100px; display:inline-block; margin-right:10px;}
+#subscribeFormContainer .userInfo label, #changePasswordForm label	{width:120px; display:inline-block; margin-right:10px;}
 .subscriberLists label	{width:300px;}
 
 

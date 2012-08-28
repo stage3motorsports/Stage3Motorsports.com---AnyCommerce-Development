@@ -108,7 +108,7 @@ var store_product = function() {
 
 //formerly appReviewsList
 		appReviewsList : {
-			init : function(pid,tagObj)	{
+			init : function(pid,tagObj,Q)	{
 				var r = 0; //will return a 1 or a 0 based on whether the item is in local storage or not, respectively.
 //app.u.dump("appReviewsList tagObj:");
 //app.u.dump(tagObj);
@@ -118,15 +118,15 @@ var store_product = function() {
 
 				if(app.model.fetchData('appReviewsList|'+pid) == false)	{
 					r = 1;
-					this.dispatch(pid,tagObj)
+					this.dispatch(pid,tagObj,Q)
 					}
 				else	{
 					app.u.handleCallback(tagObj)
 					}
 				return r;
 				},
-			dispatch : function(pid,tagObj)	{
-				app.model.addDispatchToQ({"_cmd":"appReviewsList","pid":pid,"_tag" : tagObj});	
+			dispatch : function(pid,tagObj,Q)	{
+				app.model.addDispatchToQ({"_cmd":"appReviewsList","pid":pid,"_tag" : tagObj},Q);	
 				}
 			}//appReviewsList
 		}, //calls

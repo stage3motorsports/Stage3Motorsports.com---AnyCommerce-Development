@@ -431,7 +431,7 @@ renderOptionUNKNOWN: function(pog,safeid) {
 
 // !!! this'll need fixin
 showHintIcon : function(pogid,pogHint)	{
-	app.u.dump("BEGIN variations.showHintIcon");
+//	app.u.dump("BEGIN variations.showHintIcon");
 	return "<span class='ghint_qmark_container'><a href='#' onclick='$(\"#ghint_"+pogid+"\").toggle(); return false;' class='ghint_qmark'>?<\/a></span><div style='display:none;' class='zhint' id='ghint_"+pogid+"'>"+pogHint+"</div>";
 	},
 

@@ -36,12 +36,13 @@ var analytics_google = function() {
 		callbacks : {
 			init : {
 				onSuccess : function()	{
-	//				app.u.dump('BEGIN app.ext.store_navcats.init.onSuccess ');
-					var r = true; //return false if extension won't load for some reason (account config, dependencies, etc).
-					if(typeof _gaq != 'object')	{
-						r = false;
-						}
-					return r;
+/*
+To keep this extension as self-contained as possible, it loads it's own script.
+the callback is handled in the extension loader. It will handle sequencing for the most part.
+The addTriggers will re-execute if this script isn't loaded until it has finished loading.
+*/
+					app.u.loadScript(('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js');
+					return true;
 					},
 				onError : function()	{
 	//errors will get reported for this callback as part of the extensions loading.  This is here for extra error handling purposes.
@@ -50,12 +51,12 @@ var analytics_google = function() {
 					}
 				},
 
-			addGATriggers : {
+			addTriggers : {
 				onSuccess : function(){
 //make sure that not only has myRIA been loaded, but that the createTemplateFunctions has executed
-					if(app.ext.myRIA && app.ext.myRIA.template)	{
+					if(app.ext.myRIA && app.ext.myRIA.template && typeof _gaq == 'object')	{
 
-app.u.dump("BEGIN analytics_google.callbacks.addGATriggers");
+app.u.dump("BEGIN analytics_google.callbacks.addTriggers");
 app.ext.myRIA.template.homepageTemplate.onCompletes.push(function(P) {_gaq.push(['_trackPageview', '/index.html']);})
 app.ext.myRIA.template.categoryTemplate.onCompletes.push(function(P) {_gaq.push(['_trackPageview', '/category/'+P.navcat]);})
 app.ext.myRIA.template.productTemplate.onCompletes.push(function(P) {_gaq.push(['_trackPageview', '/product/'+P.pid]);})
@@ -99,7 +100,7 @@ app.ext.store_checkout.checkoutCompletes.push(function(P){
 
 						}
 					else	{
-						setTimeout(function(){app.ext.analytics_google.callbacks.addGATriggers.onSuccess()},250);
+						setTimeout(function(){app.ext.analytics_google.callbacks.addTriggers.onSuccess()},250);
 						}
 
 					},

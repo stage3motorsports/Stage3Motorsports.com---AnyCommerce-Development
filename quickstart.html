@@ -11,7 +11,7 @@
 
 
 <script type="text/javascript">
-var _gaq = _gaq || {'push':function(){}} //here for testing. replace with actual GA code or delete at deployment.
+var _gaq = _gaq || {'push':function(){}} //here for testing. REMOVE BEFORE DEPLOYMENT!
 var myCreole;
 
 var app = {vars:{
@@ -160,7 +160,7 @@ don't modify the 'data-templateid' unless you are changing template names and up
 
 	<ul id='breadcrumb' class='clearfix noPadOrMargin fluidList' data-bind='var: category(id); format:breadcrumb; extension:store_navcats; loadsTemplate: breadcrumbTemplate;'></ul>
 
-	<img data-bind="var: page(something); format: banner; editor: banner; height:250; width:750;" />
+	<img data-bind="var: page(banner1); format: banner; editor: banner; height:250; width:750; extension: myRIA;" />
 
 	<h2 data-bind="var: page(header); format: text; editor: text;"></h2>
 	
@@ -245,7 +245,7 @@ container ul should have lineItemProdlist class on it instead of productList
 		
 			<fieldset data-bind='var: product(pid); format:atcVariations; extension:store_product;' class='borderNone'></fieldset>
 			
-			<input type='submit' value='Add to Cart' data-bind='var: product(pid); format:addToCartButton; extension:store_product;' id='addToCartBtn' class='displayNone ui-button ui-button-text ui-corner-all ui-state-active addToCartButton atcButton' />
+			<input type='submit' value='Add to Cart' data-bind='var: product(pid); format:addToCartButton; extension:store_product;' id='addToCartBtn' class='displayNone ui-button ui-button-text ui-corner-all ui-state-default addToCartButton atcButton' />
 			
 			<input type='hidden' value='1' size='3' name='quantity' />
 		
@@ -403,7 +403,7 @@ you'll likely want to something MUCH more custom here. this just simply adds it 
 		<fieldset data-bind='var: product(pid); format:atcVariations; extension:store_product;' class='borderNone'></fieldset>
 		<fieldset data-bind='var: product(pid); format:atcQuantityInput; extension:store_product; pretext:Quantity: ;' class='borderNone'></fieldset>
 	
-		<input type='submit' value='Add to Cart' class='ui-button ui-button-text ui-corner-all ui-state-active addToCartButton displayNone' data-bind='var: product(pid); format:addToCartButton; extension:store_product;' id='addToCartBtn' />
+		<input type='submit' value='Add to Cart' class='ui-button ui-button-text ui-corner-all ui-state-default addToCartButton displayNone' data-bind='var: product(pid); format:addToCartButton; extension:store_product;' id='addToCartBtn' />
 	</form>
 	
 
@@ -416,13 +416,13 @@ you'll likely want to something MUCH more custom here. this just simply adds it 
 	
 	<menu data-bind='var:product(pid);format:assignAttribute; attribute:data-pid;' id='CRMButtonMenu'>
 
-	<a href='#' onClick='app.ext.store_crm.u.showReviewFrmInModal({"pid":$(this).parent().attr("data-pid"),"templateID":"reviewFrmTemplate"}); return false;'>Write Review</a>	
+	<a href='#' onClick='app.ext.store_crm.u.showReviewFrmInModal({"pid":$(this).parent().attr("data-pid"),"templateID":"reviewFrmTemplate"}); return false;'>Write Review</a>	| 
 
 	<a href='#' onClick="app.ext.myRIA.a.add2BuyerList({pid:$(this).parent().attr('data-pid'),'listid':'wishlist'}); return false;">Add to Wishlist</a>
 
 	</menu>
 
-	
+	<span id="buySAFE_Kicker" name="buySAFE_Kicker" type="Kicker Guaranteed Transparent 33 175x30"></span>
 	</td>
 </tr>
 <tr>
@@ -544,7 +544,7 @@ adding classes is not likely to have any bad effects.
 
 
 
-<div id='companyTemplate'>
+<div id='companyTemplate' class='clearfix'>
 
 	<div class='sideline' id='sideline'>
 <nav id='companyNav'>
@@ -578,7 +578,7 @@ adding classes is not likely to have any bad effects.
 				<div><label for='contactFormSubject'>Subject: </label><input type='text' name='subject' id='contactFormSubject' /></div>
 				<div><label for='contactFormOID'>Order ID: </label><input type='text' name='OID' id='contactFormOID' /></div>
 				<div><label for='contactFormBody'>Message: </label><textarea name='body' required='required' id='contactFormBody'></textarea></div>
-				<div class='alignRight'><input type='submit' class='ui-button-text ui-button ui-state-default ui-corner-all ui-state-active' value='Send Message' />
+				<div class='alignRight'><input type='submit' class='ui-button-text ui-button ui-state-default ui-corner-all' value='Send Message' />
 				</div>
 			</fieldset>
 			</form>
@@ -719,11 +719,11 @@ adding classes is not likely to have any bad effects.
 			<div id='changepasswordContainer'>
 
 <form action='#' id='changePasswordForm' name='changePasswordForm' onSubmit="app.ext.store_crm.u.handleChangePassword('changePasswordForm',{'callback':'showMessaging','message':'Thank you, your password has been changed','targetID':'changepasswordContainer'}); return false">
-<fieldset>
+<fieldset class='borderNone'>
 
 <div class='marginBottom'><label for='changePassword'>Password</label><input type='password' name='password' id='changePassword' size='35' /></div>
 <div class='marginBottom'><label for='changePassword2'>Confirm Password</label><input type='password' name='password2' id='changePassword2' size='35' /></div>
-<div class='marginBottom'><input type='submit' class='loadingButton ui-button-text ui-button ui-state-default ui-corner-all'></div>
+<div class='marginBottom'><input type='submit' value='Change Password' class='loadingButton ui-button-text ui-button ui-state-default ui-corner-all'></div>
 
 </fieldset>
 </form>
@@ -916,7 +916,7 @@ So the cart template should contain these two elements and the extension should 
 	
 	<div class='checkoutButtonsContainer'>
 
-		<span title='proceed to secure checkout'><button class='ui-button ui-button-text ui-state-active ui-corner-all checkoutButton' onClick="showContent('checkout',{});">Store Checkout</button></span>
+		<span title='proceed to secure checkout'><button class='ui-button ui-button-text ui-state-default ui-corner-all checkoutButton' onClick="showContent('checkout',{});">Store Checkout</button></span>
 
 		<span id='paypalECButton' data-bind='var: cart(id); format:paypalECButton;'></span>
 
@@ -928,6 +928,7 @@ So the cart template should contain these two elements and the extension should 
 			
 </section>
 
+<span id="buySAFE_Kicker" name="buySAFE_Kicker" type="Kicker Guaranteed PostIt 170x52"></span>
 
 		</div>
 	</div>
@@ -1081,7 +1082,7 @@ used for store_crm.js
 </select>
 <br />
 
-<input type="submit" value="submit review" class='ui-button-text ui-button ui-state-default ui-corner-all ui-state-active' />
+<input type="submit" value="Submit Review" class='ui-button-text ui-button ui-state-default ui-corner-all' />
 
 </form>
 </div>
@@ -1090,7 +1091,7 @@ used for store_crm.js
 <div id='subscribeFormTemplate'>
 <form action='#' id='subscribeFrm' name='subscribeFrm' onSubmit="app.ext.store_crm.u.handleSubscribe('subscribeFrm'); return false">
 
-<fieldset class='userInfo'>
+<fieldset class='userInfo borderNone'>
 <div>
 <label for='subscribeLogin'>Email Address</label>
 <input type='email'  maxlength='50' size='30' name='login' id='subscribeLogin' value='' />
@@ -1104,7 +1105,7 @@ used for store_crm.js
 
 <fieldset data-bind="var:newsletters(@lists); format:subscribeCheckboxes; extension:store_crm;" class='borderNone subscriberLists'></fieldset>
 
-<input type='submit' class='ui-button-text ui-button ui-state-default ui-corner-all ui-state-active' value='Subscribe'>
+<input type='submit' class='ui-button-text ui-button ui-state-default ui-corner-all' value='Subscribe'>
 
 </form>
 </div>
@@ -1271,7 +1272,7 @@ The 'data-action' attribute is used to assign an onclick.
 		<div class='offMenu'><button data-action="displayOnMenu" class='ui-button-text ui-button ui-state-default ui-corner-all'>edit</button></div>
 		<div class='onMenu'>
 			<button data-action="cancelAddressChanges" class='ui-button-text ui-button ui-state-default ui-corner-all'>cancel changes</button>
-			<button data-action="saveAddressChanges" class='ui-button-text ui-button ui-state-default ui-state-active ui-corner-all'>Save</button>
+			<button data-action="saveAddressChanges" class='ui-button-text ui-button ui-state-default ui-corner-all'>Save</button>
 		</div>
 		<div class='changeLog'></div>
 	</menu>
@@ -1298,7 +1299,7 @@ The 'data-action' attribute is used to assign an onclick.
 		<div class='offMenu'><button data-action="displayOnMenu" class='ui-button-text ui-button ui-state-default ui-corner-all'>edit</button></div>
 		<div class='onMenu'>
 			<button data-action="cancelAddressChanges" class='ui-button-text ui-button ui-state-default ui-corner-all'>cancel changes</button>
-			<button data-action="saveAddressChanges" class='ui-button-text ui-button ui-state-default ui-state-active ui-corner-all'>Save</button>
+			<button data-action="saveAddressChanges" class='ui-button-text ui-button ui-state-default  ui-corner-all'>Save</button>
 		</div>
 		<div class='changeLog'></div>
 	</menu>
@@ -1383,7 +1384,7 @@ The 'data-action' attribute is used to assign an onclick.
 	</div>
 	
 	<div class='center'>
-	<input type='submit' value='log in' class='ui-button-text ui-button ui-state-default ui-corner-all ui-state-active' />
+	<input type='submit' value='log in' class='ui-button-text ui-button ui-state-default ui-corner-all ' />
 	</div>
 	</fieldset>
 </form>
@@ -1397,7 +1398,7 @@ The 'data-action' attribute is used to assign an onclick.
 <fieldset>
 <div class='marginBottom'><label for='passwordRecoveryLogin'>Login/Email</label> <input type='text' name='login' required='required' id='passwordRecoveryLogin' size='25' /></div>
 
-<div class='center'><input type='submit' class='ui-button-text ui-button ui-state-default ui-corner-all ui-state-active' value='Email Password to Me' /></div>
+<div class='center'><input type='submit' class='ui-button-text ui-button ui-state-default ui-corner-all ' value='Email Password to Me' /></div>
 
 </fieldset>
 </form>
@@ -1409,7 +1410,7 @@ The 'data-action' attribute is used to assign an onclick.
 
 <!-- this div will appear after a successful login. if you bind a new action to the button, best to empty the div and re-add the button, so the actions don't statck. -->
 	<div id='loginSuccessContainer' class='center displayNone'>
-		<button class='ui-button-text ui-button ui-state-default ui-corner-all ui-state-active' id='modalLoginContinueButton' onClick="$('#loginFormForModal').dialog('close');">Continue</button>
+		<button class='ui-button-text ui-button ui-state-default ui-corner-all ' id='modalLoginContinueButton' onClick="$('#loginFormForModal').dialog('close');">Continue</button>
 	</div>
 </div>
 
