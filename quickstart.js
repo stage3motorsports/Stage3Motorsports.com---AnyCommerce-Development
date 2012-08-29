@@ -727,8 +727,10 @@ for legacy browsers. That means old browsers will use the anchor to retain 'back
 						break;
 
 					case 'category':
-//add item to recently viewed list IF it is not already in the list.				
-						if($.inArray(infoObj.navcat,app.ext.myRIA.vars.session.recentCategories) < 0)	{
+//add item to recently viewed list IF it is not already the most recent in the list.				
+//Originally, used: 						if($.inArray(infoObj.navcat,app.ext.myRIA.vars.session.recentCategories) < 0)
+//bad mojo because spot 0 in array isn't necessarily the most recently viewed category, which it should be.
+						if(app.ext.myRIA.vars.session.recentCategories[0] != infoObj.navcat)	{
 							app.ext.myRIA.vars.session.recentCategories.unshift(infoObj.navcat);
 							}
 						
@@ -1373,8 +1375,8 @@ P.listID (buyer list id)
 					else	{
 						fullpath += this.buildRelativePath(P);
 						}
-					if(typeof P.uriParams == 'string')	{fullpath += '?'+P.uriParams} //add params back on to url.
-					else if(typeof P.uriParams == 'object') {
+					if(typeof P.uriParams == 'string' && app.u.isSet(P.uriParams) )	{fullpath += '?'+P.uriParams} //add params back on to url.
+					else if(typeof P.uriParams == 'object' && !$.isEmptyObject(P.uriParams)) {
 //will convert uri param object into uri friendly key value pairs.						
 						fullpath += '?';
 						var params = $.map(P.uriParams, function(n, i){

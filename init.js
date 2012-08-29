@@ -60,7 +60,7 @@ app.vars.scripts.push({'pass':1,'location':app.vars.baseURL+'includes.js','valid
 
 
 //used for making text editable (customer address). non-essential. loaded late.
-app.vars.scripts.push({'pass':8,'location':app.vars.baseURL+'jeditable.js','validator':function(){return (typeof $ == 'function' && jQuery.editable) ? true : false;}})
+app.vars.scripts.push({'pass':8,'location':app.vars.baseURL+'jeditable.js','validator':function(){return (typeof $ == 'function' && jQuery().editable) ? true : false;}})
 
 
 

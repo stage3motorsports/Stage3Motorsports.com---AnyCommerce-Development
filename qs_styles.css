@@ -178,7 +178,7 @@ and override using classes or id's as needed.
 
 .slideMe	{position:absolute; top:0px;}
 .slideMe, .slideMe li	{list-style:none; margin:0; padding:0;}
-.slideMe li	{float:left; margin-right:2px;}
+.slideMe li	{float:left; margin-right:2px; border:0;}
 
 
 
