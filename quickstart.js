@@ -528,6 +528,14 @@ need to be customized on a per-ria basis.
 					}
 				}, //subcategoryList
 
+//if first char is a !, hide that char, then render as text. used in breadcrumb
+//likely to be used in prodcats if/when it's built.s
+			catText : function($tag,data)	{
+				if(data.value[0] == '!')	{data.value = data.value.substring(1)}
+				app.renderFormats.text($tag,data)
+				},
+
+
 			addPicSlider : function($tag,data)	{
 //				app.u.dump("BEGIN myRIA.renderFormats.addPicSlider: "+data.value);
 				if(app.data['appProductGet|'+data.value])	{

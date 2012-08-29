@@ -327,7 +327,7 @@ templateID - the template id used (from app.templates)
 
 //pass in category safe id as value
 			breadcrumb : function($tag,data)	{
-//app.u.dump("BEGIN store_navcats.renderFunctions.breadcrumb");
+//app.u.dump("BEGIN store_navcats.renderFunctions.breadcrumb"); app.u.dump(data);
 var numRequests = 0; //number of requests (this format may require a dispatch to retrieve parent category info - when entry is a page 3 levels deep)
 var TID = data.bindData.loadsTemplate; //Template ID
 //on a category page, the catsafeid is the value. on a product page, the value is an array of recent categories, where 0 is always the most recent category.
@@ -338,7 +338,7 @@ if(path)	{
 	var s = '.'
 	var catSafeID; //recycled in loop for path of category in focus during iteration.
 	
-	//app.u.dump(" -> path: "+path);
+//	app.u.dump(" -> path: "+path);
 	//app.u.dump(" -> TID: "+TID);
 	//app.u.dump(pathArray);
 	//app.u.dump(" -> L: "+L);
@@ -347,12 +347,19 @@ if(path)	{
 		app.data['appCategoryDetail|.'].pretty = 'Home';
 	
 	$tag.append(app.renderFunctions.transmogrify({'id':'.','catsafeid':'.'},data.bindData.loadsTemplate,app.data['appCategoryDetail|.']));
-	for(i = 1; i < L; i += 1)	{
-		s += pathArray[i];
-	//	app.u.dump(" -> "+i+" s(path): "+s);
-		$tag.append(app.renderFunctions.transmogrify({'id':'.','catsafeid':s},data.bindData.loadsTemplate,app.data['appCategoryDetail|'+s]));
-		s += '.';
+// homepage has already been rendered. if path == ., likely we r on a product page, arriving from homepage. don't show bc.
+	if(path == '.'){}
+	else	{
+		for(i = 1; i < L; i += 1)	{
+			s += pathArray[i];
+		//	app.u.dump(" -> "+i+" s(path): "+s);
+			$tag.append(app.renderFunctions.transmogrify({'id':'.','catsafeid':s},data.bindData.loadsTemplate,app.data['appCategoryDetail|'+s]));
+			s += '.';
+			}
 		}
+	
+
+	
 }
 				} //breadcrumb
 
