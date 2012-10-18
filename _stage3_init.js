@@ -14,8 +14,15 @@ app.vars.extensions = [
 //	{"namespace":"analytics_google","filename":"extensions/analytics_google.js","callback":"addTriggers"},
 //	{"namespace":"bonding_buysafe","filename":"extensions/bonding_buysafe.js","callback":"addTriggers"},
 	{"namespace":"store_crm","filename":"extensions/store_crm.js"},
-	{"namespace":"myRIA","filename":"quickstart.js","callback":"startMyProgram"}
+	{"namespace":"myRIA","filename":"stage3_quickstart.js","callback":"startMyProgram"}
 	];
+
+
+
+app.vars.catTemplates = {
+	".975silverstang.stage_3_shop_tour":"categoryTemplateTour"
+	};
+
 
 
 /*
