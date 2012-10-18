@@ -809,7 +809,7 @@ AUTHENTICATION/USER
 		
 		thisIsAnAdminSession : function()	{
 			var r = false; //what is returned.
-			if(app.sessionId && app.sessionId.substring(0,2) === '**')	{
+			if(app.sessionId && app.sessionId.substring(0,2) != '**')	{
 				r = true;
 				}
 			return r;
@@ -1654,9 +1654,10 @@ most likely, this will be expanded to support setting other data- attributes. ##
 //allows translation by selector and does NOT require a templateID. This is very handy for translating after the fact.
 		translateSelector : function(selector,data)	{
 //			app.u.dump("BEGIN controller.renderFunctions.translateSelector");
-//			app.u.dump(" -> selector: "+selector); app.u.dump(data); 
+//			app.u.dump(" -> selector: "+selector);
+//			app.u.dump(data);
 			if(!$.isEmptyObject(data) && selector)	{
-//				app.u.dump(" -> executing handleTranslation. $("+selector+").length: "+$(selector).length);
+//				app.u.dump(" -> executing handleTranslation. $(selector).length: "+$(selector).length);
 				this.handleTranslation($(selector),data)
 				}
 			else	{
@@ -1666,13 +1667,10 @@ most likely, this will be expanded to support setting other data- attributes. ##
 
 //NEVER call this function directly.  It gets executed in transmogrify and translate element. it has no error handling (gets handled in parent function)
 		handleTranslation : function($r,data)	{
-
-//		app.u.dump("BEGIN handleTranslation for "+$r.attr('id'));
 //locates all children/grandchildren/etc that have a data-bind attribute within the parent id.
 $r.find('[data-bind]').each(function()	{
 										   
 	var $focusTag = $(this);
-//	if(debug == true){app.u.dump($focusTag); die()}
 
 //		app.u.dump(' -> data-bind match found: '+$focusTag.data('bind'));
 //proceed if data-bind has a value (not empty).
