@@ -998,3 +998,9 @@ div.clear {
 .free {
 	color: red;
 }
+
+#contactForm.satisfaction {
+	float: none;
+	margin: 0px auto;
+	width: 300px;
+}

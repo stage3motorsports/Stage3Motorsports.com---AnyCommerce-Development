@@ -462,6 +462,25 @@ CUSTOM TEMPLATES
 	
 </div>
 
+<div id='satisfactionGuarantee' class='loadingBG'>
+	<img class="alignCenter" data-bind="var: page(s3m_banner_top1); format: banner; editor: banner; extension: myRIA;" width="707"/>
+
+	<p class="marginAbove" data-bind="var: page(description); format:wiki; wikiFormats:myRIA; editor: textarea;"></p>
+	
+	
+	<form action='#' onSubmit="app.ext.store_crm.calls.appSendMessage.init($(this).serializeArray(),{'callback':'showMessaging','parentID':'contactFormMessaging','message':'Thank you, your message has been sent'},'immutable'); return false;" id='contactForm' name='contactForm' class="satisfaction">
+	<fieldset>
+		<legend>Contact Us</legend>
+		<div id='contactFormMessaging'></div>
+		<div><label for='contactFormSender'>Email Address: </label><input type='email' name='sender' required='required' id='contactFormSender' /></div>
+		<div><label for='contactFormSubject'>Subject: </label><input type='text' name='subject' id='contactFormSubject' /></div>
+		<div><label for='contactFormOID'>Order ID: </label><input type='text' name='OID' id='contactFormOID' /></div>
+		<div><label for='contactFormBody'>Message: </label><textarea name='body' required='required' id='contactFormBody'></textarea></div>
+		<div class='alignRight'><input type='submit' class='ui-button-text ui-button ui-state-default ui-corner-all' value='Send Message' />
+		</div>
+	</fieldset>
+	</form>
+</div>
 <!--
 
 ############################

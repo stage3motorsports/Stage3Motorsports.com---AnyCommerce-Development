@@ -21,7 +21,8 @@ app.vars.extensions = [
 
 app.vars.catTemplates = {
 	".975silverstang.stage_3_shop_tour":"categoryTemplateTour",
-	".financing":"categoryTemplateTour"
+	".financing":"categoryTemplateTour",
+	".customer_satisfaction_guarantee":"satisfactionGuarantee"
 	};
 
 
@@ -137,6 +138,7 @@ app.u.appInitComplete = function()	{
 	app.ext.myRIA.template.homepageTemplate.onInits.push(function(P) {app.u.showTierOne();})
 	app.ext.myRIA.template.categoryTemplate.onInits.push(function(P) {app.u.hideTierOne();})
 	app.ext.myRIA.template.categoryTemplateTour.onInits.push(function(P) {app.u.hideTierOne();})
+	app.ext.myRIA.template.satisfactionGuarantee.onInits.push(function(P) {app.u.hideTierOne();})
 	app.ext.myRIA.template.productTemplate.onInits.push(function(P) {app.u.hideTierOne();})
 	app.ext.myRIA.template.companyTemplate.onInits.push(function(P) {app.u.hideTierOne();})
 	app.ext.myRIA.template.customerTemplate.onInits.push(function(P) {app.u.hideTierOne();})
