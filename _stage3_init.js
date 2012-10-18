@@ -22,7 +22,8 @@ app.vars.extensions = [
 app.vars.catTemplates = {
 	".975silverstang.stage_3_shop_tour":"categoryTemplateTour",
 	".financing":"categoryTemplateTour",
-	".customer_satisfaction_guarantee":"satisfactionGuarantee"
+	".customer_satisfaction_guarantee":"satisfactionGuarantee",
+	".mustang_news.10-3-2012_information_security_at_stage_3_motorsports":"categoryTemplateTour"
 	};
 
 
