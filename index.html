@@ -15,7 +15,7 @@ var _gaq = _gaq || {'push':function(){}} //here for testing. REMOVE BEFORE DEPLO
 var myCreole;
 
 var app = {vars:{
-	"release":"20121008111900",  //increment this with each change. should solve caching issues. format: YYYYMMDDHHMMSS
+	"release":"20121022033000",  //increment this with each change. should solve caching issues. format: YYYYMMDDHHMMSS
 	"baseURL":"",
 	"httpsURL":"https://ssl.zoovy.com/s=www.caliperpaints.com/",
 	"httpURL":"http://www.caliperpaints.com/"
@@ -484,7 +484,37 @@ CUSTOM TEMPLATES
 
 <div id='subcatandbannerlist' class='loadingBG'>
 	<img class="alignCenter" data-bind="var: page(s3m_banner_bottom); format: banner; editor: banner; extension: myRIA;" width="707"/>
+	
+	<p class="marginAbove" data-bind="var: page(description); format:wiki; wikiFormats:myRIA; editor: textarea;"></p>
+	
 
+	<div class="displayNone" data-bind="var: page(header); format: showIfSet;">
+		<h2 class="categoryHeader" data-bind="var: page(header); format: text; editor: text;"></h2>
+	</div>
+	<img data-bind="var:page(s3m_banner_section1_spot1); format: customBanner; editor: banner; extension: myRIA;" width="120" height="120" />
+	<img data-bind="var:page(s3m_banner_section1_spot2); format: customBanner; editor: banner; extension: myRIA;" width="120" height="120" />
+	<img data-bind="var:page(s3m_banner_section1_spot3); format: customBanner; editor: banner; extension: myRIA;" width="120" height="120" />
+	<img data-bind="var:page(s3m_banner_section1_spot4); format: customBanner; editor: banner; extension: myRIA;" width="120" height="120" />
+	<img data-bind="var:page(s3m_banner_section1_spot5); format: customBanner; editor: banner; extension: myRIA;" width="120" height="120" />
+	<img data-bind="var:page(s3m_banner_section1_spot6); format: customBanner; editor: banner; extension: myRIA;" width="120" height="120" />
+	
+	<div class="displayNone" data-bind="var: page(header2); format: showIfSet;">
+		<h2 class="categoryHeader" data-bind="var: page(header2); format: text; editor: text;"></h2>
+	</div>
+	<ul data-bind="var: category(@subcategoryDetail); format: subcategoryList; extension: myRIA; loadsTemplate: categoryListTemplate;" class='listStyleNone fluidList clearfix noPadOrMargin categoryList'></ul>
+
+	
+	<div class="displayNone" data-bind="var: page(header3); format: showIfSet;">
+		<h2 class="categoryHeader" data-bind="var: page(header3); format: text; editor: text;"></h2>
+	</div>
+	<img data-bind="var:page(s3m_banner_section3_spot1); format: customBanner; editor: banner; extension: myRIA;" width="120" height="120" />
+	<img data-bind="var:page(s3m_banner_section3_spot2); format: customBanner; editor: banner; extension: myRIA;" width="120" height="120" />
+	<img data-bind="var:page(s3m_banner_section3_spot3); format: customBanner; editor: banner; extension: myRIA;" width="120" height="120" />
+	<img data-bind="var:page(s3m_banner_section3_spot4); format: customBanner; editor: banner; extension: myRIA;" width="120" height="120" />
+	<img data-bind="var:page(s3m_banner_section3_spot5); format: customBanner; editor: banner; extension: myRIA;" width="120" height="120" />
+	<img data-bind="var:page(s3m_banner_section3_spot6); format: customBanner; editor: banner; extension: myRIA;" width="120" height="120" />
+	
+	<p class="marginAbove" data-bind="var: page(description2); format:wiki; wikiFormats:myRIA; editor: textarea;"></p>
 </div>
 <!--
 

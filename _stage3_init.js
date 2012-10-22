@@ -613,6 +613,55 @@ app.u.appInitComplete = function()	{
 		}	
 	}
 	
+	app.ext.myRIA.renderFormats.customBanner = function($tag, data)	{
+//				app.u.dump("begin myRIA.renderFormats.banner");
+				var obj = app.u.getParametersAsObject(decodeURI(data.value)); //returns an object LINK, ALT and IMG
+				var hash; //used to store the href value in hash syntax. ex: #company?show=return
+				var pageInfo = {};
+				
+				
+//				app.u.dump(" -> obj.LINK: "+obj.LINK);
+				
+//if value starts with a #, then most likely the hash syntax is being used.
+				if(obj.LINK && obj.LINK.indexOf('#') == 0)	{
+					hash = obj.LINK;
+					pageInfo = app.ext.myRIA.u.getPageInfoFromHash(hash);
+					}
+// Initially attempted to do some sort of validating to see if this was likely to be a intra-store link.
+//  && data.value.indexOf('/') == -1 || data.value.indexOf('http') == -1 || data.value.indexOf('www') > -1
+				else if(obj.LINK)	{
+					pageInfo = app.ext.myRIA.u.detectRelevantInfoToPage(obj.LINK);
+					if(pageInfo.pageType)	{
+						hash = app.ext.myRIA.u.getHashFromPageInfo(pageInfo);
+						}
+					else	{
+						hash = obj.LINK
+						}
+					}
+				else	{
+					//obj.link is not set
+					}
+				if(!app.u.isSet(obj.IMG))	{$tag.remove()} //if the image isn't set, don't show the banner. if a banner is set, then unset, val may = ALT=&IMG=&LINK=
+ 				else	{
+//if we don't have a valid pageInfo object AND a valid hash, then we'll default to what's in the obj.LINK value.
+					$tag.attr('alt',obj.ALT);
+//if the link isn't set, no href is added. This is better because no 'pointer' is then on the image which isn't linked.
+					if(obj.LINK)	{
+//						app.u.dump(" -> obj.LINK is set: "+obj.LINK);
+						var $a = $("<a />").addClass('bannerBind').attr({'href':hash,'title':obj.ALT});
+						if(pageInfo && pageInfo.pageType)	{
+							$a.click(function(){
+								return showContent('',pageInfo)
+								})
+							}
+						$tag.wrap($a);
+						}
+					data.value = obj.IMG; //this will enable the image itself to be rendered by the default image handler. recycling is good.
+					app.renderFormats.imageURL($tag,data);
+					$tag.after("<span>"+obj.ALT+"</span>");
+					}
+				}
+	
 	app.ext.myRIA.template.homepageTemplate.onInits.push(function(P) {app.u.showTierOne();})
 	app.ext.myRIA.template.categoryTemplate.onInits.push(function(P) {app.u.hideTierOne();})
 	app.ext.myRIA.template.categoryTemplateTour.onInits.push(function(P) {app.u.hideTierOne();})
