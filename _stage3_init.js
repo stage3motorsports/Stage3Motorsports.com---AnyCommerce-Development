@@ -21,6 +21,7 @@ app.vars.extensions = [
 
 app.vars.catTemplates = {
 	".00001mustang2011" : "subcatandbannerlist",
+	".careers" : "categoryTemplateTour",
 	".mustang_news.1-26-2011_roush_mustang_desktop_wallpapers" : "~desktopwallpapergallery",
 	".mustang_news.1-26-2011_roush_mustang_desktop_wallpapers.roush_black_red_rs3_mustang" : "~newphotogallery",
 	".mustang_news.1-26-2011_roush_mustang_desktop_wallpapers.roush_black_rs3_race_car" : "~newphotogallery",
