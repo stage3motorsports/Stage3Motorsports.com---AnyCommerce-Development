@@ -1005,6 +1005,14 @@ div.clear {
 	width: 300px;
 }
 
-#resultsProdlist {
-	width: auto;
+#resultsProdlist, #mainColumn{
+	width: 497px;
+}
+
+.growClass #resultsProdlist, .growClass #mainColumn{
+	width:770px;
+}
+
+.sideline {
+	margin:0px;
 }
