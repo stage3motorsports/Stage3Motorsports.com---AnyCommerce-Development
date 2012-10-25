@@ -642,24 +642,27 @@ app.u.appInitComplete = function()	{
 				else	{
 					//obj.link is not set
 					}
-				if(!app.u.isSet(obj.IMG))	{$tag.remove()} //if the image isn't set, don't show the banner. if a banner is set, then unset, val may = ALT=&IMG=&LINK=
+				if(!app.u.isSet(obj.IMG))	{$tag.remove();} //if the image isn't set, don't show the banner. if a banner is set, then unset, val may = ALT=&IMG=&LINK=
  				else	{
 //if we don't have a valid pageInfo object AND a valid hash, then we'll default to what's in the obj.LINK value.
 					$tag.attr('alt',obj.ALT);
 //if the link isn't set, no href is added. This is better because no 'pointer' is then on the image which isn't linked.
 					if(obj.LINK)	{
 //						app.u.dump(" -> obj.LINK is set: "+obj.LINK);
-						var $a = $("<a />").addClass('bannerBind').attr({'href':hash,'title':obj.ALT});
+						var $li = $("<li class='categoryListItem lightShadow displayNone'></li>");
+						var $a = $("<div class='pointer'></div>").addClass('bannerBind');
 						if(pageInfo && pageInfo.pageType)	{
 							$a.click(function(){
 								return showContent('',pageInfo)
 								})
 							}
+							
 						$tag.wrap($a);
+						$tag.parent().wrap($li);
 						}
 					data.value = obj.IMG; //this will enable the image itself to be rendered by the default image handler. recycling is good.
 					app.renderFormats.imageURL($tag,data);
-					$tag.after("<span>"+obj.ALT+"</span>");
+					$tag.after("<div class='catName white2LGray'>"+obj.ALT+"</div>");
 					}
 				}
 	
@@ -670,6 +673,7 @@ app.u.appInitComplete = function()	{
 	app.ext.myRIA.template.subcatandbannerlist.onInits.push(function(P) {app.u.hideTierOne();})
 	app.ext.myRIA.template.productTemplate.onInits.push(function(P) {app.u.hideTierOne();})
 	app.ext.myRIA.template.companyTemplate.onInits.push(function(P) {app.u.hideTierOne();})
+	app.ext.myRIA.template.searchTemplate.onInits.push(function(P) {app.u.hideTierOne();})
 	app.ext.myRIA.template.customerTemplate.onInits.push(function(P) {app.u.hideTierOne();})
 	app.ext.myRIA.template.checkoutTemplate.onInits.push(function(P) {app.u.hideTierOne();})
 	

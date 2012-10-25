@@ -563,7 +563,7 @@ li.categoryListItem {
 }
 
 li.categoryListItem {
-	height: 220px;
+	height: 260px;
 }
 
 .productListVideoTag span {
@@ -1003,4 +1003,8 @@ div.clear {
 	float: none;
 	margin: 0px auto;
 	width: 300px;
+}
+
+#resultsProdlist {
+	width: auto;
 }

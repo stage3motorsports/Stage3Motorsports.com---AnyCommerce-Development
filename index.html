@@ -468,7 +468,9 @@ CUSTOM TEMPLATES
 	<p class="marginAbove" data-bind="var: page(description); format:wiki; wikiFormats:myRIA; editor: textarea;"></p>
 	
 	
-	<form action='#' onSubmit="app.ext.store_crm.calls.appSendMessage.init($(this).serializeArray(),{'callback':'showMessaging','parentID':'contactFormMessaging','message':'Thank you, your message has been sent'},'immutable'); return false;" id='contactForm' name='contactForm' class="satisfaction">
+	<!--<form action='#' onSubmit="app.ext.store_crm.calls.appSendMessage.init($(this).serializeArray(),{'callback':'showMessaging','parentID':'contactFormMessaging','message':'Thank you, your message has been sent'},'immutable'); return false;" id='contactForm' name='contactForm' class="satisfaction">
+	-->
+	<form action='#' onSubmit="app.ext.store_crm.calls.appSendMessage.init($(this).serializeJSON(),{'callback':'showMessaging','parentID':'contactFormMessaging','message':'Thank you, your message has been sent'},'immutable'); app.model.dispatchThis('immutable');  return false;" id='contactForm' name='contactForm' class="satisfaction">
 	<fieldset>
 		<legend>Contact Us</legend>
 		<div id='contactFormMessaging'></div>
@@ -491,13 +493,14 @@ CUSTOM TEMPLATES
 	<div class="displayNone" data-bind="var: page(header); format: showIfSet;">
 		<h2 class="categoryHeader" data-bind="var: page(header); format: text; editor: text;"></h2>
 	</div>
-	<img data-bind="var:page(s3m_banner_section1_spot1); format: customBanner; editor: banner; extension: myRIA;" width="120" height="120" />
-	<img data-bind="var:page(s3m_banner_section1_spot2); format: customBanner; editor: banner; extension: myRIA;" width="120" height="120" />
-	<img data-bind="var:page(s3m_banner_section1_spot3); format: customBanner; editor: banner; extension: myRIA;" width="120" height="120" />
-	<img data-bind="var:page(s3m_banner_section1_spot4); format: customBanner; editor: banner; extension: myRIA;" width="120" height="120" />
-	<img data-bind="var:page(s3m_banner_section1_spot5); format: customBanner; editor: banner; extension: myRIA;" width="120" height="120" />
-	<img data-bind="var:page(s3m_banner_section1_spot6); format: customBanner; editor: banner; extension: myRIA;" width="120" height="120" />
-	
+	<ul class="listStyleNone fluidList clearfix noPadOrMargin categoryList">
+		<img data-bind="var:page(s3m_banner_section1_spot1); format: customBanner; editor: banner; extension: myRIA;" width="180" height="180" />
+		<img data-bind="var:page(s3m_banner_section1_spot2); format: customBanner; editor: banner; extension: myRIA;" width="180" height="180" />
+		<img data-bind="var:page(s3m_banner_section1_spot3); format: customBanner; editor: banner; extension: myRIA;" width="180" height="180" />
+		<img data-bind="var:page(s3m_banner_section1_spot4); format: customBanner; editor: banner; extension: myRIA;" width="180" height="180" />
+		<img data-bind="var:page(s3m_banner_section1_spot5); format: customBanner; editor: banner; extension: myRIA;" width="180" height="180" />
+		<img data-bind="var:page(s3m_banner_section1_spot6); format: customBanner; editor: banner; extension: myRIA;" width="180" height="180" />
+	</ul>
 	<div class="displayNone" data-bind="var: page(header2); format: showIfSet;">
 		<h2 class="categoryHeader" data-bind="var: page(header2); format: text; editor: text;"></h2>
 	</div>
@@ -739,15 +742,15 @@ Used for the product in a product list (prodlist), usually in the body of a cate
 the loadingBG class is removed (must be that classname) when the template is translated.
 remember to NOT put the button inside the 'onclick' container or two events will occur onclick.
 -->
-<li id='productListTemplateResults' class='loadingBG  ' >
+<li id='productListTemplateResults' class='loadingBG productListItem lightShadow ' >
 	<div onClick="showContent('product',{'pid':$(this).attr('data-pid')})" data-bind='var:product(pid);format:assignAttribute; attribute:data-pid;' class='pointer'>
 		<div class='prodThumbContainer'>
-		<img src='blank.gif' class='prodThumb' data-bind='var: product(images); format:elasticImage1URL;bgcolor:ffffff;' width='120' height='120' />
+		<img src='blank.gif' class='prodThumb' data-bind='var: product(images); format:elasticImage1URL;bgcolor:ffffff;' width='180' height='180' />
 		</div>
 		
-		<h5 data-bind='var: product(prod_name); format:text;'></h5>
+		<h5 class="plistItemName" data-bind='var: product(prod_name); format:text;'></h5>
 	
-		<h6 data-bind='var: product(base_price); format:elasticMoney; currencySign: $;  hideZero:true; className:price; pretext: Our Price: ;'></h6>
+		<h6 class="plistItemPrice" data-bind='var: product(base_price); format:elasticMoney; currencySign: $;  hideZero:true; className:price; pretext: Our Price: ;'></h6>
 	</div>
 </li>
 </ul>
@@ -846,10 +849,12 @@ this will likely become more flexible in the future. ###
 		<h5 class="mfgheader" data-bind='var: product(zoovy:prod_mfg); format:searchLink; extension:myRIA; before:<span class="mfgspan">Mfg:</span>; after:<br />;'></h5>
 		<h5 class="mfgheader" data-bind='var: product(zoovy:prod_mfgid); format:text; before:<span class="mfgspan">Mfg ID:</span>; after:<br />;'></h5>
 		
-		<section id='prodViewerReviewSummary' >
+		<section id='prodViewerReviewSummary' data-bind='var:product(pid);format:assignAttribute; attribute:data-pid;'>
 			<span data-bind='var: reviews(average); format:addClass; className:review_;' class='reviewSprite'></span>
 			<span class="reviewspan" data-bind='var: reviews(total); format:text;pretext:(; posttext: reviews); className:numReviews;'></span> <br />
-			<a href='#' onClick='app.ext.store_crm.u.showReviewFrmInModal({"pid":$(this).parent().attr("data-pid"),"templateID":"reviewFrmTemplate"}); return false;'>Write Review</a>
+			<a href='#' 
+			onClick='app.ext.store_crm.u.showReviewFrmInModal({"pid":$(this).parent().attr("data-pid"),"templateID":"reviewFrmTemplate"}); return false;'>
+			Write Review</a>
 		</section>
 		
 		
@@ -887,8 +892,8 @@ this will likely become more flexible in the future. ###
 
 		
 		<!--<menu data-bind='var:product(pid);format:assignAttribute; attribute:data-pid;' id='CRMButtonMenu'>
-
 		<a href='#' onClick='app.ext.store_crm.u.showReviewFrmInModal({"pid":$(this).parent().attr("data-pid"),"templateID":"reviewFrmTemplate"}); return false;'>Write Review</a>	| 
+
 
 		<a href='#' onClick="app.ext.myRIA.a.add2BuyerList({pid:$(this).parent().attr('data-pid'),'listid':'wishlist'}); return false;">Add to Wishlist</a>
 
@@ -1094,7 +1099,9 @@ adding classes is not likely to have any bad effects.
 	
 		<div id='contactArticle' class='displayNone textContentArea'>
 			<h1>Contact Information</h1>
-			<form action='#' onSubmit="app.ext.store_crm.calls.appSendMessage.init($(this).serializeArray(),{'callback':'showMessaging','parentID':'contactFormMessaging','message':'Thank you, your message has been sent'},'immutable'); return false;" id='contactForm' name='contactForm'>
+			<!--<form action='#' onSubmit="app.ext.store_crm.calls.appSendMessage.init($(this).serializeArray(),{'callback':'showMessaging','parentID':'contactFormMessaging','message':'Thank you, your message has been sent'},'immutable'); return false;" id='contactForm' name='contactForm'>
+			-->
+			<form action='#' onSubmit="app.ext.store_crm.calls.appSendMessage.init($(this).serializeJSON(),{'callback':'showMessaging','parentID':'contactFormMessaging','message':'Thank you, your message has been sent'},'immutable'); app.model.dispatchThis('immutable');  return false;" id='contactForm' name='contactForm'>
 			<fieldset>
 				<legend>Contact Us</legend>
 				<div id='contactFormMessaging'></div>
