@@ -1028,5 +1028,6 @@ div.clear {
 
 #subscribeFormContainer form {
 	width: 200px;
+	padding-right: 100px;
 	margin: 0px auto;
 }
