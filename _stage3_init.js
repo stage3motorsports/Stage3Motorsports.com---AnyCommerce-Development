@@ -671,6 +671,19 @@ app.u.appInitComplete = function()	{
 	app.ext.myRIA.template.categoryTemplateTour.onInits.push(function(P) {app.u.hideTierOne();})
 	app.ext.myRIA.template.satisfactionGuarantee.onInits.push(function(P) {app.u.hideTierOne();})
 	app.ext.myRIA.template.subcatandbannerlist.onInits.push(function(P) {app.u.hideTierOne();})
+	app.ext.myRIA.template.subcatandbannerlist.onCompletes.push(function(P) {
+	/*
+		In future versions of the app this code will need an ID selector added on.
+		All previously loaded versions of a template will remain on the DOM, so a unique
+		ID will be generated, and needed for an onCompletes Handler like this.
+	*/
+		if($(".header1list").children().length == 0)
+			$(".header1").remove();
+		if($(".header2list").children().length == 0)
+			$(".header2").remove();
+		if($(".header3list").children().length == 0)
+			$(".header3").remove();
+	})
 	app.ext.myRIA.template.productTemplate.onInits.push(function(P) {app.u.hideTierOne();})
 	app.ext.myRIA.template.companyTemplate.onInits.push(function(P) {app.u.hideTierOne();})
 	app.ext.myRIA.template.searchTemplate.onInits.push(function(P) {app.u.hideTierOne();})

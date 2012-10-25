@@ -491,9 +491,9 @@ CUSTOM TEMPLATES
 	
 
 	<div class="displayNone" data-bind="var: page(header); format: showIfSet;">
-		<h2 class="categoryHeader" data-bind="var: page(header); format: text; editor: text;"></h2>
+		<h2 class="categoryHeader header1" data-bind="var: page(header); format: text; editor: text;"></h2>
 	</div>
-	<ul class="listStyleNone fluidList clearfix noPadOrMargin categoryList">
+	<ul class="listStyleNone fluidList clearfix noPadOrMargin categoryList header1list">
 		<img data-bind="var:page(s3m_banner_section1_spot1); format: customBanner; editor: banner; extension: myRIA;" width="180" height="180" />
 		<img data-bind="var:page(s3m_banner_section1_spot2); format: customBanner; editor: banner; extension: myRIA;" width="180" height="180" />
 		<img data-bind="var:page(s3m_banner_section1_spot3); format: customBanner; editor: banner; extension: myRIA;" width="180" height="180" />
@@ -502,20 +502,22 @@ CUSTOM TEMPLATES
 		<img data-bind="var:page(s3m_banner_section1_spot6); format: customBanner; editor: banner; extension: myRIA;" width="180" height="180" />
 	</ul>
 	<div class="displayNone" data-bind="var: page(header2); format: showIfSet;">
-		<h2 class="categoryHeader" data-bind="var: page(header2); format: text; editor: text;"></h2>
+		<h2 class="categoryHeader header2" data-bind="var: page(header2); format: text; editor: text;"></h2>
 	</div>
-	<ul data-bind="var: category(@subcategoryDetail); format: subcategoryList; extension: myRIA; loadsTemplate: categoryListTemplate;" class='listStyleNone fluidList clearfix noPadOrMargin categoryList'></ul>
+	<ul data-bind="var: category(@subcategoryDetail); format: subcategoryList; extension: myRIA; loadsTemplate: categoryListTemplate;" class='listStyleNone fluidList clearfix noPadOrMargin categoryList header2list'></ul>
 
 	
 	<div class="displayNone" data-bind="var: page(header3); format: showIfSet;">
-		<h2 class="categoryHeader" data-bind="var: page(header3); format: text; editor: text;"></h2>
+		<h2 class="categoryHeader header3" data-bind="var: page(header3); format: text; editor: text;"></h2>
 	</div>
-	<img data-bind="var:page(s3m_banner_section3_spot1); format: customBanner; editor: banner; extension: myRIA;" width="120" height="120" />
-	<img data-bind="var:page(s3m_banner_section3_spot2); format: customBanner; editor: banner; extension: myRIA;" width="120" height="120" />
-	<img data-bind="var:page(s3m_banner_section3_spot3); format: customBanner; editor: banner; extension: myRIA;" width="120" height="120" />
-	<img data-bind="var:page(s3m_banner_section3_spot4); format: customBanner; editor: banner; extension: myRIA;" width="120" height="120" />
-	<img data-bind="var:page(s3m_banner_section3_spot5); format: customBanner; editor: banner; extension: myRIA;" width="120" height="120" />
-	<img data-bind="var:page(s3m_banner_section3_spot6); format: customBanner; editor: banner; extension: myRIA;" width="120" height="120" />
+	<ul class="listStyleNone fluidList clearfix noPadOrMargin categoryList header3list">
+		<img data-bind="var:page(s3m_banner_section3_spot1); format: customBanner; editor: banner; extension: myRIA;" width="180" height="180" />
+		<img data-bind="var:page(s3m_banner_section3_spot2); format: customBanner; editor: banner; extension: myRIA;" width="180" height="180" />
+		<img data-bind="var:page(s3m_banner_section3_spot3); format: customBanner; editor: banner; extension: myRIA;" width="180" height="180" />
+		<img data-bind="var:page(s3m_banner_section3_spot4); format: customBanner; editor: banner; extension: myRIA;" width="180" height="180" />
+		<img data-bind="var:page(s3m_banner_section3_spot5); format: customBanner; editor: banner; extension: myRIA;" width="180" height="180" />
+		<img data-bind="var:page(s3m_banner_section3_spot6); format: customBanner; editor: banner; extension: myRIA;" width="180" height="180" />
+	</ul>
 	
 	<p class="marginAbove" data-bind="var: page(description2); format:wiki; wikiFormats:myRIA; editor: textarea;"></p>
 </div>
