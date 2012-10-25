@@ -1024,10 +1024,7 @@ P.listID (buyer list id)
 					$ele = $("<div />").attr('id','youtubeVideoModal').appendTo('body');
 					}
 				$ele.empty().append("<iframe style='z-index:1;' width='560' height='315' src='https://www.youtube.com/embed/"+videoid+"' frameborder='0' allowfullscreen></iframe>"); //clear any past videos.
-				$ele.dialog({modal:true,width:600,height:400,autoOpen:false,close: function(event, ui)
-        {
-            $(this).dialog('destroy').remove();
-        }});
+				$ele.dialog({modal:true,width:600,height:400,autoOpen:false,close: function(event, ui){$(this).dialog('destroy').remove();}});
 				$ele.dialog('open');
 				return false;
 				},

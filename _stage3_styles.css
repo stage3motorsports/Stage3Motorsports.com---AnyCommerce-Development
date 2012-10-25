@@ -1016,3 +1016,12 @@ div.clear {
 .sideline {
 	margin:0px;
 }
+
+#prodDesc table {
+
+}
+
+#prodDesc th {
+	background: black;
+	color: white;
+}

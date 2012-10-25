@@ -765,6 +765,8 @@ app.u.showPromotionModal = function(){
 }
 
 
+
+
 app.u.initMVC = function(attempts){
 //	app.u.dump("app.u.initMVC activated");
 	var includesAreDone = true;
