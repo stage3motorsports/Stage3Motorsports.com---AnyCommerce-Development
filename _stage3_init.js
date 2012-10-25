@@ -687,7 +687,7 @@ app.u.appInitComplete = function()	{
 	app.ext.myRIA.template.productTemplate.onInits.push(function(P) {app.u.hideTierOne();})
 	app.ext.myRIA.template.companyTemplate.onInits.push(function(P) {app.u.hideTierOne();})
 	app.ext.myRIA.template.companyTemplate.onCompletes.push(function(P) {
-		$("#subscribeFormContainer form").attr("target","_blank");
+		setTimeout(function(){$("#subscribeFormContainer form").attr("target","_blank")}, 3000);
 	})
 	app.ext.myRIA.template.searchTemplate.onInits.push(function(P) {app.u.hideTierOne();})
 	app.ext.myRIA.template.customerTemplate.onInits.push(function(P) {app.u.hideTierOne();})
