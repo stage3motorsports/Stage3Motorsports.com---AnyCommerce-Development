@@ -150,13 +150,21 @@ $(function(){
 			<ul id='tier1categories'></ul>
 			
 			<div id="savebig">
-				<h2>Big Now!</h2>
+				<h2>on Top Brands</h2>
 				<ul>
-					<li class="pointer catName" onClick="showContent('category',{'navcat':'.shop_by_category.mustang_accessories'});" >Mustang Accessories</li>
-					<li class="pointer catName" onClick="showContent('category',{'navcat':'.shop_by_category.mustang_billet_grilles'});" >Mustang Billet Grilles</li>
-					<li class="pointer catName" onClick="showContent('category',{'navcat':'.shop_by_category.mustang_body_kits'});" >Mustang Body Kits</li>
-					<li class="pointer catName" onClick="showContent('category',{'navcat':'.shop_by_category.mustang_brake_caliper_paint'});" >Mustang Brakes</li>
-					<li class="pointer catName" onClick="showContent('category',{'navcat':'.shop_by_category.mustang_cold_air_intakes'});" >Mustang Cold Air Intakes</li>
+					<li class="pointer catName" onClick="showContent('category', {'navcat':'.950manufacturslist.roushperformance'});" >ROUSH Performance</li>
+					<li class="pointer catName" onClick="showContent('category', {'navcat':'.950manufacturslist.airaid_cold_air_intakes'});" >AIRAID Intakes</li>
+					<li class="pointer catName" onClick="showContent('category', {'navcat':'.950manufacturslist.pypes_mustang_exhaust_'});" >Pypes Exhaust</li>
+					<li class="pointer catName" onClick="showContent('category', {'navcat':'.950manufacturslist.power_stop_mustang_rotors'});" >PowerStop Brakes</li>
+					<li class="pointer catName" onClick="showContent('category', {'navcat':'.950manufacturslist.bbkperformance'});" >BBK Performance Parts</li>
+					<li class="pointer catName" onClick="showContent('category', {'navcat':'.950manufacturslist.whipple_superchargers'});" >Whipple Superchargers</li>
+					<li class="pointer catName" onClick="showContent('category', {'navcat':'.950manufacturslist.slp_performance'});" >SLP Performance</li>
+					<li class="pointer catName" onClick="showContent('category', {'navcat':'.950manufacturslist.sct_flash_tuners__programmers'});" >SCT Programmers</li>
+					<li class="pointer catName" onClick="showContent('category', {'navcat':'.950manufacturslist.eibach'});" >Eibach Suspension</li>
+					<li class="pointer catName" onClick="showContent('category', {'navcat':'.950manufacturslist.mcleod_mustang_clutches'});" >McLeod Clutches</li>
+					<li class="pointer catName" onClick="showContent('category', {'navcat':'.950manufacturslist.trufiber_mustang_hoods'});" >TruFiber Body Components</li>
+					<li class="pointer catName" onClick="showContent('category', {'navcat':'.950manufacturslist.hawk_brake_pads'});" >Hawk Brake Pads</li>
+					<li class="pointer catName" onClick="showContent('category', {'navcat':'.950manufacturslist'});" >Shop All Brands</li>
 				</ul>
 				<div id="ribbon"></div>
 			</div>
@@ -199,7 +207,7 @@ $(function(){
 					Contact Us
 				</a>
 				<a href='#' onClick="showContent('category', {'navcat':'.customer_satisfaction_guarantee'}); return false;">
-					Our Pledge to You
+					Our Pledge
 				</a>
 				<a href='#' onClick="showContent('company', {'show':'return'}); return false;">
 					Returns
@@ -214,7 +222,7 @@ $(function(){
 					FAQ
 				</a>
 				<a href='#' onClick="showContent('category', {'navcat':'.financing'}); return false;">
-					Apply for Financing
+					Financing
 				</a>
 				<h3>My Account</h3>
 				<a href='#' onClick="showContent('customer', {'show':'myaccount'}); return false;">
@@ -252,7 +260,7 @@ $(function(){
 					Newsletter
 				</a>
 				<a href='#' onClick="showContent('category', {'navcat':'.900clearanceitems.stage_3_motorsports_coupon_code'}); return false;">
-					Our Coupon Codes
+					Coupon Codes
 				</a>
 			</div>
 			<div class="col">
@@ -283,7 +291,7 @@ $(function(){
 			<div class="col">
 				<h3>Our Top Brands</h3>
 				<a href='#' onClick="showContent('category', {'navcat':'.950manufacturslist.roushperformance'}); return false;">
-					Roush
+					ROUSH
 				</a>
 				<a href='#' onClick="showContent('category', {'navcat':'.950manufacturslist.airaid_cold_air_intakes'}); return false;">
 					AIRAID
@@ -556,9 +564,9 @@ the homepageTemplate template is loaded into mainContentArea by default when the
 	
 	<div id="customBanner" class="lightShadow">
 		<div id="mainbanner">
-			<img class="pointer" src="img/centerbanner.png" onClick="showContent('category',{'navcat':'.jack_roush_appearance_2012_'}); return false;"/>
+			<a href='#' onClick="showContent('category', {'navcat':'.950manufacturslist.whiteline_mustang_suspension_parts'}); return false;"><img src="img/whiteline_banner.png"/></a>
 		</div>
-		<div id="banner3text">
+		<!--<div id="banner3text">
 			<div>
 				<h3>ON SALE</h3>
 				<p></p>
@@ -574,7 +582,7 @@ the homepageTemplate template is loaded into mainContentArea by default when the
 				<p></p>
 				<a>Read More</a>
 			</div>
-		</div>
+		</div>-->
 	</div>
 	<h2 class='sectionHeader'>Featured Items</h2>
 	<ul id='homepageFeaturedItems' data-bind="var: category(@products); format: productList; editor: finder; extension: store_prodlist; loadsTemplate: productListTemplate; items_per_page: 12; withReviews:1;" class='listStyleNone fluidList clearfix noPadOrMargin productList'></ul>
