@@ -710,7 +710,9 @@ app.u.appInitComplete = function()	{
 	})
 	
 	
-	app.renderFunctions.translateSelector('#shippingModal',app.data['profile|default'])
+	setTimeout(function() {
+		app.renderFunctions.translateSelector('#shippingModal',app.data['profile|default']);
+	}, 4000);
 
 	}
 
@@ -779,6 +781,7 @@ app.u.showPromotionModal = function(){
 }
 
 app.u.showShippingModal = function(){
+	$('body').scrollTop(0);
 	var $ele = $('#shippingModal');
 	if($ele.length != 0)	{
 		$ele.dialog({modal:true,width:600,height:400,autoOpen:false, title:"Shipping Policy"});
