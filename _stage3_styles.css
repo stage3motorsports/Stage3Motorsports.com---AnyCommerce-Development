@@ -1046,3 +1046,14 @@ div.clear {
 	background: url(img/downarrow.png) top left no-repeat;
 	background-size: contain;
 }
+
+
+.aboutLeft {
+	display: inline-block;
+	width: 30%;
+}
+
+.aboutRight {
+	display: inline-block;
+	width: 60%;
+}
