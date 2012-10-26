@@ -9,6 +9,24 @@ h1,h2,h3,h4,h5,h6 {
 	color: #3a3939;
 }
 
+a {
+	color: rgb(0,113,169);
+	font-weight: bold;
+	text-decoration: none;
+}
+
+a:hover {
+	color: rgb(40,192,224);
+}
+
+a:visited {
+	color: rgb(0,113,169);
+}
+
+a:visited:hover {
+	color: rgb(40,192,224);
+}
+
 h1 {	font-size: 1.6em; }
 h2 {	font-size: 1.3em; }
 
