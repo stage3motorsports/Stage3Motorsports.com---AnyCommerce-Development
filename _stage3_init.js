@@ -708,6 +708,10 @@ app.u.appInitComplete = function()	{
 			$(".jscroll").removeClass("jscroll");
 		$(".jscroll").jScrollPane({autoReinitialise: true, showArrows: true});
 	})
+	
+	
+	app.renderFunctions.translateSelector('#shippingModal',app.data['profile|default'])
+
 	}
 
 //gets executed once controller.js is loaded.
@@ -774,7 +778,14 @@ app.u.showPromotionModal = function(){
 	return false;
 }
 
-
+app.u.showShippingModal = function(){
+	var $ele = $('#shippingModal');
+	if($ele.length != 0)	{
+		$ele.dialog({modal:true,width:600,height:400,autoOpen:false, title:"Shipping Policy"});
+		$ele.dialog('open');
+	}
+	return false;
+}
 
 
 app.u.initMVC = function(attempts){
