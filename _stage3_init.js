@@ -718,6 +718,8 @@ app.u.appInitComplete = function()	{
 app.u.hideLeftContents = function() {
 	if($("#savebig").hasClass("showClass"))
 		$("#savebig").removeClass("showClass");
+	if($("#headerarrow").hasClass("showClass"))
+		$("#headerarrow").removeClass("showClass");
 	if($("#leftbanners").hasClass("showClass"))
 		$("#leftbanners").removeClass("showClass");
 	if(!$("#bottombanners").hasClass("showClass"))
@@ -727,6 +729,8 @@ app.u.hideLeftContents = function() {
 app.u.hideTierOne = function() {
 	if($("#leftContents").hasClass("showClass"))
 		$("#leftContents").removeClass("showClass");
+	if($("#headerarrow").hasClass("showClass"))
+		$("#headerarrow").removeClass("showClass");
 	if(!$("#bottombanners").hasClass("showClass"))
 		$("#bottombanners").addClass("showClass");
 	if(!$("#mainContent").hasClass("growClass"))
@@ -745,6 +749,8 @@ app.u.showLeftContents = function() {
 app.u.showTierOne = function() {
 	if(!$("#leftContents").hasClass("showClass"))
 		$("#leftContents").addClass("showClass");
+	if(!$("#headerarrow").hasClass("showClass"))
+		$("#headerarrow").addClass("showClass");
 	if($("#bottombanners").hasClass("showClass"))
 		$("#bottombanners").removeClass("showClass");
 	if($("#mainContent").hasClass("growClass"))
@@ -753,6 +759,7 @@ app.u.showTierOne = function() {
 
 app.u.toggleTierOne = function() {
 	$("#leftContents").toggleClass("showClass");
+	$("#headerarrow").toggleClass("showClass");
 	$("#bottombanners").toggleClass("showClass");
 	$("#mainContent").toggleClass("growClass");
 }
