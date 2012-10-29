@@ -11,7 +11,7 @@
 
 
 <script type="text/javascript">
-var _gaq = _gaq || {'push':function(){}} //here for testing. REMOVE BEFORE DEPLOYMENT!
+var _gaq = _gaq || []; 
 _gaq.push(['_setAccount', 'UA-2211032-1']);
 _gaq.push(['_trackPageview']);
 
@@ -179,9 +179,9 @@ $(function(){
 		</div>
 	</div>
 	
-	<div id='mainContent'>
+	<div id='mainContent' class="growClass">
 		<div id='globalMessaging' class='appMessaging'></div><!-- DO NOT REMOVE - used for some high level error handling (usually appears below breadcrumb nav or top bar) -->
-		<div id='mainContentArea'></div><!-- DO NOT REMOVE - this is where the specific page (ex: homepage, product, category) content is going to go -->
+		<div id='mainContentArea'><div class="loadingBG"></div></div><!-- DO NOT REMOVE - this is where the specific page (ex: homepage, product, category) content is going to go -->
 	</div>
 	
 	<div id="bottombanners">
