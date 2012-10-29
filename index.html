@@ -20,7 +20,7 @@ _gaq.push(['_trackPageview']);
 var myCreole;
 
 var app = {vars:{
-	"release":"20121026104100",  //increment this with each change. should solve caching issues. format: YYYYMMDDHHMMSS
+	"release":"20121029124400",  //increment this with each change. should solve caching issues. format: YYYYMMDDHHMMSS
 	"baseURL":"",
 	"httpsURL":"https://ssl.zoovy.com/s=www.stage3motorsports.com/",
 	"httpURL":"http://www.stage3motorsports.com/"
@@ -84,7 +84,7 @@ $(function(){
 
 
 <!-- what is displayed onLoad until the view is loaded -->
-<div id='appPreView'>
+<div id='appPreView' class="displayNone">
 <table>
 <tr>
 	<td><img src="img/logo.png" /></td>
@@ -104,7 +104,7 @@ $(function(){
 
 
 
-<div id='appView' class='displayNone'>
+<div id='appView' class=''>
 
 <!-- VIEW CONTENT -->
 <!-- leave the appView div, put your your html here ...  -->
