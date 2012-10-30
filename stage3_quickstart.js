@@ -1622,7 +1622,7 @@ return r;
 
 				}, //showCompany
 				
-				
+				/*
 			showSearch : function(P)	{
 //				app.u.dump("BEGIN myRIA.u.showSearch. P follows: ");
 //				app.u.dump(P);
@@ -1647,7 +1647,32 @@ return r;
 				app.ext.myRIA.u.handleTemplateFunctions(P);
 
 				}, //showSearch
+				*/
+ showSearch : function(P) {
+//    app.u.dump("BEGIN myRIA.u.showSearch. P follows: ");
+//    app.u.dump(P);
+    P.templateID = 'searchTemplate'
+    P.state = 'onInits';
+    app.ext.myRIA.u.handleTemplateFunctions(P);
 
+    $('#mainContentArea').empty().append(app.renderFunctions.createTemplateInstance(P.templateID,'mainContentArea_search'))
+   
+
+//add item to recently viewed list IF it is not already in the list.
+    if($.inArray(P.KEYWORDS,app.ext.myRIA.vars.session.recentSearches) < 0) {
+     app.ext.myRIA.vars.session.recentSearches.unshift(P.KEYWORDS);
+     }
+    app.ext.myRIA.u.showRecentSearches();
+    app.ext.store_search.u.handleElasticSimpleQuery(P.KEYWORDS,{'callback':'handleElasticResults','extension':'store_search','templateID':'productListTemplateResults','parentID':'resultsProductListContainer'});
+//legacy search.
+//    app.ext.store_search.calls.searchResult.init(P,{'callback':'showResults','extension':'myRIA'});
+    // DO NOT empty altSearchesLis here. wreaks havoc.
+    app.model.dispatchThis();
+
+    P.state = 'onCompletes'; //needed for handleTemplateFunctions.
+    app.ext.myRIA.u.handleTemplateFunctions(P);
+
+    }, //showSearch
 
 
 //pio is PageInfo object
