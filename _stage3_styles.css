@@ -15,20 +15,12 @@ a {
 	text-decoration: none;
 }
 
-a:hover {
-	color: rgb(40,192,224);
-}
+a:hover { color: rgb(40,192,224); }
+a:visited { color: rgb(0,113,169); }
+a:visited:hover { color: rgb(40,192,224); }
 
-a:visited {
-	color: rgb(0,113,169);
-}
-
-a:visited:hover {
-	color: rgb(40,192,224);
-}
-
-h1 {	font-size: 1.6em; }
-h2 {	font-size: 1.3em; }
+h1 { font-size: 1.6em; }
+h2 { font-size: 1.3em; }
 
 .lightShadow {
 	box-shadow: 0px 0px 6px rgba(22,22,22,.75);
@@ -795,7 +787,7 @@ div.thumbcontainer img {
 
 .growClass .prodBigImage {
 	width: 500px;
-	height: 500px;
+	height: 375px;
 }
 .growClass #prodVideoContainer {
 	width: 224px;
