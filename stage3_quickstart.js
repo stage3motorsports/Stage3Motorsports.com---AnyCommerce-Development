@@ -528,6 +528,9 @@ need to be customized on a per-ria basis.
 				return "<a href='#' onClick=\"return showContent('search',{'KEYWORDS':'"+suffix+"'}); \">"+phrase+"<\/a>"
 				},
 			":category" : function(suffix,phrase){
+				if(suffix.indexOf('.')!=0){
+					suffix = '.'+suffix;
+				}
 				return "<a href='#category?navcat="+suffix+"' onClick='return showContent(\"category\",{\"navcat\":\""+suffix+"\"});'>"+phrase+"<\/a>"
 				},
 			":product" : function(suffix,phrase){
@@ -535,9 +538,27 @@ need to be customized on a per-ria basis.
 				},
 			":customer" : function(suffix,phrase){
 // ### this needs to get smarter. look at what the suffix is and handle cases. (for orders, link to orders, newsletter link to newsletter, etc)				
-				return "<a href='#customer?show="+suffix+"' onClick='return showContent({\"customer\",{\"show\":\""+suffix+"\"});'>"+phrase+"<\/a>"
+				return "<a href='#customer?show="+suffix+"' onClick='return showContent(\"customer\",{\"show\":\""+suffix+"\"});'>"+phrase+"<\/a>"
+				},
+			":policy" : function(suffix,phrase){
+				return "<a href='#company?show="+suffix+"' onClick='return showContent(\"company\",{\"show\":\""+suffix+"\"});'>"+phrase+"<\/a>"
+			},
+
+			":app" : function(suffix,phrase){
+				var output; //what is returned.
+				if(suffix == 'about')	{
+					output = "<a href='#company?show="+suffix+"' onClick='return showContent(\"company\",{\"show\":\""+suffix+"\"});'>"+phrase+"<\/a>"	
 				}
-			}, //wiki
+				else if(suffix == 'contact')	{
+					output = "<a href='#company?show="+suffix+"' onClick='return showContent(\"company\",{\"show\":\""+suffix+"\"});'>"+phrase+"<\/a>"	
+				}
+				else	{
+					//we'll want to do something fantastic here.
+					output = phrase;
+				}
+				return output;
+			},
+		}, //wiki
 
 
 
