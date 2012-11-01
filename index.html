@@ -27,7 +27,7 @@ _gaq.push(['_trackPageview']);
 var myCreole;
 
 var app = {vars:{
-	"release":"20121031035100",  //increment this with each change. should solve caching issues. format: YYYYMMDDHHMMSS
+	"release":"20121101092200",  //increment this with each change. should solve caching issues. format: YYYYMMDDHHMMSS
 	"baseURL":"",
 	"httpsURL":"https://ssl.zoovy.com/s=www.stage3motorsports.com/",
 	"httpURL":"http://www.stage3motorsports.com/"
@@ -1853,7 +1853,11 @@ font-size: 10px;
 </style>
 <script type="text/javascript" src="http://app.icontact.com/icp/loadsignup.php/form.js?c=935962&l=13676&f=2488"></script>
 <span class="link"><a href="http://www.icontact.com">Email Marketing</a> You Can Trust</span>
-
+<script>
+	if($("#subscribeFormContainer form").length == 1){
+		$("#subscribeFormContainer form").attr('target','_blank');
+	}
+</script>
 </div>
 
 
