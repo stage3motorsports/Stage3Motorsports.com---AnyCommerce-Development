@@ -766,8 +766,8 @@ app.u.showTierOne = function() {
 app.u.toggleTierOne = function() {
 	$("#leftContents").toggleClass("showClass");
 	$("#headerarrow").toggleClass("showClass");
-/*	$("#bottombanners").toggleClass("showClass"); */
-/*	$("#mainContent").toggleClass("growClass"); */
+	$("#bottombanners").toggleClass("showClass");
+	$("#mainContent").toggleClass("growClass");
 }
 
 
