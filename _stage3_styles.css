@@ -782,7 +782,7 @@ div.thumbcontainer img {
 
 .prodBigImage {
 	width: 340px;
-	height: 340px;
+	height: 255px;
 }
 
 .growClass .prodBigImage {
@@ -864,8 +864,6 @@ div.thumbcontainer img {
 
 #prodReviews {
 	min-height: 50px;
-	width: 940px;
-	padding: 0 20px;
 }
 
 input.addToCartButton {
