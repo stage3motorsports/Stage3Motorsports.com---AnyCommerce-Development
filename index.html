@@ -2,12 +2,10 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Stage 3 Motorsports</title>
-
+<title>Stage 3 Motorsports - 1987-2013 Mustang Performance Parts - Free Shipping</title>
 
 
 <base href='' /><!-- leave blank so it works for a local file -->
-
 
 
 <script type="text/javascript">
@@ -953,9 +951,7 @@ this will likely become more flexible in the future. ###
 		
 		</div>
 		
-		<!--<div class="thumbDivider"></div>-->
-		
-		<div id="prodVideoContainer" class="productInfoContainer" data-bind="var: product(youtube:videoids); format:showIfSet; before:<div class='thumbDivider'></div>;">
+		<div id="prodVideoContainer" class="productInfoContainer" data-bind="var: product(youtube:videoids); format:showIfSet;"> <!-- removed  before:<div class='thumbDivider'></div>; -->
 			<div data-bind="var: product(youtube:videoids); format:youtubeVideos; extension:myRIA; before:<h4>Videos</h4>;"></div>
 		</div>
 	</td>
@@ -982,7 +978,7 @@ this will likely become more flexible in the future. ###
 <ul id='prodlistAccessories' class='listStyleNone fluidList clearfix noPadOrMargin productList' data-bind="var: product(zoovy:accessory_products); format:productList; extension:store_prodlist;loadsTemplate:productListTemplate;hide_multipage_controls:true;hide_multipage:true; withReviews:1; before: <h2 class='sectionHeader'>You May Also Like</h2>;"></ul>
 
 
-<ul id='prodlistRelated' class='listStyleNone fluidList clearfix noPadOrMargin productList' data-bind="var: product(zoovy:related_products); format:productList; extension:store_prodlist;loadsTemplate:productListTemplate;hide_multipage_controls:true;hide_multipage:true;  withReviews:1; before: <h2 class='sectionHeader'>Similar Items</h2>;"></ul>
+<ul id='prodlistRelated' class='listStyleNone fluidList clearfix noPadOrMargin productList' data-bind="var: product(zoovy:related_products); format:productList; extension:store_prodlist;loadsTemplate:productListTemplate;hide_multipage_controls:true;hide_multipage:true;  withReviews:1; before: <h2 class='sectionHeader'>Similar Items</h2>;" style="width: 940px; padding: 0 20px;"></ul>
 
 
 </div><!-- productTemplate -->
@@ -1457,7 +1453,7 @@ adding classes is not likely to have any bad effects.
 		</div>
 	
 		<div id='forgetmeArticle' class='displayNone textContentArea'>
-			<h1>Your 'Forget Me' list</h1>
+			<h1>Your 'Forget Me' List</h1>
 			<p>Items on this list will not show up anywhere on the site. Use it for items you never want to see again. If you add an item to the list by mistake, use this page to remove it from the list and it will start re-appearing during your shopping experience.</p>
 			<ul id='forgetmeContainer' class='prodlist loadingBG'>
 			</ul>
