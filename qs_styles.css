@@ -193,7 +193,7 @@ PRODUCT DETAIL PAGE (productTemplate)
 
 ***************************************************/
 
-#prodViewerTable	{width:940px; margin: 0 20px;}
+#prodViewerTable	{width:100%;}
 #prodViewerTable td	{padding-bottom:15px;}
 
 .breadAndAddThisContainer	{margin-bottom:8px; padding-bottom:8px; border-bottom:1px dotted #b6b6b6;}
@@ -244,11 +244,11 @@ so the displayNone class is used, then a .grpType_PARENT class is added if the i
 
 
 /****** REVIEW LIST - on product detail page, used for product reviews. ******/
-#prodViewerReviews			{margin:0; padding:0;} /* parent ul containing all reviews, each review as an li */
-.reviewLineItem 			{margin:0 0 12px 0; padding:0 0 12px 0; display:block; clear:both; border-bottom:1px #cccccc dotted;} /* on the li of an individual review */
-.prodReviewInfo				{float:left; display:block; width:165px; list-style:none; margin:0 12px 0px 0; font-weight:normal; padding:0;} /* on the ul of the list containing the name, location, date, etc */
-.prodReviewInfo li	     	{display:block; clear:both;} /* applies to li for location, name, date, etc */
-.prodReviewTemplate li p 	{font-weight:normal; margin:0; padding:0;}
+#prodViewerReviews	{margin:0; padding:0;} /* parent ul containing all reviews, each review as an li */
+.reviewLineItem {margin:0 0 12px 0; padding:0 0 12px 0; display:block; clear:both; border-bottom:1px #cccccc dotted;} /* on the li of an individual review */
+.prodReviewInfo	{float:left; display:block; width:165px; list-style:none; margin:0 12px 0px 0; font-weight:normal; padding:0;} /* on the ul of the list containing the name, location, date, etc */
+.prodReviewInfo li	{display:block; clear:both;} /* applies to li for location, name, date, etc */
+.prodReviewTemplate li p	{font-weight:normal; margin:0; padding:0;}
 
 .reviewLineItem blockquote	{margin:0 0 0 185px; padding:0;}
 

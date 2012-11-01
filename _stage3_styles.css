@@ -766,19 +766,18 @@ div.thumbcontainer img {
 }
 
 .prodThumbs {
-	width: 680px;
+	width: 672px;
 	display: block;
 	float: left;
-	margin: 15px 0;
+	margin-bottom: 16px;
 }
 #prodInfoContainer {
 	padding-top: 10px;
 }
 #prodVideoContainer {
-	float: right;
+	width: 672px;
+	float: left;
 	display: block;
-	border-left: 2px solid #a3a3a3;
-	padding: 15px 0 15px 25px;
 }
 
 .prodBigImage {
