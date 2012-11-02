@@ -554,6 +554,15 @@ app.vars.scripts.push({'pass':1,'location':app.vars.baseURL+'jscrollpane/script/
 	//not sure how to validate
 	return true;}
 	})
+	
+app.vars.scripts.push({
+	'pass':4,
+	'location':(document.location.protocol == 'https:' ? 'https:' : 'http:')+'//checkout.google.com/files/digital/ga_post.js',
+	'validator':function(){
+		app.u.dump("typeof getUrchinFieldValue:"+typeof getUrchinFieldValue);
+		return (typeof getUrchinFieldValue == 'undefined') ? false : true;}
+	})
+	
 
 //used for making text editable (customer address). non-essential. loaded late.
 app.vars.scripts.push({'pass':8,'location':app.vars.baseURL+'jeditable.js','validator':function(){return (typeof $ == 'function' && jQuery().editable) ? true : false;}})

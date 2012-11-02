@@ -14,6 +14,13 @@ var _gaq = _gaq || [];
 _gaq.push(['_setAccount', 'UA-2211032-1']);
 _gaq.push(['_trackPageview']);
 
+(function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+
+
 var myCreole;
 
 var app = {vars:{
@@ -23,7 +30,7 @@ var app = {vars:{
 	"httpURL":"http://www.stage3motorsports.com/"
 	},u:{}};
 
-//set base url so images, css, js, etc all load from appropriate location once deployed.
+	//set base url so images, css, js, etc all load from appropriate location once deployed.
 //baseURL as blank lets loadScript function run off local copy when testing locally.
 if(document.location.protocol != 'file:')	{
 	app.vars.baseURL  = "https:" == document.location.protocol ? app.vars.httpsURL : app.vars.httpURL; 
@@ -1509,8 +1516,8 @@ So the cart template should contain these two elements and the extension should 
                 
                         <span title='proceed to secure checkout'><button class='ui-button ui-button-text ui-state-default ui-corner-all checkoutButton' onClick="showContent('checkout',{});">Store Checkout</button></span>
                         <span id='paypalECButton' data-bind='var: cart(data.order_subtotal); format:paypalECButton;'></span>
-                        <!--
                         <span id='googleCheckoutButton' class='pointer' data-bind='var: cart(data.order_subtotal); format:googleCheckoutButton;'></span>
+                        <!--
                         <span id='amazonCheckoutButton' class='pointer' data-bind='var: cart(data.order_subtotal); format:amazonCheckoutButton;'></span>
                         -->
                     </div>

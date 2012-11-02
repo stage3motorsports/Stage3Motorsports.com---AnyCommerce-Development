@@ -68,7 +68,7 @@ a callback was also added which just executes this call, so that checkout COULD 
 					"analyticsdata":"", //must be set, even if blank.
 					"edit_cart_url" : zGlobals.appSettings.https_app_url+"#cart?show=cart&sessionId="+app.sessionId,
 					"continue_shopping_url" : zGlobals.appSettings.https_app_url+"?sessionId="+app.sessionId,
-					'_tag':{'callback':'proceedToGoogleCheckout','extension':'convertSessionToOrder','datapointer':'cartGoogleCheckoutURL'}
+					'_tag':{'callback':'proceedToGoogleCheckout','extension':'store_checkout','datapointer':'cartGoogleCheckoutURL'}
 					},'immutable');
 				}
 			}, //cartGoogleCheckoutURL	
@@ -270,6 +270,7 @@ _gaq.push(['_trackEvent','Checkout','App Event','Attempting to create order']);
 				},
 			onError : function(responseData,uuid)	{
 				$('#chkoutPlaceOrderBtn').removeAttr('disabled').removeClass('ui-state-disabled'); // re-enable checkout button on checkout page.
+				app.u.dump("error in checkout");
 				app.u.throwMessage(responseData,uuid);
 				}
 			},
