@@ -1090,28 +1090,32 @@ P.listID (buyer list id)
 
 
 //assumes the faq are already in memory.
-			showFAQbyTopic : function(topicID)	{
+			showFAQbyTopic : function(topicID)	{	
 				app.u.dump("BEGIN showFAQbyTopic ["+topicID+"]");
 				var templateID = 'faqQnATemplate'
-				var $target = $('#faqDetails4Topic_'+topicID).empty().show();
+
 				if(!topicID)	{
 					app.u.throwMessage("Uh Oh. It seems an app error occured. Error: no topic id. see console for details.");
 					app.u.dump("a required parameter (topicID) was left blank for myRIA.a.showFAQbyTopic");
-					}
+				}
 				else if(!app.data['appFAQs'] || $.isEmptyObject(app.data['appFAQs']['@detail']))	{
 					app.u.dump(" -> No data is present");
-					}
+				}
 				else	{
-					var L = app.data['appFAQs']['@detail'].length;
-					app.u.dump(" -> total #faq: "+L);
-					for(var i = 0; i < L; i += 1)	{
-						if(app.data['appFAQs']['@detail'][i]['TOPIC_ID'] == topicID)	{
-							app.u.dump(" -> faqid matches topic: "+app.data['appFAQs']['@detail'][i]['ID']);
-							$target.append(app.renderFunctions.transmogrify({'id':topicID+'_'+app.data['appFAQs']['@detail'][i]['ID'],'data-faqid':+app.data['appFAQs']['@detail'][i]['ID']},templateID,app.data['appFAQs']['@detail'][i]))
+					var $target = $('#faqDetails4Topic_'+topicID).toggle();
+					if($target.children().length)	{} //if children are present, this faq topic has been opened before or is empty. no need to re-render content.
+					else	{
+						var L = app.data['appFAQs']['@detail'].length;
+						app.u.dump(" -> total #faq: "+L);
+						for(var i = 0; i < L; i += 1)	{
+							if(app.data['appFAQs']['@detail'][i]['TOPIC_ID'] == topicID)	{
+								app.u.dump(" -> faqid matches topic: "+app.data['appFAQs']['@detail'][i]['ID']);
+								$target.append(app.renderFunctions.transmogrify({'id':topicID+'_'+app.data['appFAQs']['@detail'][i]['ID'],'data-faqid':+app.data['appFAQs']['@detail'][i]['ID']},templateID,app.data['appFAQs']['@detail'][i]))
 							}
 						}
 					}
-				} //showFAQbyTopic
+				}
+			} //showFAQbyTopic
 		
 		
 			}, //action [a]
