@@ -1073,3 +1073,5 @@ div.clear {
 .faqAnswer:before	{content:"A: ";}
 
 .faqAnswer	{margin-bottom:12px;}
+
+#faqContent { width: 75%;}
