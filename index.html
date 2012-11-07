@@ -9,6 +9,7 @@
 
 
 <script type="text/javascript">
+//<![CDATA[
 var _gaq = _gaq || []; 
 _gaq.push(['_setAccount', 'UA-2211032-1']);
 _gaq.push(['_trackPageview']);
@@ -24,7 +25,7 @@ _gaq.push(['_trackPageview']);
 var myCreole;
 
 var app = {vars:{
-	"release":"20121105042900",  //increment this with each change. should solve caching issues. format: YYYYMMDDHHMMSS
+	"release":"201211070101000",  //increment this with each change. should solve caching issues. format: YYYYMMDDHHMMSS
 	"baseURL":"",
 	"httpsURL":"https://ssl.zoovy.com/s=www.stage3motorsports.com/",
 	"httpURL":"http://www.stage3motorsports.com/"
@@ -37,7 +38,7 @@ if(document.location.protocol != 'file:')	{
 	document.getElementsByTagName('base')[0].href = app.vars.baseURL;
 	}
 	
-
+//]]>
 </script>
 
 
@@ -60,6 +61,7 @@ css files should be included before any .js file to ensure they are downloaded i
 <script type="text/javascript" src="jscrollpane/script/jquery.mousewheel.js"></script>-->
 
 <script type="text/javascript">
+//<![CDATA[
 app.u.loadScript(app.vars.baseURL+"_stage3_init.js");
 
 $(function(){
@@ -76,7 +78,7 @@ $(function(){
 });
 
 
-
+//]]>
 </script>
 
 
@@ -1703,9 +1705,11 @@ used for store_crm.js
     <script type="text/javascript" src="http://app.icontact.com/icp/loadsignup.php/form.js?c=935962&l=13676&f=2488"></script>
     <span class="link"><a href="http://www.icontact.com">Email Marketing</a> You Can Trust</span>
     <script>
+	//<![CDATA[
         if($("#subscribeFormContainer form").length == 1){
             $("#subscribeFormContainer form").attr('target','_blank');
         }
+	//]]>
     </script>
 </div>
 
