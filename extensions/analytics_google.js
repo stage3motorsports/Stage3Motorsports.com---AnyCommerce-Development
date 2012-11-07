@@ -110,7 +110,7 @@ app.ext.store_checkout.checkoutCompletes.push(function(P){
 
 					},
 				onError : function(){}
-				},
+				}
 			}, //r object.
 				
 		u : {
