@@ -1033,7 +1033,11 @@ div.clear {
 }
 
 #prodDesc table td {
-	padding: 5px;
+	padding: 2px 5px;
+}
+
+#prodDesc h3 {
+	padding-top: 5px;
 }
 
 #prodDesc th {
