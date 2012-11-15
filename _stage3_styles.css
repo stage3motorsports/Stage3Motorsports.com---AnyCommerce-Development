@@ -1028,7 +1028,12 @@ div.clear {
 }
 
 #prodDesc table {
+	border: 2px solid black;
+	margin-left: 20px;
+}
 
+#prodDesc table td {
+	padding: 5px;
 }
 
 #prodDesc th {
