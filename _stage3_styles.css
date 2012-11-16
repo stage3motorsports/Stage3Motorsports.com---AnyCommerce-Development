@@ -1046,16 +1046,11 @@ div.clear {
 }
 
 .tableBorders table {
-	border: 2px solid black;
 	margin: 10px 0 10px 20px;
 }
 
 .tableBorders table td {
 	padding: 2px 7px;
-}
-
-.tableBorders table td:first-child + td {
-	width: 300px;
 }
 
 .tableBorders h3 {
