@@ -1054,6 +1054,10 @@ div.clear {
 	padding: 2px 7px;
 }
 
+.tableBorders h3 {
+	padding-top: 10px;
+}
+
 .tableBorders th {
 	background: #000;
 	color: white;
