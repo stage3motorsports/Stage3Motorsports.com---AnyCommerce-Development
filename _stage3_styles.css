@@ -470,6 +470,19 @@ form#headerSearchFrm input#searchbtn {
 	margin-top: 20px;
 }
 
+.tableBorders {
+	border: 2px solid #000;
+	margin: 0 0 10px 20px;
+}
+
+.tableBorders td {
+	padding: 2px 5px;
+}
+
+.tableBorders th {
+	background: #000;
+}
+
 .categoryHeader, .sectionHeader {
 	color: white;
 	height: 40px;
