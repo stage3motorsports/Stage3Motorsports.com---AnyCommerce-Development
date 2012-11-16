@@ -1027,23 +1027,15 @@ div.clear {
 	margin:0px;
 }
 
-#prodDesc table {
-	border: 2px solid black;
-	margin: 10px 0 10px 20px;
-}
+#prodDesc table { border: 2px solid black; margin: 10px 0 10px 20px; }
 
-#prodDesc table td {
-	padding: 2px 7px;
-}
+#prodDesc table td { padding: 2px 7px; }
 
-#prodDesc h3 {
-	padding-top: 10px;
-}
+#prodDesc h3 { padding-top: 10px; }
 
-#prodDesc th {
-	background: black;
-	color: white;
-}
+#prodDesc th { background: black; color: white; }
+
+#prodDesc ul { margin: 5px 0; }
 
 .tableBorders table {
 	margin: 10px 0 10px 20px;
