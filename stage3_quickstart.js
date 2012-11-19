@@ -116,14 +116,14 @@ if(app.u.getParameterByName('debug'))	{
 if(typeof window.onpopstate == 'object')	{
 	window.onpopstate = function(event) { 
 		app.ext.myRIA.u.handlePopState(event.state);
-		}
+		};
 	}
 //if popstate isn't supporeted, hashchange will use the anchor.
 else if ("onhashchange" in window)	{ // does the browser support the hashchange event?
 		_ignoreHashChange = false; //global var. when hash is changed from JS, set to true. see handleHashState for more info on this.
 		window.onhashchange = function () {
 		app.ext.myRIA.u.handleHashState();
-		}
+		};
 	}
 else	{
 	app.u.throwMessage("You appear to be running a very old browser. Our app will run, but may not be an optimal experience.");
@@ -143,7 +143,7 @@ else	{
 					app.ext.store_navcats.calls.appCategoryDetailMax.init('.',{},'passive');
 					},7000); //throw this into the q to have handy. do it later 
 				
-				if(app && app.u && typeof app.u.appInitComplete == 'function'){app.u.appInitComplete()}; //gets run prior to any page content so that it can be used to add renderformats of template functions.
+				if(app && app.u && typeof app.u.appInitComplete == 'function'){app.u.appInitComplete();} //gets run prior to any page content so that it can be used to add renderformats of template functions.
 
 				var page = app.ext.myRIA.u.handleAppInit(); //checks url and will load appropriate page content. returns object {pageType,pageInfo}
 
@@ -163,7 +163,7 @@ else	{
 
 //adds submit functionality to search form. keeps dom clean to do it here.
 				app.ext.myRIA.u.bindAppViewForms();
-				app.ext.myRIA.vars.mcSetInterval = setInterval(app.ext.myRIA.u.handleMinicartUpdate,4000,'cartItemsList')
+				app.ext.myRIA.vars.mcSetInterval = setInterval(app.ext.myRIA.u.handleMinicartUpdate,4000,'cartItemsList');
 				showContent = app.ext.myRIA.a.showContent; //a shortcut for easy execution.
 				quickView = app.ext.myRIA.a.quickView; //a shortcut for easy execution.
 				
@@ -557,7 +557,7 @@ need to be customized on a per-ria basis.
 					output = phrase;
 				}
 				return output;
-			},
+			}
 		}, //wiki
 
 
